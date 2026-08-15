@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>浅倉大介 クレジットデータベース</title>
+<meta name="description" content="浅倉大介関連のクレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+
+<!-- The share card lives here rather than on the app itself: an Apps Script /exec URL
+     serves a Google wrapper and puts the page in a sandboxed iframe, so a scraper
+     never reaches these tags. This page is the front door that link previews can read. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="浅倉大介 クレジットデータベース">
+<meta property="og:description" content="クレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+<meta property="og:image" content="https://endohoheto.github.io/da_db_site/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://endohoheto.github.io/da_db_site/">
+<meta property="og:site_name" content="Asakura Daisuke Credit Database">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="浅倉大介 クレジットデータベース">
+<meta name="twitter:description" content="クレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+<meta name="twitter:image" content="https://endohoheto.github.io/da_db_site/og-card.png">
+
+<link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#05070d">
+
+<style>
+:root { --bg:#05070d; --card:#0a0f1a; --cyan:#00fff2; --purple:#b07cff;
+  --text:#d6f7f5; --dim:#63808c; --border:rgba(0,255,242,0.18); }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; background:var(--bg); color:var(--text);
+  font-family:"Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  display:flex; align-items:center; justify-content:center; padding:32px 20px;
+  background-image:linear-gradient(rgba(0,255,242,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,242,0.045) 1px, transparent 1px);
+  background-size:42px 42px; }
+main { width:100%; max-width:660px; border:1px solid var(--border); border-radius:6px;
+  background:var(--card); padding:38px 34px 30px; }
+.mark { display:flex; align-items:center; gap:18px; margin-bottom:24px; }
+.mark img { width:56px; height:56px; border-radius:12px; display:block; }
+h1 { margin:0; font-size:clamp(19px, 4.6vw, 27px); letter-spacing:2px; color:var(--cyan);
+  line-height:1.35; font-weight:normal; }
+.sub { color:var(--purple); font-size:11px; letter-spacing:3px; margin-top:6px; }
+p { color:var(--dim); font-size:13px; line-height:1.95; margin:0 0 22px; }
+.tags { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 26px; }
+.tags span { border:1px solid var(--border); border-radius:3px; padding:5px 9px;
+  font-size:10.5px; letter-spacing:1.5px; color:var(--dim); }
+.enter { display:inline-block; border:1px solid var(--cyan); color:var(--cyan);
+  text-decoration:none; padding:13px 30px; border-radius:4px; letter-spacing:3px;
+  font-size:13px; transition:background .15s ease; }
+.enter:hover { background:rgba(0,255,242,0.13); }
+.note { color:var(--dim); font-size:10.5px; letter-spacing:1px; margin-top:20px;
+  opacity:.75; line-height:1.8; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">
+    <img src="favicon.png" alt="">
+    <div>
+      <h1>浅倉大介<br>クレジットデータベース</h1>
+      <div class="sub">CREDIT DATABASE</div>
+    </div>
+  </div>
+
+  <p>作品のクレジット、ライブの記録、楽曲とそのバージョン、雑誌掲載、放送、書籍、
+    そして人と会社のつながりを、ひとつの場所から横断して辿れるようにしたものです。</p>
+
+  <div class="tags">
+    <span>WORKS</span><span>LIVE</span><span>SONGS</span><span>NETWORK</span>
+    <span>MAGAZINES</span><span>BROADCASTS</span><span>BOOKS</span><span>TIMELINE</span>
+  </div>
+
+  <a class="enter" id="enter" href="#">ENTER ▸</a>
+
+  <div class="note">個人名は原則イニシャル表記です。<br>
+    データの誤りにお気づきの際はご連絡ください。</div>
+</main>
+<script>
+  // one place to change the app address
+  var APP = 'https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec';
+  document.getElementById('enter').href = APP;
+</script>
+</body>
+</html>
