@@ -23,6 +23,24 @@
 <meta name="twitter:description" content="クレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
 <meta name="twitter:image" content="https://endohoheto.github.io/da_db_site/og-card.png">
 
+<!-- GA4. This is a normal top-level page, so unlike the app inside the Apps Script
+     iframe it reports a real referrer and a durable client id. Same measurement id, so
+     arriving here and entering the app are one session. Replace the id or delete the
+     block; GA_ID empty means nothing loads. -->
+<script>var GA_ID = '';</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  if (GA_ID) {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', GA_ID);
+  }
+</script>
+
 <link rel="icon" type="image/png" sizes="256x256" href="favicon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -83,7 +101,10 @@ p { color:var(--dim); font-size:13px; line-height:1.95; margin:0 0 22px; }
 <script>
   // one place to change the app address
   var APP = 'https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec';
-  document.getElementById('enter').href = APP;
+  var enter = document.getElementById('enter');
+  enter.href = APP;
+  // how many people who see the door actually walk through it
+  enter.addEventListener('click', function () { gtag('event', 'enter_app'); });
 </script>
 </body>
 </html>
