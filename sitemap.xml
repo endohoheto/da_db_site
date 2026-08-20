@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One page, because there is only one page: everything else the database shows is
+     drawn inside the Apps Script iframe and has no address of its own.
+     A sitemap is only read if a search engine is told where it is. robots.txt would do
+     it, but robots.txt is only honoured at the domain root (endohoheto.github.io/robots.txt),
+     which is a different repository — so this file is registered in Search Console instead. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://endohoheto.github.io/da_db_site/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

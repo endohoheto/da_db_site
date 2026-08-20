@@ -3,30 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>浅倉大介 クレジットデータベース</title>
-<meta name="description" content="浅倉大介関連のクレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+<title>浅倉大介 クレジットデータベース｜作品・ライブ・楽曲・雑誌を横断して辿る</title>
+<meta name="description" content="浅倉大介が関わった作品667タイトル・楽曲4,385曲・公演2,087日程・雑誌1,919号などを、クレジットと人のつながりから横断して辿れるデータベース。access / T.M.Revolution ほか201組を収録。">
+<link rel="canonical" href="https://endohoheto.github.io/da_db_site/">
+<!-- max-image-preview:large lets the share card show at full width in results;
+     the default for a page with no preference is a thumbnail. -->
+<meta name="robots" content="index, follow, max-image-preview:large">
 
 <!-- The share card lives here rather than on the app itself: an Apps Script /exec URL
      serves a Google wrapper and puts the page in a sandboxed iframe, so a scraper
-     never reaches these tags. This page is the front door that link previews can read. -->
+     never reaches these tags. This page is the front door that link previews can read.
+     It is also the only page a search engine can read at all — everything the app draws
+     is behind that iframe — so what the database holds is written out below in text. -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="浅倉大介 クレジットデータベース">
-<meta property="og:description" content="クレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+<meta property="og:description" content="作品・クレジット・ライブ・楽曲・雑誌・放送・書籍と、人と会社のつながりを横断して辿れるデータベース。">
 <meta property="og:image" content="https://endohoheto.github.io/da_db_site/og-card.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="浅倉大介 クレジットデータベース">
 <meta property="og:url" content="https://endohoheto.github.io/da_db_site/">
 <meta property="og:site_name" content="Asakura Daisuke Credit Database">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="浅倉大介 クレジットデータベース">
-<meta name="twitter:description" content="クレジット・作品・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。">
+<meta name="twitter:description" content="作品・クレジット・ライブ・楽曲・雑誌・放送・書籍と、人と会社のつながりを横断して辿れるデータベース。">
 <meta name="twitter:image" content="https://endohoheto.github.io/da_db_site/og-card.png">
+<meta name="twitter:image:alt" content="浅倉大介 クレジットデータベース">
+
+<!-- Two things a crawler cannot work out on its own: that this page is the front of a
+     dataset, and roughly how big it is. Counts here are the ones in docs/STATUS.md;
+     when the data grows, they and the table below move together.
+     sameAs (Wikipedia, MusicBrainz) is deliberately absent — an unverified identity link
+     is worse than none. Add it once the URL has been opened and checked. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://endohoheto.github.io/da_db_site/#website",
+      "url": "https://endohoheto.github.io/da_db_site/",
+      "name": "浅倉大介 クレジットデータベース",
+      "alternateName": "Asakura Daisuke Credit Database",
+      "inLanguage": "ja",
+      "description": "浅倉大介が関わった作品・クレジット・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。"
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://endohoheto.github.io/da_db_site/#dataset",
+      "name": "浅倉大介 クレジットデータベース",
+      "url": "https://endohoheto.github.io/da_db_site/",
+      "inLanguage": "ja",
+      "isAccessibleForFree": true,
+      "description": "作品667タイトル(リリース1,166点)、クレジット2,499件、楽曲4,385曲、公演2,087日程とセットリスト10,862行、雑誌1,919号、放送4,629件、書籍22点を収録し、人と会社のつながりから横断して辿れるようにしたもの。",
+      "keywords": ["浅倉大介", "クレジット", "ディスコグラフィー", "セットリスト", "作詞", "作曲", "編曲", "プロデュース", "access", "T.M.Revolution"],
+      "mainEntityOfPage": { "@id": "https://endohoheto.github.io/da_db_site/#website" },
+      "about": { "@type": "Person", "name": "浅倉大介" }
+    }
+  ]
+}
+</script>
 
 <!-- GA4. This is a normal top-level page, so unlike the app inside the Apps Script
      iframe it reports a real referrer and a durable client id. Same measurement id, so
      arriving here and entering the app are one session. Replace the id or delete the
      block; GA_ID empty means nothing loads. -->
+<link rel="preconnect" href="https://www.googletagmanager.com">
 <script>var GA_ID = 'G-1YQ80GQ5Z1';</script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -50,18 +93,23 @@
 :root { --bg:#05070d; --card:#0a0f1a; --cyan:#00fff2; --purple:#b07cff;
   --text:#d6f7f5; --dim:#63808c; --border:rgba(0,255,242,0.18); }
 * { box-sizing:border-box; }
+/* flex-start + margin:auto centres the card while there is room and stops the top being
+   cut off once the content is taller than the window — align-items:center clips it. */
 body { margin:0; min-height:100vh; background:var(--bg); color:var(--text);
   font-family:"Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  display:flex; align-items:center; justify-content:center; padding:32px 20px;
+  display:flex; align-items:flex-start; justify-content:center; padding:32px 20px;
   background-image:linear-gradient(rgba(0,255,242,0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,255,242,0.045) 1px, transparent 1px);
   background-size:42px 42px; }
-main { width:100%; max-width:660px; border:1px solid var(--border); border-radius:6px;
-  background:var(--card); padding:38px 34px 30px; }
+main { width:100%; max-width:660px; margin:auto; border:1px solid var(--border);
+  border-radius:6px; background:var(--card); padding:38px 34px 30px; }
 .mark { display:flex; align-items:center; gap:18px; margin-bottom:24px; }
 .mark img { width:56px; height:56px; border-radius:12px; display:block; }
 h1 { margin:0; font-size:clamp(19px, 4.6vw, 27px); letter-spacing:2px; color:var(--cyan);
   line-height:1.35; font-weight:normal; }
+h2 { margin:0 0 14px; font-size:12px; letter-spacing:3px; color:var(--purple);
+  font-weight:normal; text-transform:uppercase; }
+h2 .ja { color:var(--dim); letter-spacing:1px; margin-left:10px; text-transform:none; }
 .sub { color:var(--purple); font-size:11px; letter-spacing:3px; margin-top:6px; }
 p { color:var(--dim); font-size:13px; line-height:1.95; margin:0 0 22px; }
 .tags { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 26px; }
@@ -71,8 +119,25 @@ p { color:var(--dim); font-size:13px; line-height:1.95; margin:0 0 22px; }
   text-decoration:none; padding:13px 30px; border-radius:4px; letter-spacing:3px;
   font-size:13px; transition:background .15s ease; }
 .enter:hover { background:rgba(0,255,242,0.13); }
+section { border-top:1px solid var(--border); margin-top:34px; padding-top:26px; }
+dl { margin:0; font-size:12.5px; line-height:1.85; }
+dt { color:var(--cyan); letter-spacing:2px; }
+dd { color:var(--dim); margin:0 0 14px; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { text-align:left; padding:6px 8px 6px 0; border-bottom:1px solid rgba(0,255,242,0.08);
+  color:var(--dim); font-weight:normal; }
+td.n { text-align:right; color:var(--text); white-space:nowrap; padding-right:0; }
 .note { color:var(--dim); font-size:10.5px; letter-spacing:1px; margin-top:20px;
   opacity:.75; line-height:1.8; }
+.en { font-size:11.5px; line-height:1.9; letter-spacing:.3px; }
+footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
+  color:var(--dim); font-size:10.5px; letter-spacing:1px; line-height:1.9; opacity:.75; }
+@media (max-width:480px) {
+  main { padding:28px 20px 24px; }
+  .mark { gap:13px; }
+  .mark img { width:44px; height:44px; }
+  th, td { font-size:12px; }
+}
 </style>
 </head>
 <body>
@@ -86,26 +151,99 @@ p { color:var(--dim); font-size:13px; line-height:1.95; margin:0 0 22px; }
   </div>
 
   <p>作品のクレジット、ライブの記録、楽曲とそのバージョン、雑誌掲載、放送、書籍、
-    そして人と会社のつながりを、ひとつの場所から横断して辿れるようにしたものです。</p>
+    そして人と会社のつながりを、ひとつの場所から横断して辿れるようにしたものです。
+    浅倉大介本人の作品だけでなく、access / T.M.Revolution をはじめ、
+    作曲・編曲・プロデュース・演奏で関わった201組の記録を同じ場所に収めています。</p>
 
   <div class="tags">
     <span>WORKS</span><span>LIVE</span><span>SONGS</span><span>NETWORK</span>
     <span>MAGAZINES</span><span>BROADCASTS</span><span>BOOKS</span><span>TIMELINE</span>
   </div>
 
-  <a class="enter" id="enter" href="#">ENTER ▸</a>
+  <a class="enter" id="enter"
+     href="https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec">ENTER ▸</a>
 
-  <div class="note">個人名は原則イニシャル表記です。<br>
-    データの誤りにお気づきの際はご連絡ください。<br>
-    アクセス状況の把握に Google アナリティクスを使用しています。</div>
+  <section>
+    <h2>Contents<span class="ja">収録しているもの</span></h2>
+    <p>2026年8月時点の件数です。ひとつの作品に通常盤・初回限定盤・BOXがあるため、
+      作品数とリリース数は一致しません。</p>
+    <table>
+      <tbody>
+        <tr><th scope="row">作品(カタログ)</th><td class="n">667</td></tr>
+        <tr><th scope="row">リリース(形態違いを含む)</th><td class="n">1,166</td></tr>
+        <tr><th scope="row">クレジット</th><td class="n">2,499</td></tr>
+        <tr><th scope="row">楽曲(バージョン違いを含む)</th><td class="n">4,385</td></tr>
+        <tr><th scope="row">公演(日程)</th><td class="n">2,087</td></tr>
+        <tr><th scope="row">セットリスト(曲行)</th><td class="n">10,862</td></tr>
+        <tr><th scope="row">放送(テレビ・ラジオ)</th><td class="n">4,629</td></tr>
+        <tr><th scope="row">雑誌</th><td class="n">1,919</td></tr>
+        <tr><th scope="row">雑誌連載</th><td class="n">670</td></tr>
+        <tr><th scope="row">CM</th><td class="n">56</td></tr>
+        <tr><th scope="row">ファンクラブ会報</th><td class="n">527</td></tr>
+        <tr><th scope="row">書籍</th><td class="n">22</td></tr>
+        <tr><th scope="row">人物・組織(相関図)</th><td class="n">854 / 143</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What you can do<span class="ja">7つの画面</span></h2>
+    <dl>
+      <dt>SEARCH</dt>
+      <dd>667作品の年表。形態(通常盤・初回盤・BOX)をまとめて表示し、
+        クレジットのある作品にはバッジが付きます。</dd>
+      <dt>NETWORK</dt>
+      <dd>人・組織・アーティスト・作詞家の相関図。名前で検索すると、
+        その人と繋がっている相手を残したまま浮かび上がります。
+        年代を切って当時の関係だけを見ることもできます。</dd>
+      <dt>SONGS</dt>
+      <dd>曲の一覧。初出・バージョン数・ライブでの演奏回数・作家がひと目で並び、
+        1曲を開くとリミックスや別バージョンの関係が図になります。</dd>
+      <dt>LIVE</dt>
+      <dd>ツアー単位で辿るライブの記録。日程・セットリストのパターン・
+        パンフレット・バンド編成(サポートメンバー)まで。</dd>
+      <dt>MAGAZINES</dt>
+      <dd>雑誌1,919号と連載670回の掲載記録。</dd>
+      <dt>TIMELINE</dt>
+      <dd>1年分を縦に読む年表。リリース・ライブ・テレビ・ラジオ・雑誌・
+        会報・書籍・CMが同じ時間軸に並びます。</dd>
+      <dt>TOURNAMENT</dt>
+      <dd>曲を2択で選び抜いて1位を決めるトーナメント。結果は画像で保存できます。</dd>
+    </dl>
+  </section>
+
+  <section>
+    <h2>About<span class="ja">このデータベースについて</span></h2>
+    <p>市販のディスコグラフィーでは作品ごとに分断されてしまう情報を、
+      <strong>人・曲・公演の側から</strong>辿れるように組み直したものです。
+      同じ人が別表記で何度も現れないよう、表記ゆれは機械が候補を出して人が選ぶ方式にしています
+      (推測での自動統合はしません。誤った統合は、存在しない共作関係を作ってしまうためです)。
+      アーティスト名義はアーティストリストの表記を唯一の正としています。</p>
+    <p>個人名は原則としてイニシャル表記です。
+      データの誤りにお気づきの際はご連絡ください。</p>
+  </section>
+
+  <section lang="en">
+    <h2>In English</h2>
+    <p class="en">A cross-referenced database of the work of Japanese composer and producer
+      <strong>Daisuke Asakura</strong> — 667 releases, 2,499 credits, 4,385 songs,
+      2,087 live dates with setlists, and the network of people and companies behind them,
+      including access and T.M.Revolution. Japanese interface.</p>
+  </section>
+
+  <div class="note">アクセス状況の把握に Google アナリティクスを使用しています。</div>
+
+  <footer>
+    データ更新: 2026-08-16<br>
+    Google スプレッドシート + Apps Script で動いています。
+  </footer>
 </main>
 <script>
-  // one place to change the app address
-  var APP = 'https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec';
-  var enter = document.getElementById('enter');
-  enter.href = APP;
-  // how many people who see the door actually walk through it
-  enter.addEventListener('click', function () { gtag('event', 'enter_app'); });
+  // The link works without this: the address is in the href already, so a crawler and a
+  // visitor with scripts off both get through. This only counts the click.
+  document.getElementById('enter').addEventListener('click', function () {
+    gtag('event', 'enter_app');
+  });
 </script>
 </body>
 </html>
