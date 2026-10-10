@@ -1,0 +1,18 @@
+name: nonogram
+on:
+  push:
+    paths: ['nonogram/**', '.github/workflows/nonogram-test.yml']
+  pull_request:
+    paths: ['nonogram/**', '.github/workflows/nonogram-test.yml']
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nonogram
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      # 行ソルバーの照合と、配る全問の「答えが1つ」の数え直し
+      - run: npm test

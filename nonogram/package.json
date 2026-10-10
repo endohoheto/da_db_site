@@ -1,0 +1,14 @@
+{
+  "name": "nonogram",
+  "private": true,
+  "description": "毎回自動で作られる、答えが1つのノノグラム",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "serve": "node scripts/serve.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "build:puzzles": "node tools/build-puzzles.mjs"
+  },
+  "devDependencies": {
+    "@vp-tw/cjk-web-fonts-fusion-pixel-font": "^0.0.1"
+  }
+}

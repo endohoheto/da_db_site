@@ -1,0 +1,67 @@
+{
+  "_note": "出題する言葉。浅倉大介にまつわるアーティスト名・作品名など、公に発表されている名前だけを入れる。ロゴは使わず、文字はドットフォントで組む。kind: artist / song / album / tour",
+  "words": [
+    {
+      "text": "浅倉大介",
+      "kind": "artist"
+    },
+    {
+      "text": "access",
+      "kind": "artist"
+    },
+    {
+      "text": "Iceman",
+      "kind": "artist"
+    },
+    {
+      "text": "T.M.Revolution",
+      "kind": "artist",
+      "layout": "T.M.\nRevo\nlution"
+    },
+    {
+      "text": "T.M.R-e",
+      "kind": "artist"
+    },
+    {
+      "text": "pool bit boys",
+      "kind": "artist"
+    },
+    {
+      "text": "Mad Soldiers",
+      "kind": "artist"
+    },
+    {
+      "text": "コタニキンヤ.",
+      "kind": "artist",
+      "layout": "コタニ\nキンヤ."
+    },
+    {
+      "text": "MC-K2",
+      "kind": "artist"
+    },
+    {
+      "text": "Fayray",
+      "kind": "artist"
+    },
+    {
+      "text": "木村由姫",
+      "kind": "artist"
+    },
+    {
+      "text": "LAZY KNACK",
+      "kind": "artist"
+    },
+    {
+      "text": "The Seeker",
+      "kind": "artist"
+    },
+    {
+      "text": "黒田倫弘",
+      "kind": "artist"
+    },
+    {
+      "text": "西川貴教",
+      "kind": "artist"
+    }
+  ]
+}
