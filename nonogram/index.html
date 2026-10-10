@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>鬼ノノグラム</title>
+<meta name="description" content="浅倉大介にまつわる名前が絵になるノノグラム(お絵かきパズル)。答えは必ず1つ。">
+<meta name="theme-color" content="#eef1f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11151b" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ノノグラム">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <button class="ib" id="menuBtn" aria-label="メニュー" title="メニュー">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <button class="title" id="titleBtn" aria-label="問題一覧">
+      <span class="t1" id="info1">—</span>
+      <span class="t2" id="info2"></span>
+    </button>
+    <button class="timer" id="timerBtn" aria-label="一時停止" title="一時停止 (P)">
+      <span id="timer">00:00</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>
+    </button>
+    <button class="ib" id="fitBtn" aria-label="全体を表示" title="全体を表示 (0)">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    </button>
+  </header>
+
+  <main class="board">
+    <div class="stage" id="stage"><div class="sizer" id="sizer"><canvas id="cv" tabindex="0" aria-label="盤面。矢印キーで移動、Zで塗る、Xでバツ"></canvas></div></div>
+    <div class="cover" id="busy" hidden>
+      <div class="cover-box"><span id="busyText">問題を作っています</span><div class="prog"><i id="progBar"></i></div></div>
+    </div>
+    <button class="cover pause" id="pauseCover" hidden>
+      <span class="cover-box"><b>一時停止中</b><span>タップで再開</span></span>
+    </button>
+    <div class="stamp" id="stamp" aria-hidden="true">完</div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </main>
+
+  <div class="memo-bar" id="memoBar" hidden>
+    <span>メモ</span>
+    <button id="memoOk">確定する</button>
+    <button id="memoDel">消す</button>
+  </div>
+
+  <nav class="tools" aria-label="道具">
+    <div class="seg" role="radiogroup" aria-label="道具">
+      <button role="radio" id="tFill" aria-checked="true" title="塗る (1)"><i class="sw-fill"></i><span>塗る</span></button>
+      <button role="radio" id="tCross" aria-checked="false" title="バツ (2)"><i class="sw-cross">×</i><span>バツ</span></button>
+      <button role="radio" id="tMemo" aria-checked="false" title="メモ (3)"><i class="sw-memo"></i><span>メモ</span></button>
+    </div>
+    <div class="hist">
+      <button class="ib" id="undoBtn" aria-label="戻す" title="戻す (Ctrl+Z)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+      <button class="ib" id="redoBtn" aria-label="やり直す" title="やり直す (Ctrl+Y)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+    </div>
+  </nav>
+</div>
+
+<!-- メニュー -->
+<dialog id="menuDlg" class="sheet">
+  <div class="sheet-head"><h2>メニュー</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="menu">
+    <button data-open="listDlg"><b>問題一覧</b><span>解いた問題は、文字の絵と名前が並びます</span></button>
+    <button id="checkBtn"><b>間違いを探す</b><span>答えと違うマスを数秒だけ赤で示します</span></button>
+    <button id="resetBtn"><b>全部消す</b><span>この盤面を最初からやり直します</span></button>
+    <button data-open="transferDlg"><b>引き継ぎ</b><span>機種変更や別の端末へ、途中経過を移します</span></button>
+    <button data-open="settingsDlg"><b>設定</b><span>表示、自動バツ、振動</span></button>
+    <button data-open="helpDlg"><b>遊び方と操作</b><span>ルール、タッチ操作、キーボード</span></button>
+  </div>
+</dialog>
+
+<!-- 問題一覧 -->
+<dialog id="listDlg" class="sheet list">
+  <div class="sheet-head"><h2>問題一覧 <small id="listCount"></small></h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chips filters" role="radiogroup" aria-label="絞り込み" id="listFilter">
+    <button role="radio" data-filter="all">すべて</button>
+    <button role="radio" data-filter="todo">まだ</button>
+    <button role="radio" data-filter="done">クリア済み</button>
+  </div>
+  <div class="cards" id="cards"></div>
+</dialog>
+
+<!-- 設定 -->
+<dialog id="settingsDlg" class="sheet">
+  <div class="sheet-head"><h2>設定</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="field">
+    <span class="label">画面</span>
+    <div class="chips" role="radiogroup" aria-label="画面の明るさ" id="themeChips">
+      <button role="radio" data-theme="auto">端末に合わせる</button>
+      <button role="radio" data-theme="light">明るい</button>
+      <button role="radio" data-theme="dark">暗い</button>
+    </div>
+  </div>
+  <label class="toggle"><input type="checkbox" id="setRed"><span><b>矛盾した行の数字を赤くする</b><small>今の塗りとバツでは数字を満たせない行を知らせます。答えは見ません</small></span></label>
+  <label class="toggle"><input type="checkbox" id="setAuto"><span><b>数字を満たした行の残りを自動でバツ</b><small>オフでも、数字をタップすれば残りをバツにできます</small></span></label>
+  <label class="toggle"><input type="checkbox" id="setHaptic"><span><b>塗ったときに振動する</b><small>対応している端末だけ(多くの Android)</small></span></label>
+  <label class="toggle"><input type="checkbox" id="setTimer"><span><b>タイマーを表示する</b><small>非表示でも時間は記録します</small></span></label>
+  <label class="toggle"><input type="checkbox" id="setLeft"><span><b>左手で操作する</b><small>道具と戻すボタンの左右を入れ替えます</small></span></label>
+</dialog>
+
+<!-- 引き継ぎ -->
+<dialog id="transferDlg" class="sheet">
+  <div class="sheet-head"><h2>引き継ぎ</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <p class="note">途中の盤面、ベストタイム、設定をひとつのコードにまとめます。移したい端末で「読み込む」に貼り付けてください。</p>
+  <div class="actions">
+    <button class="primary" id="exportBtn">コードを作ってコピー</button>
+  </div>
+  <textarea id="transferText" rows="4" spellcheck="false" autocomplete="off" placeholder="ここに引き継ぎコードを貼り付け"></textarea>
+  <div class="actions">
+    <button id="importBtn">貼り付けたコードを読み込む</button>
+  </div>
+  <p class="note" id="transferMsg" role="status"></p>
+</dialog>
+
+<!-- 遊び方 -->
+<dialog id="helpDlg" class="sheet">
+  <div class="sheet-head"><h2>遊び方と操作</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="help">
+    <h3>この問題について</h3>
+    <p>絵はすべて、浅倉大介にまつわるアーティスト名や作品名を、ドットの文字で組んだものです。解くと何の名前だったかがわかります。ロゴやジャケットは使っていません。</p>
+    <p>答えは必ず1つです。文字の形によっては推論だけで1つに絞れないため、最初から見えているマス(左上に小さな印)がある問題もあります。</p>
+    <h3>ルール</h3>
+    <p>左と上の数字は、その行・列で続けて塗るマスの数を、並んでいる順に表します。数字と数字の間には1マス以上の空白が入ります。すべての行と列を満たすと絵が完成します。答えは必ず1つで、当てずっぽうは要りません。</p>
+    <h3>塗る</h3>
+    <ul>
+      <li>マスを押してそのまま縦か横に動かすと、一直線にまとめて塗れます。押し始めたマスと同じ状態のマスだけが変わるので、消すときも同じ動きです</li>
+      <li>ドラッグ中は、塗っているかたまりの長さが指の上に出ます</li>
+      <li>数字を満たした行の数字をタップすると、残りのマスをまとめてバツにできます</li>
+    </ul>
+    <h3>メモ</h3>
+    <p>オレンジの仮置きです。仮定を試して、数字が合えば「確定する」、矛盾したら(数字が赤くなったら)「消す」。メモは正解の判定に数えません。</p>
+    <h3>移動と拡大</h3>
+    <ul>
+      <li>2本指でスクロール、ピンチで拡大縮小。数字の欄をドラッグしてもスクロールできます</li>
+      <li>盤面が画面より大きいとき、左上の角に全体の縮小図が出ます。押した場所へ飛びます</li>
+      <li>右上の四角いボタンで全体表示に戻ります</li>
+    </ul>
+    <h3>キーボード</h3>
+    <dl class="keys">
+      <dt><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></dt><dd>カーソル移動</dd>
+      <dt><kbd>Z</kbd> / <kbd>Enter</kbd></dt><dd>塗る(押したまま矢印で連続)</dd>
+      <dt><kbd>X</kbd></dt><dd>バツ</dd>
+      <dt><kbd>C</kbd></dt><dd>メモ</dd>
+      <dt><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></dt><dd>道具の切り替え</dd>
+      <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Ctrl</kbd>+<kbd>Y</kbd></dt><dd>戻す / やり直す</dd>
+      <dt><kbd>+</kbd> <kbd>−</kbd> <kbd>0</kbd></dt><dd>拡大 / 縮小 / 全体表示</dd>
+      <dt><kbd>P</kbd></dt><dd>一時停止</dd>
+      <dt><kbd>N</kbd></dt><dd>問題一覧</dd>
+      <dt>右クリック</dt><dd>バツ(メモ中はメモのバツ)</dd>
+      <dt>Ctrl+ホイール</dt><dd>拡大縮小</dd>
+      <dt>中ボタンでドラッグ</dt><dd>スクロール</dd>
+    </dl>
+    <h3>クレジット</h3>
+    <p class="small">非公式のファン作品です。名前は各権利者のものです。文字は <a href="https://github.com/TakWolf/fusion-pixel-font" target="_blank" rel="noopener">Fusion Pixel Font</a>(SIL Open Font License 1.1)で組んでいます。</p>
+  </div>
+</dialog>
+
+<!-- クリア -->
+<dialog id="clearDlg" class="sheet clear">
+  <div class="clear-body">
+    <p class="clear-kind" id="clearKind"></p>
+    <p class="clear-word" id="clearWord"></p>
+    <p class="clear-sub" id="clearSub"></p>
+  </div>
+  <div class="actions">
+    <button class="primary" id="nextBtn">次の問題</button>
+    <button id="toListBtn">問題一覧</button>
+    <button data-close>絵を眺める</button>
+  </div>
+  <p class="clear-link"><a href="../">浅倉大介クレジットデータベースへ</a></p>
+</dialog>
+
+<script src="gen.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

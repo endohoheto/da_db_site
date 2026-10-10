@@ -2,12 +2,14 @@
 
 浅倉大介クレジットデータベースの入口ページ。
 
-**データは一切含みません** — HTML2枚と画像のみ。
+**データベースの中身は含みません** — 入口のHTML2枚と画像、それに別アプリのノノグラムだけです。
 
 - `index.html` — 入口。OGPタグ、構造化データ、アプリへのリンク
 - `404.html` — 存在しないパスに出るページ(`noindex`)
 - `sitemap.xml` — Search Console に登録する用
 - `og-card.png` — 共有時のカード画像 (1200x630)
+- `nonogram/` — 文字のノノグラム(別アプリ、`/da_db_site/nonogram/`)。アーティスト名などの公開されている名前だけを持ちます。
+  問題の作り方・テストは `nonogram/README.md`。中身を変えたら `nonogram/sw.js` の `VERSION` を上げる
 - `favicon.png` ほか — アイコン
 
 画像は `da_db` 側の `site/make-icons.py` / `site/make-og-card.py` で生成しています。
