@@ -1,7 +1,7 @@
 {
   "name": "nonogram",
   "private": true,
-  "description": "毎回自動で作られる、答えが1つのノノグラム",
+  "description": "浅倉大介にまつわる名前が絵になるノノグラム",
   "scripts": {
     "test": "node --test test/*.test.js",
     "serve": "node scripts/serve.mjs",
@@ -9,6 +9,6 @@
     "build:puzzles": "node tools/build-puzzles.mjs"
   },
   "devDependencies": {
-    "@vp-tw/cjk-web-fonts-fusion-pixel-font": "^0.0.1"
+    "@fontsource/dotgothic16": "^5.3.0"
   }
 }

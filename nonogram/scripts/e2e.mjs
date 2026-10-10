@@ -65,7 +65,8 @@ console.log('PC 1280×860');
   await page.evaluate(() => { const n = window.__nono; n.cells.fill(0); });
   await page.keyboard.press('Control+z'); // 状態の同期を戻すためではなく、undo が壊れないことの確認
   await page.evaluate(() => { const n = window.__nono; n.cells.fill(0); });
-  let row = 0; while (sol.slice(row * C, row * C + C).every(v => v === 0)) row++;
+  // 塗るマスと空くマスの両方がある行を選ぶ(白抜きの絵には全部塗る行がある)
+  let row = 0; while (sol.slice(row * C, row * C + C).every(v => v === 0) || sol.slice(row * C, row * C + C).every(v => v === 1)) row++;
   for (let cc = 0; cc < C; cc++) if (sol[row * C + cc]) { const p = await cellPos(page, row, cc); await page.mouse.click(p.x, p.y); }
   const clueX = await page.evaluate(() => { const L = window.__nono.L; return document.getElementById('cv').getBoundingClientRect().left + L.left - 12; });
   const rowY = (await cellPos(page, row, 0)).y;
