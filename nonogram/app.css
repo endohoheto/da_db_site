@@ -180,6 +180,8 @@ dialog[open] { animation: up .2s ease-out; }
 .actions button.primary { background: var(--ink); color: var(--sheet); }
 .actions button.warn { background: var(--shu); color: #fff; }
 .actions button[hidden] { display: none; }
+.danger-zone { border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 4px; }
+.danger-zone button { color: var(--shu); }
 .toggle { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--grid); cursor: pointer; }
 .toggle input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex: none; }
 .toggle span { display: flex; flex-direction: column; gap: 3px; }

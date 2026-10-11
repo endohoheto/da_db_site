@@ -197,21 +197,29 @@ function layout(depth = 0) {
   if (!P) return;
   const f = fitSize(), aw0 = stage.clientWidth;
   // タッチで確実に押せる大きさより小さくはしない(その場合はスクロール)
-  const minCell = coarse ? 20 : 14;
+  // 2桁の数字が縦の欄で隣とくっつかない幅を下限にする(PCでも18px)
+  const minCell = coarse ? 20 : 18;
   const base = Math.max(minCell, Math.floor(f.fit));
   const cs = Math.max(8, Math.round(Math.max(base, 8) * zoom));
   // 数字は拡大しても一定以上は大きくしない。マスと一緒に育てると、拡大したとき数字の欄が画面を占領する
   const narrow = aw0 < 520;
   const fs = Math.round(Math.max(11, Math.min(narrow ? 15 : 18, cs * (narrow ? 0.56 : 0.55))));
   const slotW = fs * (narrow ? 1.12 : 1.3), slotH = fs * (narrow ? 1.08 : 1.24);
-  const left = Math.ceil(f.maxR * slotW + fs * 0.7) + f.M;
+  // 横の欄は数字ごとの実際の幅で並べる。決まった幅のマスに入れると、2桁の数字どうしがくっついて
+  // 「20 24」が「2024」に見えた
+  ctx.font = `700 ${fs}px ${colors.font}`;
+  const w1 = ctx.measureText('8').width, w2 = ctx.measureText('88').width, gap = Math.max(4, fs * 0.55);
+  const numW = (n) => (n >= 10 ? w2 : w1);
+  const rowW = (list) => list.reduce((a, n) => a + numW(n), 0) + gap * Math.max(0, list.length - 1);
+  const maxRowW = Math.max(...P.rc.map(l => rowW(l.length ? l : [0])));
+  const left = Math.ceil(maxRowW + fs * 1.0) + f.M;
   const top = Math.ceil(f.maxC * slotH + fs * 0.6) + f.M;
   const W = left + P.C * cs + f.M, H = top + P.R * cs + f.M;
   const aw = stage.clientWidth, ah = stage.clientHeight;
   sizer.style.width = W + 'px'; sizer.style.height = H + 'px';
   sizer.style.marginTop = Math.max(0, Math.floor((ah - H) / 2)) + 'px';
   const vw = Math.min(W, stage.clientWidth), vh = Math.min(H, stage.clientHeight);
-  L = { cs, left, top, W, H, vw, vh, slotW, slotH, fs };
+  L = { cs, left, top, W, H, vw, vh, slotW, slotH, fs, w1, w2, gap };
   const dpr = Math.min(3, window.devicePixelRatio || 1);
   cv.width = Math.round(vw * dpr); cv.height = Math.round(vh * dpr);
   cv.style.width = vw + 'px'; cv.style.height = vh + 'px';
@@ -317,10 +325,12 @@ function draw() {
   for (let r = r0; r <= r1; r++) {
     const clue = P.rc[r], list = clue.length ? clue : [0], info = rowInfo[r];
     if (info.bad) { ctx.globalAlpha = 0.12; ctx.fillStyle = colors.shu; ctx.fillRect(0, gy + r * cs, left, cs); ctx.globalAlpha = 1; }
-    for (let j = 0; j < list.length; j++) {
-      const x = left - fs * 0.35 - (list.length - 1 - j) * L.slotW - L.slotW / 2;
+    let x = left - fs * 0.5;
+    for (let j = list.length - 1; j >= 0; j--) {
+      const w = list[j] >= 10 ? L.w2 : L.w1;
       ctx.fillStyle = clueColor(info, j);
-      ctx.fillText(String(list[j]), x, gy + r * cs + cs / 2 + 1);
+      ctx.fillText(String(list[j]), x - w / 2, gy + r * cs + cs / 2 + 1);
+      x -= w + L.gap;
     }
   }
   ctx.restore();
@@ -331,7 +341,10 @@ function draw() {
     for (let j = 0; j < list.length; j++) {
       const y = top - fs * 0.3 - (list.length - 1 - j) * L.slotH - L.slotH / 2;
       ctx.fillStyle = clueColor(info, j);
-      ctx.fillText(String(list[j]), gx + c * cs + cs / 2, y + 1);
+      // 縦の欄で2桁が列の幅より広いとき(縮小したとき)は横に詰めて、隣の列と混ざらないようにする
+      const t = String(list[j]), w = t.length > 1 ? L.w2 : L.w1, room = cs - 3;
+      if (w > room) { ctx.save(); ctx.translate(gx + c * cs + cs / 2, y + 1); ctx.scale(room / w, 1); ctx.fillText(t, 0, 0); ctx.restore(); }
+      else ctx.fillText(t, gx + c * cs + cs / 2, y + 1);
     }
   }
   ctx.restore();
@@ -839,16 +852,33 @@ function resetTwoStep() {
   clearTimeout(armed.timer); armed.btn.classList.remove('warn'); armed.btn.innerHTML = armed.html; armed = null;
 }
 
+// この問題を最初から: 盤面もタイマーも履歴も初期に戻す(解き終えた問題も、もう一度解ける)
+function restartPuzzle() {
+  if (!P) return;
+  cleared = false; elapsed = 0; undo = []; redo = []; paused = false; flash = null;
+  cells = Uint8Array.from(initialCells(P));
+  lastTick = performance.now();
+  $('stamp').classList.remove('on'); $('pauseCover').hidden = true;
+  stage.scrollLeft = 0; stage.scrollTop = 0;
+  recalc(); renderInfo(); updateUI(); renderTimer(); draw(); save();
+  closeDialogs(); toast('最初からやり直します');
+}
 $('resetBtn').onclick = () => {
   if (!P) return;
-  const go = () => {
-    if (cleared) { cleared = false; elapsed = 0; undo = []; redo = []; cells = Uint8Array.from(initialCells(P)); $('stamp').classList.remove('on'); recalc(); renderInfo(); updateUI(); draw(); save(); }
-    else bulk(() => EMPTY);
-    closeDialogs(); toast('全部消しました。戻すで元に戻せます');
-  };
-  if (!cleared && !cells.some((v, i) => v !== EMPTY && !fixed[i])) { closeDialogs(); return; }
-  twoStep($('resetBtn'), '<b>もう一度押すと全部消します</b><span>戻すボタンで取り消せます</span>', go);
+  const touched = cleared || elapsed > 3000 || cells.some((v, i) => v !== EMPTY && !fixed[i]);
+  if (!touched) { restartPuzzle(); return; }
+  twoStep($('resetBtn'), '<b>もう一度押すと最初からになります</b><span>塗ったマスとタイマーが消えます</span>', restartPuzzle);
 };
+$('againBtn').onclick = restartPuzzle;
+// すべての記録を消す: 全問の途中経過・クリア・ベストタイムを消す(設定は残す)
+$('wipeBtn').onclick = () => twoStep($('wipeBtn'), 'もう一度押すと、全部の記録を消します', () => {
+  store.slots = {}; store.best = {}; store.zoom = {};
+  const first = PUZZLES[0];
+  P = null; save();
+  closeDialogs();
+  if (first) openPuzzle(first.key);
+  toast('すべての記録を消しました');
+});
 $('checkBtn').onclick = () => {
   if (!P || cleared) return;
   const wrong = new Set();

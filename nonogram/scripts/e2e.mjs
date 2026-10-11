@@ -142,11 +142,25 @@ console.log('PC 1280×860');
   await page.waitForTimeout(1000);
   check(await page.evaluate(() => document.getElementById('clearDlg').open), '最後の1マスでクリア画面が出る');
   check(await page.evaluate(() => document.getElementById('clearWord').textContent === window.__nono.P.text), 'クリア画面に名前が出る');
+  // クリアした問題をもう一度解く
+  await page.click('#againBtn');
+  check(await page.evaluate(() => !document.getElementById('clearDlg').open && Array.from(window.__nono.cells).every((v, i) => v === 0 || window.__nono.P.givens[i] !== undefined)), '「もう一度解く」で盤面が最初に戻る');
+  // 解き直したものを、もう一度クリアしてから一覧へ
+  await page.evaluate(() => { const n = window.__nono; const s = n.P.sol; for (let i = 0; i < s.length; i++) n.cells[i] = s[i]; const k = s.lastIndexOf(1); n.cells[k] = 0; });
+  await page.evaluate(() => { const s = document.getElementById('stage'); s.scrollLeft = 1e5; s.scrollTop = 1e5; });
+  await page.waitForTimeout(100);
+  { const lp2 = await cellPos(page, last[0], last[1]); await page.mouse.click(lp2.x, lp2.y); }
+  await page.waitForFunction(() => document.getElementById('clearDlg').open, null, { timeout: 3000 }).catch(() => {});
   await page.click('#toListBtn');
   check(await page.evaluate(() => !!document.querySelector('#cards .card.cur canvas')), '解いた問題は一覧で絵になる');
   if (OUT) await page.screenshot({ path: OUT + '/pc-list.png' });
   await page.keyboard.press('Escape');
   if (OUT) await page.screenshot({ path: OUT + '/pc-clear.png' });
+  // すべての記録を消す
+  await page.click('#menuBtn'); await page.click('[data-open="settingsDlg"]');
+  await page.click('#wipeBtn'); await page.click('#wipeBtn');
+  await page.waitForTimeout(200);
+  check(await page.evaluate(() => Object.values(window.__nono.store().slots).every(s => !s.cleared) && !Object.keys(window.__nono.store().best).length), '「すべての記録を消して最初から」で記録が消える');
   check(errors.length === 0, 'エラーなし ' + errors.join(' | '));
   await ctx.close();
 }

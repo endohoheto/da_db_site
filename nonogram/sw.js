@@ -1,6 +1,6 @@
 // オフラインでも起動できるよう、アプリ本体をまとめてキャッシュする。
 // 中身を変えたら VERSION を上げる(上げないと古い版が配られ続ける)
-const VERSION = 'v4';
+const VERSION = 'v5';
 const CACHE = 'nonogram-' + VERSION;
 const FILES = [
   './', 'index.html', 'app.css', 'app.js', 'gen.js', 'puzzles.json', 'manifest.webmanifest',
