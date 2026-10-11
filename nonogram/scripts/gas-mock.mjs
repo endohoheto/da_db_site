@@ -34,6 +34,8 @@ export function loadServer() {
       DigestAlgorithm: { SHA_256: 'sha256' }, Charset: { UTF_8: 'utf8' },
       computeDigest: (alg, s) => Array.from(crypto.createHash('sha256').update(s, 'utf8').digest()).map(b => (b > 127 ? b - 256 : b)),
     },
+    // 公開中の puzzles.json の代わりに、手元のものを返す
+    UrlFetchApp: { fetch: () => ({ getResponseCode: () => 200, getContentText: () => fs.readFileSync(path.join(root, 'puzzles.json'), 'utf8') }) },
     LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
     CacheService: { getScriptCache: () => ({ get: (k) => cache.get(k) ?? null, put: (k, v) => cache.set(k, v) }) },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (t) => ({ text: t, setMimeType() { return this; } }) },

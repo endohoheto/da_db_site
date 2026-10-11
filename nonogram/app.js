@@ -24,6 +24,8 @@ function load() {
   if (!s || s.v !== 2) s = { v: 2, cur: null, slots: {}, best: {}, zoom: {}, filter: 'all' };
   s.settings = { ...DEFAULTS, ...(s.settings || {}) };
   s.zoom = s.zoom || {}; s.best = s.best || {}; s.slots = s.slots || {};
+  // fair: まちがいチェックを使わずに解いた最速タイム(ランキング用)。前からある記録はそのまま使う
+  if (!s.fair) s.fair = { ...s.best };
   return s;
 }
 let saveFailed = false;
@@ -34,7 +36,7 @@ function save(changed) {
     tickTimer();
     const prev = store.slots[store.cur];
     store.slots[store.cur] = {
-      cells: Array.from(cells), elapsed: Math.round(elapsed), cleared,
+      cells: Array.from(cells), elapsed: Math.round(elapsed), cleared, aided,
       undo: undo.slice(-300), redo: redo.slice(-300),
       scroll: [stage.scrollLeft, stage.scrollTop],
       t: changed === true ? Date.now() : (prev && prev.t) || 0,
@@ -60,6 +62,7 @@ let cells = null;
 let fixed = null;        // 最初から見せるマス。触っても変わらない
 let undo = [], redo = [];
 let elapsed = 0, lastTick = performance.now(), cleared = false, paused = false;
+let aided = false;       // この回で「まちがいチェック」を使ったか(使ったタイムはランキングに入れない)
 let mode = 1, zoom = 1;
 let rowInfo = [], colInfo = [];   // {done: Uint8Array, bad: bool}
 let hover = null, cursor = null, kbVisible = false;
@@ -104,7 +107,7 @@ function nextTodo() {
 function startPuzzle(s) {
   cells = Uint8Array.from(s.cells);
   fixed = new Uint8Array(P.R * P.C);
-  for (const k in P.givens) { fixed[+k] = 1; cells[+k] = P.givens[k] ? FILL : CROSS; } elapsed = s.elapsed || 0; cleared = !!s.cleared;
+  for (const k in P.givens) { fixed[+k] = 1; cells[+k] = P.givens[k] ? FILL : CROSS; } elapsed = s.elapsed || 0; cleared = !!s.cleared; aided = !!s.aided;
   undo = s.undo || []; redo = s.redo || []; stroke = null; keyHold = null; flash = null;
   cursor = null; kbVisible = false; hover = null; paused = false;
   $('pauseCover').hidden = true;
@@ -539,6 +542,8 @@ function checkWin() {
   stroke = null; keyHold = null; hover = null; flash = null;
   const b = store.best[store.cur], isBest = !b || elapsed < b;
   if (isBest) store.best[store.cur] = Math.round(elapsed);
+  const f = store.fair[store.cur];
+  if (!aided && (!f || elapsed < f)) store.fair[store.cur] = Math.round(elapsed);
   recalc(); renderInfo(); updateUI(); draw(); save(true);
   buzz([20, 40, 30]);
   const st = $('stamp'); st.classList.remove('on'); void st.offsetWidth; st.classList.add('on');
@@ -547,6 +552,7 @@ function checkWin() {
   $('clearSub').textContent = `No.${P.no}・${fmt(elapsed)}` + (isBest && b ? '・ベスト更新' : !isBest ? `(ベスト ${fmt(b)})` : '');
   const nx = nextTodo();
   $('nextBtn').hidden = !nx;
+  showClearRank();
   setTimeout(() => { if (cleared && !anyDialogOpen()) $('clearDlg').showModal(); }, 700);
 }
 
@@ -860,7 +866,7 @@ function resetTwoStep() {
 // この問題を最初から: 盤面もタイマーも履歴も初期に戻す(解き終えた問題も、もう一度解ける)
 function restartPuzzle() {
   if (!P) return;
-  cleared = false; elapsed = 0; undo = []; redo = []; paused = false; flash = null;
+  cleared = false; aided = false; elapsed = 0; undo = []; redo = []; paused = false; flash = null;
   cells = Uint8Array.from(initialCells(P));
   lastTick = performance.now();
   $('stamp').classList.remove('on'); $('pauseCover').hidden = true;
@@ -877,7 +883,7 @@ $('resetBtn').onclick = () => {
 $('againBtn').onclick = restartPuzzle;
 // すべての記録を消す: 全問の途中経過・クリア・ベストタイムを消す(設定は残す)
 $('wipeBtn').onclick = () => twoStep($('wipeBtn'), 'もう一度押すと、全部の記録を消します', () => {
-  store.slots = {}; store.best = {}; store.zoom = {};
+  store.slots = {}; store.best = {}; store.fair = {}; store.zoom = {};
   const first = PUZZLES[0];
   P = null; save();
   closeDialogs();
@@ -891,6 +897,7 @@ $('checkBtn').onclick = () => {
     if ((cells[i] === FILL && P.sol[i] !== 1) || (cells[i] === CROSS && P.sol[i] === 1)) wrong.add(i);
   }
   closeDialogs();
+  aided = true; save();
   if (!wrong.size) { toast('今のところ間違いはありません(メモは見ていません)'); return; }
   flash = wrong; draw();
   toast(`間違いが ${wrong.size} マスあります`, 3500);
@@ -939,6 +946,7 @@ function renderList() {
     const nm = document.createElement('div'); nm.className = 'name';
     nm.textContent = ok ? p.text : `${p.C}×${p.R}・${KINDS[p.kind] || ''}`;
     b.append(th, no, nm);
+    if ((store.crowns || []).includes(p.key)) { const c = document.createElement('span'); c.className = 'crown'; c.textContent = '👑'; c.title = 'この問題の1位'; b.appendChild(c); }
     const pr = progressOf(p);
     if (!ok && pr > 0) { const bar = document.createElement('div'); bar.className = 'bar'; bar.innerHTML = `<i style="width:${Math.round(pr * 100)}%"></i>`; b.appendChild(bar); }
     b.onclick = () => { if (P === p) closeDialogs(); else openPuzzle(p.key); };
@@ -1013,7 +1021,7 @@ $('importBtn').onclick = async () => {
   try { s = await unpackStore(code); }
   catch { $('transferMsg').textContent = 'コードを読めませんでした。途中で切れていないか確かめてください。'; return; }
   twoStep($('importBtn'), 'もう一度押すと、この端末の保存を置き換えます', () => {
-    store = { v: 2, cur: null, slots: {}, best: {}, zoom: {}, filter: 'all', ...s, settings: { ...DEFAULTS, ...(s.settings || {}) } };
+    store = { v: 2, cur: null, slots: {}, best: {}, fair: {}, zoom: {}, filter: 'all', ...s, settings: { ...DEFAULTS, ...(s.settings || {}) } };
     applySettings();
     P = null;
     if (!openPuzzle(store.cur)) openPuzzle((nextTodo() || PUZZLES[0]).key);
@@ -1051,17 +1059,21 @@ const ERR = {
   too_many: 'まちがいが続いたので、10分ほど待ってからもう一度どうぞ',
   too_big: '記録が大きすぎて預けられませんでした',
   network: 'つながりませんでした。電波のある場所でもう一度どうぞ',
+  bad_name: '表示名は1〜12文字で、記号の < > & " \' / \\ や、リンク・@ は使えません',
+  name_taken: 'その表示名はもう使われています。別の名前にしてください',
+  name_is_id: '表示名はIDと別のものにしてください(IDはログイン用なので公開しません)',
 };
 const errText = (code) => ERR[code] || 'うまくいきませんでした(' + code + ')';
 
 // 2つの記録を合わせる: 問題ごとに新しいほう、ベストタイムは速いほう
 function mergeStores(local, remote) {
-  const out = { ...local, slots: { ...local.slots }, best: { ...local.best } };
+  const out = { ...local, slots: { ...local.slots }, best: { ...local.best }, fair: { ...(local.fair || local.best) } };
   for (const [k, r] of Object.entries(remote.slots || {})) {
     const l = out.slots[k];
     if (!l || (r.t || 0) > (l.t || 0)) out.slots[k] = r;
   }
   for (const [k, v] of Object.entries(remote.best || {})) if (!out.best[k] || v < out.best[k]) out.best[k] = v;
+  for (const [k, v] of Object.entries(remote.fair || remote.best || {})) if (!out.fair[k] || v < out.fair[k]) out.fair[k] = v;
   return out;
 }
 
@@ -1105,9 +1117,16 @@ function setAccount(a) {
 function renderAccount() {
   if (!SYNC_URL) return;
   const on = !!account;
+  // 上の帯のボタン: ログイン前は「ログイン」、ログイン中はIDを出す
+  $('acctBtn').hidden = false;
+  $('acctBtn').classList.toggle('on', on);
+  $('acctBtnText').textContent = on ? account.id : 'ログイン';
+  $('acctBtn').setAttribute('aria-label', on ? `ID ${account.id} でログイン中` : 'ログイン');
   $('acctOut').hidden = on; $('acctIn').hidden = !on;
   if (on) {
     $('acctName').textContent = account.id;
+    if (document.activeElement !== $('acctNickNew')) $('acctNickNew').value = account.name || '';
+    $('acctNickLabel').textContent = account.name ? '表示名(ランキングに出る名前)' : '表示名を決めると、ランキングに載ります';
     $('acctLast').textContent = lastSync ? '最後に預けた時刻: ' + new Date(lastSync).toLocaleString('ja-JP') : 'まだ預けていません';
   }
 }
@@ -1116,17 +1135,21 @@ async function signIn(register) {
   const msg = $('acctMsg');
   if (!/^[a-z0-9_-]{3,20}$/.test(id)) { msg.textContent = ERR.bad_id; return; }
   if (pw.length < 6) { msg.textContent = 'パスワードは6文字以上にしてください'; return; }
+  const name = $('acctNick').value.trim();
+  if (register && !name) { msg.textContent = '表示名を入れてください(ランキングに出る名前です)'; $('acctNick').focus(); return; }
+  if (register && name.toLowerCase() === id) { msg.textContent = ERR.name_is_id; return; }
   msg.textContent = register ? '登録しています…' : 'ログインしています…';
   try {
     const key = await deriveKey(id, pw);
-    const r = await api(register ? 'register' : 'login', { id, key });
+    const r = await api(register ? 'register' : 'login', register ? { id, key, name } : { id, key });
     if (!r.ok) { msg.textContent = errText(r.error); return; }
     // 預けてある記録と合わせ終わってから「ログイン中」にする(途中で画面だけ切り替わらないように)
-    account = { id, key };
+    account = { id, key, name: r.name || '' };
     await pullAndMerge();
     await push();
-    setAccount({ id, key });
-    $('acctPw').value = ''; msg.textContent = '';
+    setAccount(account);
+    $('acctPw').value = ''; $('acctNick').value = ''; msg.textContent = '';
+    sendClears().catch(() => {});
     toast(register ? `ID「${id}」を登録しました。これから途中経過を自動で預けます` : `ID「${id}」でログインしました`, 4000);
   } catch (e) {
     if (!localStorage.getItem(ACCOUNT_KEY)) account = null;
@@ -1138,12 +1161,144 @@ if (SYNC_URL) {
   $('acctLogin').onclick = () => signIn(false);
   $('acctRegister').onclick = () => signIn(true);
   $('acctSave').onclick = async () => { await push(); toast(lastSync ? '預けました' : errText('network')); };
+  $('acctNickSave').onclick = async () => {
+    const name = $('acctNickNew').value.trim(), m = $('acctNickMsg');
+    if (!name) { m.textContent = '表示名を入れてください'; return; }
+    m.textContent = '変えています…';
+    try {
+      const r = await api('setname', { id: account.id, key: account.key, name });
+      if (!r.ok) { m.textContent = errText(r.error); return; }
+      setAccount({ ...account, name: r.name }); rankCache = null;
+      m.textContent = `表示名を「${r.name}」にしました`;
+    } catch { m.textContent = errText('network'); }
+  };
   $('acctLogout').onclick = () => twoStep($('acctLogout'), 'もう一度押すとログアウト', () => { setAccount(null); toast('ログアウトしました。この端末の記録はそのまま残ります'); });
   renderAccount();
   // 閉じる・隠す瞬間に、まだ預けていない変更があれば送る(返事は待たない)
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && account && syncTimer) { clearTimeout(syncTimer); syncTimer = 0; packStore().then(d => { try { navigator.sendBeacon(SYNC_URL, new Blob([JSON.stringify({ op: 'save', id: account.id, key: account.key, data: d })], { type: 'text/plain' })); } catch {} }); }
   });
+}
+
+
+// ======================================================================
+// ランキング
+// ======================================================================
+// 総合(解いた問題の点数)・王冠(最速1位の数)・問題別(最速タイム)。
+// ログインしていれば、自分の順位とひとつ上との差を出して、次の一手を見せる
+let rankCache = null, rankTab = 'total', rankBusy = null;
+const gapText = (ms) => ms < 60000 ? (ms / 1000).toFixed(1) + '秒' : fmt(ms);
+function clearItems() {
+  const known = new Set(PUZZLES.map(p => p.key));
+  return Object.keys(store.best).filter(k => known.has(k)).map(k => ({ k, ms: store.fair[k] || 0 }));
+}
+async function rankCall(k, send) {
+  const auth = account ? { id: account.id, key: account.key } : {};
+  const r = send && account ? await api('clear', { ...auth, items: clearItems(), k }) : await api('rank', { ...auth, k });
+  if (!r.ok) { if (r.error === 'wrong') { toast('ログインが切れました。もう一度ログインしてください', 6000); setAccount(null); } throw new Error(r.error); }
+  rankCache = { at: Date.now(), k, r };
+  if (account && r.myCrowns) noteCrowns(r.myCrowns);
+  if (account && r.name !== undefined && r.name !== account.name) setAccount({ ...account, name: r.name });
+  return r;
+}
+// ログイン時と起動時: この端末で解いた記録をまとめて送る(ログイン前に解いた分も入る)
+function sendClears() { return account && SYNC_URL ? rankCall(P && P.key, true) : Promise.resolve(); }
+
+// 自分が持っていた1位が誰かに抜かれていたら知らせる
+function noteCrowns(now) {
+  const before = store.crowns;
+  store.crowns = now; save();
+  if (!before) return;
+  const lost = before.filter(k => !now.includes(k)).map(k => PUZZLES.find(p => p.key === k)).filter(Boolean);
+  if (!lost.length) return;
+  const p = lost[0];
+  toast(lost.length > 1 ? `👑 1位を${lost.length}問、抜かれました。「${p.text}」など` : `👑「${p.text}」の1位を抜かれました`, 8000,
+    { label: '取り返す', run: () => { $('toast').hidden = true; openPuzzle(p.key); restartPuzzle(); } });
+}
+
+function showClearRank() {
+  const el = $('clearRank');
+  if (!SYNC_URL) return;
+  el.hidden = false;
+  $('rankFromClear').hidden = false;
+  if (!account) { el.innerHTML = 'ログインすると、このタイムでランキングに挑めます'; return; }
+  if (!account.name) { el.innerHTML = 'アカウント画面で表示名を決めると、ランキングに載ります'; return; }
+  el.textContent = 'ランキングを確かめています…';
+  const k = P.key, wasAided = aided;
+  rankCall(k, true).then(r => {
+    if (!P || P.key !== k) return;
+    const pz = r.puzzle && r.puzzle.me, t = r.total && r.total.me;
+    let h = '';
+    if (wasAided) h += 'まちがいチェックを使ったので、今回のタイムはランキングに入りません。<br>';
+    if (pz) h += pz.r === 1 ? `<b>👑 この問題の1位です！</b>` + (pz.lead ? `(2位と ${gapText(pz.lead)} 差)` : '')
+      : `この問題 <b>${pz.r}位</b> / ${r.puzzle.count}人・ひとつ上まで <b>${gapText(pz.gap)}</b>`;
+    if (t) h += `<br>総合 <b>${t.r}位</b>(${t.pts}点)` + (t.gap ? `・ひとつ上まで ${t.gap}点` : t.r === 1 ? '・トップです' : '');
+    el.innerHTML = h || '記録しました';
+  }).catch(() => { if (P && P.key === k) el.textContent = 'ランキングにつながりませんでした(記録はこの端末に残っています)'; });
+}
+
+function openRank() {
+  openDlg('rankDlg');
+  renderRank();
+  const k = P && P.key;
+  if (rankCache && rankCache.k === k && Date.now() - rankCache.at < 30000) return;
+  if (rankBusy) return;
+  $('rankMe').textContent = '読み込んでいます…';
+  rankBusy = rankCall(k, false).then(renderRank, () => { $('rankMe').textContent = errText('network'); }).finally(() => { rankBusy = null; });
+}
+function renderRank() {
+  for (const b of document.querySelectorAll('#rankTabs button')) {
+    b.setAttribute('aria-checked', b.dataset.tab === rankTab);
+    b.onclick = () => { rankTab = b.dataset.tab; renderRank(); };
+  }
+  $('rankTabPuzzle').textContent = P ? `この問題(No.${P.no})` : 'この問題';
+  const list = $('rankList'), me = $('rankMe');
+  list.innerHTML = '';
+  if (!rankCache) return;
+  const r = rankCache.r, b = r[rankTab];
+  $('rankCount').textContent = `参加 ${r.players}人`;
+  const val = (x) => rankTab === 'total' ? `${x.pts}点<small>${x.n}問` + (x.c ? `・👑${x.c}` : '') + '</small>'
+    : rankTab === 'crowns' ? `👑 ${x.c}` : fmt(x.ms);
+  const row = (x) => {
+    const li = document.createElement('li'); if (x.me) li.className = 'me';
+    const r1 = document.createElement('span'); r1.className = 'r' + (x.r <= 3 ? ' r' + x.r : ''); r1.textContent = x.r;
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = x.name + (x.me ? '(あなた)' : '');
+    const v = document.createElement('span'); v.className = 'v'; v.innerHTML = val(x);
+    li.append(r1, nm, v); return li;
+  };
+  if (!b || !b.top.length) {
+    const li = document.createElement('li'); li.className = 'rank-empty';
+    li.textContent = rankTab === 'puzzle' ? 'まだ誰もこの問題のタイムを出していません。一番乗りのチャンス' : rankTab === 'crowns' ? 'まだ1位を持っている人はいません' : 'まだ誰も載っていません';
+    list.appendChild(li);
+  } else {
+    b.top.forEach(x => list.appendChild(row(x)));
+    if (b.me && !b.top.some(x => x.me)) {
+      const sep = document.createElement('li'); sep.className = 'sep'; sep.textContent = '⋮'; list.appendChild(sep);
+      list.appendChild(row({ ...b.me, me: true }));
+    }
+  }
+  // 自分の位置と、次に何をすれば上がれるか
+  const unit = rankTab === 'total' ? (n) => `${n}点` : rankTab === 'crowns' ? (n) => `王冠${n}個` : gapText;
+  me.innerHTML = '';
+  if (!account || !account.name) {
+    me.textContent = !account ? 'ログインして表示名を決めると、あなたもここに載ります。' : 'アカウント画面で表示名を決めると、ここに載ります。';
+    const btn = document.createElement('button'); btn.textContent = !account ? 'ログイン・登録' : '表示名を決める';
+    btn.onclick = () => openDlg('accountDlg'); me.appendChild(document.createElement('br')); me.appendChild(btn);
+  } else if (b && b.me) {
+    const m = b.me;
+    me.innerHTML = m.r === 1 ? `<b>あなたが1位！</b>` + (m.lead ? ` 2位と ${unit(m.lead)} 差。抜かれないように` : '')
+      : `あなたは <b>${m.r}位</b>。ひとつ上まで <b>${unit(m.gap)}</b>` + (rankTab === 'total' ? '(鬼は1問8点)' : rankTab === 'crowns' ? '。解いた問題の最速タイムを塗り替えよう' : '');
+  } else {
+    me.textContent = rankTab === 'puzzle' ? (store.best[P && P.key] ? 'この問題は、まちがいチェックなしで解くとタイムが載ります。' : 'この問題を解くと、タイムが載ります。')
+      : rankTab === 'crowns' ? 'どれか1問で最速タイムを出すと、王冠がもらえます。' : '1問解くと載ります。';
+  }
+  $('rankNote').textContent = rankTab === 'total' ? '点数: やさしい1・ふつう2・むずかしい4・鬼8。同じ問題は1回だけ数えます。'
+    : rankTab === 'crowns' ? '王冠: その問題の最速タイムを持っている数。もう一度解いて速く解けば、奪い返せます。'
+    : 'まちがいチェックを使った回と、一時停止中の時間は入りません。名前は表示名だけで、IDは出ません。';
+}
+if (SYNC_URL) {
+  $('rankMenu').hidden = false; $('rankFromList').hidden = false;
+  $('rankMenu').onclick = openRank; $('rankFromList').onclick = openRank; $('rankFromClear').onclick = openRank;
 }
 
 // ======================================================================
@@ -1173,12 +1328,14 @@ if (window.ResizeObserver) new ResizeObserver(relayout).observe(stage);
 // ---------- 更新の知らせ ----------
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   var wantReload = false;
-  navigator.serviceWorker.register('sw.js').then(reg => {
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
     reg.addEventListener('updatefound', () => {
       const nw = reg.installing;
       nw && nw.addEventListener('statechange', () => {
         if (nw.state === 'installed' && navigator.serviceWorker.controller) {
-          toast('新しい版があります', 0, { label: '更新する', run: () => { save(); wantReload = true; nw.postMessage('skipWaiting'); } });
+          // 開いた直後(まだ何も触っていない)なら、すぐ新しい版に切り替える。遊んでいる途中なら知らせるだけ
+          if (performance.now() < 15000 && !undo.length) { save(); wantReload = true; nw.postMessage('skipWaiting'); }
+          else toast('新しい版があります', 0, { label: '更新する', run: () => { save(); wantReload = true; nw.postMessage('skipWaiting'); } });
         }
       });
     });
@@ -1199,9 +1356,9 @@ setMode(1);
   catch { $('busyText').textContent = '問題を読み込めませんでした。電波のある場所で開き直してください'; return; }
   $('busy').hidden = true;
   if (!openPuzzle(store.cur)) openPuzzle((PUZZLES.find(p => !isDone(p)) || PUZZLES[0]).key);
-  if (account && SYNC_URL) pullAndMerge().then(() => { renderAccount(); push(); }).catch(() => {});
+  if (account && SYNC_URL) pullAndMerge().then(() => { renderAccount(); push(); return sendClears(); }).catch(() => {});
 })();
 
 // テスト用の入口(画面の動作確認スクリプトが使う)
-window.__nono = { mapRect: () => mapRect(), get PUZZLES() { return PUZZLES; }, open: (k) => openPuzzle(k), get P() { return P; }, get cells() { return cells; }, get L() { return L; }, get rowInfo() { return rowInfo; }, get zoom() { return zoom; }, store: () => store };
+window.__nono = { mapRect: () => mapRect(), get PUZZLES() { return PUZZLES; }, open: (k) => openPuzzle(k), get P() { return P; }, get cells() { return cells; }, get L() { return L; }, get rowInfo() { return rowInfo; }, get zoom() { return zoom; }, store: () => store, setElapsed: (v) => { elapsed = v; } };
 })();
