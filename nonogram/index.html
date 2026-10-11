@@ -31,6 +31,10 @@
       <span id="timer">00:00</span>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>
     </button>
+    <button class="acct-btn" id="acctBtn" data-open="accountDlg" hidden aria-label="ログイン">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      <span id="acctBtnText">ログイン</span>
+    </button>
     <button class="ib" id="fitBtn" aria-label="全体を表示" title="全体を表示 (0)">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
     </button>
@@ -74,6 +78,7 @@
     <button data-open="listDlg"><b>問題一覧</b><span>解いた問題は、文字の絵と名前が並びます</span></button>
     <button id="checkBtn"><b>間違いを探す</b><span>答えと違うマスを数秒だけ赤で示します</span></button>
     <button id="resetBtn"><b>この問題を最初からやり直す</b><span>塗ったマスとタイマーを消します。解き終えた問題も、もう一度解けます</span></button>
+    <button id="rankMenu" hidden><b>ランキング</b><span>点数・1位の数(王冠)・問題ごとの最速タイムで競います</span></button>
     <button data-open="accountDlg" id="acctMenu" hidden><b>アカウント(ID・パスワード)</b><span>登録すると途中経過を預けて、別の端末でも続きができます</span></button>
     <button data-open="transferDlg"><b>引き継ぎ</b><span>機種変更や別の端末へ、途中経過を移します</span></button>
     <button data-open="settingsDlg"><b>設定</b><span>表示、自動バツ、振動</span></button>
@@ -83,7 +88,7 @@
 
 <!-- 問題一覧 -->
 <dialog id="listDlg" class="sheet list">
-  <div class="sheet-head"><h2>問題一覧 <small id="listCount"></small></h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="sheet-head"><h2>問題一覧 <small id="listCount"></small></h2><button class="ib" id="rankFromList" hidden aria-label="ランキング" title="ランキング"><svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg></button><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="chips filters" role="radiogroup" aria-label="絞り込み" id="listFilter">
     <button role="radio" data-filter="all">すべて</button>
     <button role="radio" data-filter="todo">まだ</button>
@@ -134,21 +139,38 @@
     <p class="note">IDとパスワードを決めて登録すると、途中経過とクリアの記録を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
     <label class="field"><span class="label">ID(半角の英数字、3〜20文字)</span><input id="acctId" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="latin"></label>
     <label class="field"><span class="label">パスワード(6文字以上)</span><input id="acctPw" type="password" autocomplete="current-password"></label>
+    <label class="field"><span class="label">表示名(新しく登録するときだけ。ランキングに出る名前、12文字まで)</span><input id="acctNick" type="text" maxlength="12" autocomplete="nickname" placeholder="例: 鬼の解き手"></label>
     <div class="actions">
       <button class="primary" id="acctLogin">ログイン</button>
       <button id="acctRegister">新しく登録</button>
     </div>
     <p class="note" id="acctMsg" role="status"></p>
-    <p class="note small">パスワードを忘れると元に戻せません。メールアドレスなどは預かりません。</p>
+    <p class="note small">パスワードを忘れると元に戻せません。メールアドレスなどは預かりません。ランキングに出るのは表示名だけで、IDは出ません(IDと同じ表示名にはできません)。</p>
   </div>
   <div id="acctIn" hidden>
     <p class="note">ID「<b id="acctName"></b>」でログインしています。途中経過は自動で預けています。</p>
     <p class="note" id="acctLast"></p>
+    <label class="field"><span class="label" id="acctNickLabel">表示名(ランキングに出る名前)</span><input id="acctNickNew" type="text" maxlength="12" autocomplete="nickname"></label>
+    <div class="actions"><button id="acctNickSave">表示名を変える</button></div>
+    <p class="note" id="acctNickMsg" role="status"></p>
     <div class="actions">
       <button class="primary" id="acctSave">今すぐ預ける</button>
       <button id="acctLogout">ログアウト</button>
     </div>
   </div>
+</dialog>
+
+<!-- ランキング -->
+<dialog id="rankDlg" class="sheet rank">
+  <div class="sheet-head"><h2>ランキング <small id="rankCount"></small></h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chips" role="radiogroup" aria-label="種類" id="rankTabs">
+    <button role="radio" data-tab="total">総合</button>
+    <button role="radio" data-tab="crowns">王冠</button>
+    <button role="radio" data-tab="puzzle" id="rankTabPuzzle">この問題</button>
+  </div>
+  <div class="rank-me" id="rankMe"></div>
+  <ol class="rank-list" id="rankList"></ol>
+  <p class="note small" id="rankNote"></p>
 </dialog>
 
 <!-- 遊び方 -->
@@ -176,6 +198,10 @@
     </ul>
     <h3>別の端末で続きから</h3>
     <p>メニューの「アカウント」で、IDとパスワードを決めて登録すると、途中経過を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
+    <h3>ランキング</h3>
+    <p>アカウントを登録して表示名を決めると、ランキングに載ります。出るのは表示名だけで、ログイン用のIDは出ません。</p>
+    <p><b>総合</b>は解いた問題の点数の合計(やさしい1・ふつう2・むずかしい4・鬼8)。<b>王冠</b>は、その問題の最速タイムで1位を持っている数です。<b>この問題</b>は、いま開いている問題の最速タイム順です。</p>
+    <p>1位を誰かに抜かれると、次に開いたときにお知らせします。「もう一度解く」で速く解けば、奪い返せます。まちがいチェックを使った回と、一時停止中の時間はタイムに入りません。</p>
     <h3>やり直す</h3>
     <ul>
       <li>メニューの「この問題を最初からやり直す」で、塗ったマスとタイマーを消せます。解き終えた問題も、もう一度解けます</li>
@@ -207,11 +233,13 @@
     <p class="clear-kind" id="clearKind"></p>
     <p class="clear-word" id="clearWord"></p>
     <p class="clear-sub" id="clearSub"></p>
+    <p class="clear-rank" id="clearRank" hidden></p>
   </div>
   <div class="actions">
     <button class="primary" id="nextBtn">次の問題</button>
     <button id="toListBtn">問題一覧</button>
     <button id="againBtn">もう一度解く</button>
+    <button id="rankFromClear" hidden>ランキング</button>
     <button data-close>絵を眺める</button>
   </div>
   <p class="clear-link"><a href="../">浅倉大介クレジットデータベースへ</a></p>
