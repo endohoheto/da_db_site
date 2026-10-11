@@ -3,7 +3,7 @@
   "private": true,
   "description": "浅倉大介にまつわる名前が絵になるノノグラム",
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/*.test.js test/*.test.mjs",
     "serve": "node scripts/serve.mjs",
     "e2e": "node scripts/e2e.mjs",
     "build:puzzles": "node tools/build-puzzles.mjs"

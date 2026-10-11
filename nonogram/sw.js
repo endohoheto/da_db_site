@@ -1,9 +1,9 @@
 // オフラインでも起動できるよう、アプリ本体をまとめてキャッシュする。
 // 中身を変えたら VERSION を上げる(上げないと古い版が配られ続ける)
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = 'nonogram-' + VERSION;
 const FILES = [
-  './', 'index.html', 'app.css', 'app.js', 'gen.js', 'puzzles.json', 'manifest.webmanifest',
+  './', 'index.html', 'app.css', 'app.js', 'gen.js', 'config.js', 'puzzles.json', 'manifest.webmanifest',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
 ];
 

@@ -2,6 +2,7 @@
 // 盤面の操作・保存・引き継ぎ・オフライン起動を、スマホとPCの両方の大きさで確かめる
 import { createRequire } from 'node:module';
 import { serve } from './serve.mjs';
+import { serveGas } from './gas-mock.mjs';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const OUT = process.env.SHOTS || null;
@@ -163,6 +164,52 @@ console.log('PC 1280×860');
   check(await page.evaluate(() => Object.values(window.__nono.store().slots).every(s => !s.cleared) && !Object.keys(window.__nono.store().best).length), '「すべての記録を消して最初から」で記録が消える');
   check(errors.length === 0, 'エラーなし ' + errors.join(' | '));
   await ctx.close();
+}
+
+// ---------------- アカウント(ID・パスワードで預ける)----------------
+console.log('アカウント');
+{
+  const gas = await serveGas(8766);
+  const withSync = async () => {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
+    await ctx.route('**/config.js', r => r.fulfill({ contentType: 'text/javascript', body: "window.NONO_SYNC_URL = 'http://localhost:8766/exec';" }));
+    const page = await ctx.newPage();
+    const errors = []; page.on('pageerror', e => errors.push(e.message));
+    if (process.env.DEBUG) { page.on('console', m => console.log('  [console]', m.text())); page.on('requestfailed', r => console.log('  [fail]', r.url(), r.failure().errorText)); page.on('request', r => { if (r.url().includes('8766')) console.log('  [req]', r.method(), r.url()); }); }
+    await page.goto(URL);
+    await page.waitForFunction(() => window.__nono && window.__nono.P && document.getElementById('busy').hidden, null, { timeout: 30000 });
+    return { ctx, page, errors };
+  };
+  const A = await withSync();
+  await A.page.click('#menuBtn');
+  check(await A.page.isVisible('#acctMenu'), 'メニューに「アカウント」が出る');
+  await A.page.click('#acctMenu');
+  await A.page.fill('#acctId', 'tester1'); await A.page.fill('#acctPw', 'password1');
+  await A.page.click('#acctRegister');
+  await A.page.waitForFunction(() => !document.getElementById('acctIn').hidden, null, { timeout: 8000 }).catch(() => {});
+  check(await A.page.isVisible('#acctIn'), '新しく登録するとログイン状態になる');
+  await A.page.keyboard.press('Escape');
+  const key = await A.page.evaluate(() => window.__nono.P.key);
+  const a1 = await cellPos(A.page, 0, 0), a2 = await cellPos(A.page, 0, 2);
+  await A.page.mouse.move(a1.x, a1.y); await A.page.mouse.down(); await A.page.mouse.move(a2.x, a2.y, { steps: 5 }); await A.page.mouse.up();
+  await A.page.click('#menuBtn'); await A.page.click('#acctMenu'); await A.page.click('#acctSave');
+  await A.page.waitForTimeout(500);
+  const aCells = await A.page.evaluate(() => Array.from(window.__nono.cells).join(''));
+  const B = await withSync();
+  await B.page.click('#menuBtn'); await B.page.click('#acctMenu');
+  await B.page.fill('#acctId', 'tester1'); await B.page.fill('#acctPw', 'wrongpass');
+  await B.page.click('#acctLogin'); await B.page.waitForTimeout(500);
+  check((await B.page.textContent('#acctMsg')).includes('違います'), 'パスワードが違うとログインできない');
+  await B.page.fill('#acctPw', 'password1'); await B.page.click('#acctLogin');
+  await B.page.waitForFunction(() => !document.getElementById('acctIn').hidden, null, { timeout: 8000 }).catch(() => {});
+  await B.page.keyboard.press('Escape');
+  await B.page.evaluate(k => { window.__nono.open(k); }, key);
+  const bCells = await B.page.evaluate(() => Array.from(window.__nono.cells).join(''));
+  check(bCells === aCells && aCells.includes('1'), '別の端末で同じIDでログインすると、続きから遊べる');
+  const dump = JSON.stringify(gas.state.sheets.users.rows);
+  check(!dump.includes('password1'), '保存先にパスワードが残らない');
+  check(A.errors.length + B.errors.length === 0, 'エラーなし ' + [...A.errors, ...B.errors].join(' | '));
+  await A.ctx.close(); await B.ctx.close(); gas.server.close();
 }
 
 // ---------------- スマホ ----------------

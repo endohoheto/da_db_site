@@ -74,6 +74,7 @@
     <button data-open="listDlg"><b>問題一覧</b><span>解いた問題は、文字の絵と名前が並びます</span></button>
     <button id="checkBtn"><b>間違いを探す</b><span>答えと違うマスを数秒だけ赤で示します</span></button>
     <button id="resetBtn"><b>この問題を最初からやり直す</b><span>塗ったマスとタイマーを消します。解き終えた問題も、もう一度解けます</span></button>
+    <button data-open="accountDlg" id="acctMenu" hidden><b>アカウント(ID・パスワード)</b><span>登録すると途中経過を預けて、別の端末でも続きができます</span></button>
     <button data-open="transferDlg"><b>引き継ぎ</b><span>機種変更や別の端末へ、途中経過を移します</span></button>
     <button data-open="settingsDlg"><b>設定</b><span>表示、自動バツ、振動</span></button>
     <button data-open="helpDlg"><b>遊び方と操作</b><span>ルール、タッチ操作、キーボード</span></button>
@@ -126,6 +127,30 @@
   <p class="note" id="transferMsg" role="status"></p>
 </dialog>
 
+<!-- アカウント -->
+<dialog id="accountDlg" class="sheet">
+  <div class="sheet-head"><h2>アカウント</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div id="acctOut">
+    <p class="note">IDとパスワードを決めて登録すると、途中経過とクリアの記録を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
+    <label class="field"><span class="label">ID(半角の英数字、3〜20文字)</span><input id="acctId" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="latin"></label>
+    <label class="field"><span class="label">パスワード(6文字以上)</span><input id="acctPw" type="password" autocomplete="current-password"></label>
+    <div class="actions">
+      <button class="primary" id="acctLogin">ログイン</button>
+      <button id="acctRegister">新しく登録</button>
+    </div>
+    <p class="note" id="acctMsg" role="status"></p>
+    <p class="note small">パスワードを忘れると元に戻せません。メールアドレスなどは預かりません。</p>
+  </div>
+  <div id="acctIn" hidden>
+    <p class="note">ID「<b id="acctName"></b>」でログインしています。途中経過は自動で預けています。</p>
+    <p class="note" id="acctLast"></p>
+    <div class="actions">
+      <button class="primary" id="acctSave">今すぐ預ける</button>
+      <button id="acctLogout">ログアウト</button>
+    </div>
+  </div>
+</dialog>
+
 <!-- 遊び方 -->
 <dialog id="helpDlg" class="sheet">
   <div class="sheet-head"><h2>遊び方と操作</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
@@ -149,6 +174,8 @@
       <li>盤面が画面より大きいとき、左上の角に全体の縮小図が出ます。押した場所へ飛びます</li>
       <li>右上の四角いボタンで全体表示に戻ります</li>
     </ul>
+    <h3>別の端末で続きから</h3>
+    <p>メニューの「アカウント」で、IDとパスワードを決めて登録すると、途中経過を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
     <h3>やり直す</h3>
     <ul>
       <li>メニューの「この問題を最初からやり直す」で、塗ったマスとタイマーを消せます。解き終えた問題も、もう一度解けます</li>
@@ -190,6 +217,7 @@
   <p class="clear-link"><a href="../">浅倉大介クレジットデータベースへ</a></p>
 </dialog>
 
+<script src="config.js"></script>
 <script src="gen.js"></script>
 <script src="app.js"></script>
 </body>
