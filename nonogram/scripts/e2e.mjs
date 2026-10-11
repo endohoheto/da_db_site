@@ -196,12 +196,14 @@ console.log('アカウント');
   await A.page.click('#acctRegister');
   await A.page.waitForFunction(() => !document.getElementById('acctIn').hidden, null, { timeout: 8000 }).catch(() => {});
   check(await A.page.isVisible('#acctIn'), '新しく登録するとログイン状態になる');
-  check((await A.page.textContent('#acctBtnText')) === 'tester1', 'ログイン中は上の帯のボタンにIDが出る');
+  check((await A.page.textContent('#acctBtnText')) === '一号', 'ログイン中は上の帯のボタンに表示名が出る');
   await A.page.keyboard.press('Escape');
   const key = await A.page.evaluate(() => window.__nono.P.key);
   const a1 = await cellPos(A.page, 0, 0), a2 = await cellPos(A.page, 0, 2);
   await A.page.mouse.move(a1.x, a1.y); await A.page.mouse.down(); await A.page.mouse.move(a2.x, a2.y, { steps: 5 }); await A.page.mouse.up();
-  await A.page.click('#menuBtn'); await A.page.click('#acctMenu'); await A.page.click('#acctSave');
+  await A.page.click('#acctBtn');   // アカウント画面を開くと、待っている変更がすぐ保存される
+  await A.page.waitForFunction(() => /自動で保存されています/.test(document.getElementById('acctLast').textContent), null, { timeout: 8000 }).catch(() => {});
+  check((await A.page.textContent('#acctLast')).includes('自動で保存されています'), 'アカウント画面を開くと保存され、その旨が一行で出る');
   await A.page.waitForTimeout(500);
   const aCells = await A.page.evaluate(() => Array.from(window.__nono.cells).join(''));
   const B = await withSync();
