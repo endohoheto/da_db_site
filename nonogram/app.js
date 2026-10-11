@@ -27,15 +27,20 @@ function load() {
   return s;
 }
 let saveFailed = false;
-function save() {
+// changed=true は盤面が実際に変わったとき。t(更新時刻)はこのときだけ進め、
+// 端末どうしでどちらの盤面が新しいかの判定に使う
+function save(changed) {
   if (P) {
     tickTimer();
+    const prev = store.slots[store.cur];
     store.slots[store.cur] = {
       cells: Array.from(cells), elapsed: Math.round(elapsed), cleared,
       undo: undo.slice(-300), redo: redo.slice(-300),
       scroll: [stage.scrollLeft, stage.scrollTop],
+      t: changed === true ? Date.now() : (prev && prev.t) || 0,
     };
     store.zoom[P.key] = zoom;
+    if (changed === true) syncSoon();
   }
   try { localStorage.setItem(KEY, JSON.stringify(store)); saveFailed = false; }
   catch {
@@ -524,7 +529,7 @@ function commit(ch) {
   redo = [];
   afterChange();
 }
-function afterChange() { recalc(); updateUI(); checkWin(); save(); }
+function afterChange() { recalc(); updateUI(); checkWin(); save(true); }
 
 function checkWin() {
   if (cleared) return;
@@ -534,7 +539,7 @@ function checkWin() {
   stroke = null; keyHold = null; hover = null; flash = null;
   const b = store.best[store.cur], isBest = !b || elapsed < b;
   if (isBest) store.best[store.cur] = Math.round(elapsed);
-  recalc(); renderInfo(); updateUI(); draw(); save();
+  recalc(); renderInfo(); updateUI(); draw(); save(true);
   buzz([20, 40, 30]);
   const st = $('stamp'); st.classList.remove('on'); void st.offsetWidth; st.classList.add('on');
   $('clearKind').textContent = KINDS[P.kind] || '';
@@ -860,7 +865,7 @@ function restartPuzzle() {
   lastTick = performance.now();
   $('stamp').classList.remove('on'); $('pauseCover').hidden = true;
   stage.scrollLeft = 0; stage.scrollTop = 0;
-  recalc(); renderInfo(); updateUI(); renderTimer(); draw(); save();
+  recalc(); renderInfo(); updateUI(); renderTimer(); draw(); save(true);
   closeDialogs(); toast('最初からやり直します');
 }
 $('resetBtn').onclick = () => {
@@ -1018,6 +1023,130 @@ $('importBtn').onclick = async () => {
 };
 
 // ======================================================================
+// アカウント(ID・パスワードで途中経過を預ける)
+// ======================================================================
+// 預け先は保存用スプレッドシートに付けた Apps Script(server/Code.gs)。URL は config.js の NONO_SYNC_URL。
+// パスワードはこの端末でハッシュにしてから送る。端末に残すのもハッシュだけ
+const SYNC_URL = (window.NONO_SYNC_URL || '').trim();
+const ACCOUNT_KEY = 'nonogram-account';
+let account = null, syncTimer = 0, syncing = false, lastSync = '';
+try { account = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || 'null'); } catch {}
+
+async function deriveKey(id, pw) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`nonogram:${id}:${pw}`));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function api(op, extra) {
+  const res = await fetch(SYNC_URL, {
+    method: 'POST', redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // text/plain なら事前確認なしで送れる
+    body: JSON.stringify({ op, ...extra }),
+  });
+  return res.json();
+}
+const ERR = {
+  taken: 'そのIDはもう使われています。別のIDにしてください',
+  wrong: 'IDかパスワードが違います',
+  bad_id: 'IDは半角の英数字と _ - で、3〜20文字にしてください',
+  too_many: 'まちがいが続いたので、10分ほど待ってからもう一度どうぞ',
+  too_big: '記録が大きすぎて預けられませんでした',
+  network: 'つながりませんでした。電波のある場所でもう一度どうぞ',
+};
+const errText = (code) => ERR[code] || 'うまくいきませんでした(' + code + ')';
+
+// 2つの記録を合わせる: 問題ごとに新しいほう、ベストタイムは速いほう
+function mergeStores(local, remote) {
+  const out = { ...local, slots: { ...local.slots }, best: { ...local.best } };
+  for (const [k, r] of Object.entries(remote.slots || {})) {
+    const l = out.slots[k];
+    if (!l || (r.t || 0) > (l.t || 0)) out.slots[k] = r;
+  }
+  for (const [k, v] of Object.entries(remote.best || {})) if (!out.best[k] || v < out.best[k]) out.best[k] = v;
+  return out;
+}
+
+async function pullAndMerge() {
+  const r = await api('load', { id: account.id, key: account.key });
+  if (!r.ok) throw new Error(r.error);
+  if (r.data) {
+    const remote = await unpackStore(r.data);
+    const curBefore = store.cur && JSON.stringify(store.slots[store.cur] || null);
+    save();
+    store = mergeStores(store, remote);
+    const curAfter = store.cur && JSON.stringify(store.slots[store.cur] || null);
+    if (curBefore !== curAfter && store.cur) { const k = store.cur; P = null; openPuzzle(k); }
+    save();
+  }
+  lastSync = r.updated || '';
+}
+async function push() {
+  if (!account || !SYNC_URL || syncing) return;
+  syncing = true;
+  try {
+    const r = await api('save', { id: account.id, key: account.key, data: await packStore() });
+    if (!r.ok) throw new Error(r.error);
+    lastSync = r.updated;
+    renderAccount();
+  } catch (e) {
+    const code = e && e.message;
+    if (code === 'wrong') { toast('ログインが切れました。アカウント画面からもう一度ログインしてください', 6000); setAccount(null); }
+  } finally { syncing = false; }
+}
+function syncSoon() {
+  if (!account || !SYNC_URL) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(push, 5000);
+}
+function setAccount(a) {
+  account = a;
+  try { if (a) localStorage.setItem(ACCOUNT_KEY, JSON.stringify(a)); else localStorage.removeItem(ACCOUNT_KEY); } catch {}
+  renderAccount();
+}
+function renderAccount() {
+  if (!SYNC_URL) return;
+  const on = !!account;
+  $('acctOut').hidden = on; $('acctIn').hidden = !on;
+  if (on) {
+    $('acctName').textContent = account.id;
+    $('acctLast').textContent = lastSync ? '最後に預けた時刻: ' + new Date(lastSync).toLocaleString('ja-JP') : 'まだ預けていません';
+  }
+}
+async function signIn(register) {
+  const id = $('acctId').value.trim().toLowerCase(), pw = $('acctPw').value;
+  const msg = $('acctMsg');
+  if (!/^[a-z0-9_-]{3,20}$/.test(id)) { msg.textContent = ERR.bad_id; return; }
+  if (pw.length < 6) { msg.textContent = 'パスワードは6文字以上にしてください'; return; }
+  msg.textContent = register ? '登録しています…' : 'ログインしています…';
+  try {
+    const key = await deriveKey(id, pw);
+    const r = await api(register ? 'register' : 'login', { id, key });
+    if (!r.ok) { msg.textContent = errText(r.error); return; }
+    // 預けてある記録と合わせ終わってから「ログイン中」にする(途中で画面だけ切り替わらないように)
+    account = { id, key };
+    await pullAndMerge();
+    await push();
+    setAccount({ id, key });
+    $('acctPw').value = ''; msg.textContent = '';
+    toast(register ? `ID「${id}」を登録しました。これから途中経過を自動で預けます` : `ID「${id}」でログインしました`, 4000);
+  } catch (e) {
+    if (!localStorage.getItem(ACCOUNT_KEY)) account = null;
+    msg.textContent = errText(e && e.message && ERR[e.message] ? e.message : 'network');
+  }
+}
+if (SYNC_URL) {
+  $('acctMenu').hidden = false;
+  $('acctLogin').onclick = () => signIn(false);
+  $('acctRegister').onclick = () => signIn(true);
+  $('acctSave').onclick = async () => { await push(); toast(lastSync ? '預けました' : errText('network')); };
+  $('acctLogout').onclick = () => twoStep($('acctLogout'), 'もう一度押すとログアウト', () => { setAccount(null); toast('ログアウトしました。この端末の記録はそのまま残ります'); });
+  renderAccount();
+  // 閉じる・隠す瞬間に、まだ預けていない変更があれば送る(返事は待たない)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && account && syncTimer) { clearTimeout(syncTimer); syncTimer = 0; packStore().then(d => { try { navigator.sendBeacon(SYNC_URL, new Blob([JSON.stringify({ op: 'save', id: account.id, key: account.key, data: d })], { type: 'text/plain' })); } catch {} }); }
+  });
+}
+
+// ======================================================================
 // 小物
 // ======================================================================
 let toastTimer = 0;
@@ -1070,6 +1199,7 @@ setMode(1);
   catch { $('busyText').textContent = '問題を読み込めませんでした。電波のある場所で開き直してください'; return; }
   $('busy').hidden = true;
   if (!openPuzzle(store.cur)) openPuzzle((PUZZLES.find(p => !isDone(p)) || PUZZLES[0]).key);
+  if (account && SYNC_URL) pullAndMerge().then(() => { renderAccount(); push(); }).catch(() => {});
 })();
 
 // テスト用の入口(画面の動作確認スクリプトが使う)
