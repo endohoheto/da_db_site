@@ -37,13 +37,15 @@ export function loadServer() {
     // 公開中の puzzles.json の代わりに、手元のものを返す
     UrlFetchApp: { fetch: () => ({ getResponseCode: () => 200, getContentText: () => fs.readFileSync(path.join(root, 'puzzles.json'), 'utf8') }) },
     LockService: { getScriptLock: () => ({ waitLock: () => {}, releaseLock: () => {} }) },
-    CacheService: { getScriptCache: () => ({ get: (k) => cache.get(k) ?? null, put: (k, v) => cache.set(k, v) }) },
+    CacheService: { getScriptCache: () => ({ get: (k) => cache.get(k) ?? null, put: (k, v) => cache.set(k, v), remove: (k) => cache.delete(k) }) },
+    Logger: { log: () => {} },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: (t) => ({ text: t, setMimeType() { return this; } }) },
   };
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(root, 'server/Code.gs'), 'utf8'), ctx);
   return {
     sheets,
+    setup: () => ctx.setup(),
     post: (obj) => JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify(obj) } }).text),
     postRaw: (text) => JSON.parse(ctx.doPost({ postData: { contents: text } }).text),
   };
