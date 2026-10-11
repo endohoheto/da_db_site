@@ -1050,7 +1050,10 @@ async function api(op, extra) {
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // text/plain なら事前確認なしで送れる
     body: JSON.stringify({ op, ...extra }),
   });
-  return res.json();
+  // 届いたのに JSON でない = Apps Script が自分の画面(許可が要る・公開設定が違う など)を返している。
+  // 電波の問題と区別して出す
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { throw new Error('not_ready'); }
 }
 const ERR = {
   taken: 'そのIDはもう使われています。別のIDにしてください',
@@ -1059,6 +1062,8 @@ const ERR = {
   too_many: 'まちがいが続いたので、10分ほど待ってからもう一度どうぞ',
   too_big: '記録が大きすぎて預けられませんでした',
   network: 'つながりませんでした。電波のある場所でもう一度どうぞ',
+  not_ready: '保存係(サーバー)の準備ができていません。少し時間をおいてもう一度どうぞ',
+  server: '保存係(サーバー)でエラーが起きました。少し時間をおいてもう一度どうぞ',
   bad_name: '表示名は1〜12文字で、記号の < > & " \' / \\ や、リンク・@ は使えません',
   name_taken: 'その表示名はもう使われています。別の名前にしてください',
   name_is_id: '表示名はIDと別のものにしてください(IDはログイン用なので公開しません)',
@@ -1142,7 +1147,8 @@ async function signIn(register) {
   try {
     const key = await deriveKey(id, pw);
     const r = await api(register ? 'register' : 'login', register ? { id, key, name } : { id, key });
-    if (!r.ok) { msg.textContent = errText(r.error); return; }
+    // サーバーのエラーは中身も出す(原因を調べるときに読み上げてもらえるように)
+    if (!r.ok) { msg.textContent = errText(r.error) + (r.message ? '(' + r.message + ')' : ''); return; }
     // 預けてある記録と合わせ終わってから「ログイン中」にする(途中で画面だけ切り替わらないように)
     account = { id, key, name: r.name || '' };
     await pullAndMerge();

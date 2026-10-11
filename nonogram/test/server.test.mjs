@@ -114,3 +114,9 @@ test('ランキング: ありえないタイム・知らない問題は数えな
   assert.strictEqual(s.sheets.clears.rows.length, 1, '消すとクリアの記録も消える');
   assert.strictEqual(s.sheets.players.rows.length, 1);
 });
+
+test('setup: シートを用意して問題一覧を読める', () => {
+  const s = loadServer();
+  s.setup();
+  assert.deepStrictEqual(Object.keys(s.sheets).sort(), ['clears', 'players', 'users']);
+});

@@ -25,6 +25,15 @@ const POINTS = { easy: 1, normal: 2, std: 2, hard: 4, oni: 8 };
 const MS_PER_CELL = 20;       // 1マス0.02秒より速いタイムは人の手では無理なので、タイムとして扱わない
 const TOP = 20, TOP_PUZZLE = 10;
 
+// 最初と、このファイルを貼り直したときに、エディタの上の「実行」で一度だけ動かす。
+// 必要な許可(スプレッドシート・外部への接続)をまとめて求め、シートを用意し、問題一覧が読めるか確かめる。
+// 許可がないままだと、アプリからは「準備ができていません」になる
+function setup() {
+  sheet_(); playersSheet_(); clearsSheet_();
+  CacheService.getScriptCache().remove('puzzles:v1');
+  Logger.log('準備できました。問題 ' + Object.keys(puzzles_()).length + ' 問を確認');
+}
+
 function doPost(e) {
   let req;
   try { req = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad_request' }); }
