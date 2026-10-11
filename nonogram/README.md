@@ -19,22 +19,33 @@
 
 ## 問題を増やす
 
-言葉は2か所から取ります。同じ文字列は `words.json` が優先です。
+出題するのは `data/words.json` の言葉だけです。
 
 | ファイル | 中身 |
 |---|---|
-| `data/words.json` | 手で選んだ言葉。`layout` で改行位置を指定できる(例: `"コタニ\nキンヤ."`) |
-| `data/db-words.json` | クレジットDBから書き出した言葉。DB側で `npm run nonogramwords` を実行すると、隣にあるこのリポジトリへ書かれる |
+| `data/words.json` | 出題する言葉。`layout` で改行位置を指定できる(例: `"コタニ\nキンヤ."`) |
+| `data/db-words.json` | クレジットDBから書き出した**候補**。DB側で `npm run nonogramwords` を実行すると書かれる。セトリの「MC」やイベント名のような絵にならないものも混ざるので、**選んで words.json に移す** |
+| `data/published.json` | 公開済みの問題の台帳(key と形の指紋)。ビルドが書き足し、テストが突き合わせる |
 
 ```bash
 npm install                 # 文字のフォント Noto Sans JP(ビルド時だけ使う)
-npm i -D playwright         # 文字を描くのに使う。未導入なら
-npm run build:puzzles       # data/ → puzzles.json
+npm i --no-save playwright && npx playwright install chromium   # 文字を描くのに使う。未導入なら
+VARIANTS=3 npm run build:puzzles   # words.json に足した言葉の分だけ作り、後ろに足す
 npm run build:puzzles -- "コタニキンヤ."   # 1語だけ試して絵を表示(puzzles.json は書かない)
-npm test                    # 全問の「答えが1つ」を別の探索で数え直す
+npm test                    # 全問の「答えが1つ」の数え直しと、公開済みの問題が変わっていないかの確認
 ```
 
+**公開した問題は作り直さない。** 遊びかけの盤面は key(名前#番号)ごとに縦×横のマスで預かっているので、
+形が1マスでも変わると途中経過が壊れます。一覧の No. も並び順なので、途中に挟むと番号がずれます。
+ビルドは既存の問題をそのまま残して後ろに足すだけで、変わっていればテストが落ちます
+(`REBUILD=1` で全部作り直せますが、公開後は使わないこと)。
+
+**足すのは小分けに。** 1問およそ4KBで、`puzzles.json` は起動のたびに読み直され、一覧には全問のカードが並びます。
+今は1語3問(`VARIANTS=3`)で、数十語ずつ足しています。
+
 **問題を変えたら `sw.js` の `VERSION` を上げる。** 上げないと、ホーム画面のアプリに古い問題がキャッシュから配られ続けます。
+ランキングの保存係は問題一覧を6時間覚えているので、足した問題のクリアがランキングに載るのは最大6時間後です
+(記録は端末から毎回まとめて送られるので、失われはしません)。
 
 ### 問題の作り方
 

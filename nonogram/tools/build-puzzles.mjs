@@ -1,7 +1,13 @@
-// 言葉の一覧(data/words.json と data/db-words.json)から、文字の絵のノノグラムを作って puzzles.json に書き出す。
+// 言葉の一覧(data/words.json)から、文字の絵のノノグラムを作って puzzles.json に書き出す。
 //
-//   npm run build:puzzles                 全部作り直す
+//   npm run build:puzzles                 words.json に足した言葉の分だけ作って、後ろに足す
 //   npm run build:puzzles -- "浅倉大介"     1語だけ試して絵を表示(puzzles.json は書かない)
+//   REBUILD=1 npm run build:puzzles       全部作り直す(公開後は使わない。下を参照)
+//
+// 公開した問題は作り直さない。遊びかけの盤面は key(名前#番号)ごとに縦×横のマスで預かっていて、
+// 形が1マスでも変わると途中経過が壊れる。しかも作り直すと同じにはならない(解く確認に時間の打ち切りがある)。
+// 一覧の No. も並び順なので、途中に挟むと既存の番号がずれる。だから既存の問題はそのまま残し、
+// 新しい言葉の分を後ろにつなぐ。data/published.json が公開済みの台帳で、テストが変わっていないか確かめる。
 //
 // 文字は Noto Sans JP(OFL)の太字を、1文字24〜32マスで組む。ロゴや既存の書体の模倣はしない。
 // 線が2〜4マスの太さになるので、字として読めて、しかも数字の手がかりが多い
@@ -26,12 +32,17 @@ const FACES = [[28, 700], [28, 900], [24, 900], [32, 700], [20, 900]];   // [大
 const MAX_GIVENS = 6;
 const only = process.argv[2] || null;
 
-// 手で選んだ言葉と、DBから書き出した言葉を合わせる。同じ文字列は手で選んだほうを残す
-const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(root, 'data', f), 'utf8')).words || []; } catch { return []; } };
+// 出題するのは words.json の言葉だけ。data/db-words.json はクレジットDBから書き出した候補の一覧で、
+// セトリの「MC」やイベント名のような絵にならないものも混ざるので、選んでから words.json に移す
+const REBUILD = !!process.env.REBUILD;
+const read = (f) => { try { return JSON.parse(fs.readFileSync(path.join(root, 'data', f), 'utf8')); } catch { return null; } };
+const old = REBUILD || only ? [] : (read('../puzzles.json') || { puzzles: [] }).puzzles;
+const built = new Set(old.map(p => p.text));
 const seenText = new Set();
-const words = [...read('words.json'), ...read('db-words.json')]
+const words = ((read('words.json') || {}).words || [])
   .filter(w => w && w.text && !seenText.has(w.text) && seenText.add(w.text))
-  .filter(w => !only || w.text === only);
+  .filter(w => only ? w.text === only : !built.has(w.text));
+if (!only && !words.length) { console.log('words.json に新しい言葉がありません'); process.exit(0); }
 
 // ---- 改行の候補 ----
 // 必ず2〜3行に組む(1行の並びは字の形を先読みしやすく、易しすぎる)。
@@ -65,6 +76,8 @@ function* jitters(n, size, seedBase) {
     yield { name: `乱${tag}`, amp, dy: Array.from({ length: n }, () => Math.round((rnd() * 2 - 1) * amp)) };
   }
 }
+// 公開済みの問題が変わっていないかを見る指紋。番号・大きさ・答え・最初から見せるマス
+const fingerprint = (p) => `${p.id}|${p.R}x${p.C}|${hash(p.sol).toString(36)}|${hash(JSON.stringify(p.givens || {})).toString(36)}`;
 const hash = (t) => { let h = 2166136261; for (const ch of t) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 
 const browser = await chromium.launch({ args: ['--allow-file-access-from-files'], executablePath: process.env.CHROMIUM_PATH || undefined });
@@ -233,10 +246,16 @@ for (const w of words) {
 await browser.close();
 fs.unlinkSync(probe);
 if (!only) {
-  // やさしい → 鬼 の順に、同じ難しさの中では小さいものから並べる
+  // 足す分の中で、やさしい → 鬼 の順に、同じ難しさの中では小さいものから並べて、既存の後ろにつなぐ
   const rank = { easy: 0, normal: 1, hard: 2, oni: 3 };
   results.sort((a, b) => rank[a.level] - rank[b.level] || a.R * a.C - b.R * b.C);
-  results.forEach((r, i) => { r.id = i + 1; });
-  fs.writeFileSync(path.join(root, process.env.OUT || 'puzzles.json'), JSON.stringify({ version: 3, puzzles: results }));
-  console.log(`\n${results.length} 問を puzzles.json に書き出しました`);
+  results.forEach((r, i) => { r.id = old.length + i + 1; });
+  const all = [...old, ...results];
+  fs.writeFileSync(path.join(root, process.env.OUT || 'puzzles.json'), JSON.stringify({ version: 3, puzzles: all }));
+  // 台帳: 公開した問題の key と形の指紋。テストがこれと puzzles.json を突き合わせる
+  const ledger = path.join(root, 'data/published.json');
+  const prev = REBUILD ? {} : (read('published.json') || {});
+  for (const p of all) if (!prev[p.key]) prev[p.key] = fingerprint(p);
+  fs.writeFileSync(ledger, JSON.stringify(prev, null, 1) + '\n');
+  console.log(`\n${results.length} 問を足しました(全部で ${all.length} 問)。sw.js の VERSION を上げること`);
 }

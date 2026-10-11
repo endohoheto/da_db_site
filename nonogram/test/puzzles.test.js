@@ -33,3 +33,19 @@ for (const p of puzzles) {
     assert.strictEqual(f.sols.length, 1, '答えが1つではない');
   });
 }
+
+// 公開した問題は変えない。遊びかけの盤面は key ごとにマスで預かっているので、形が変わると途中経過が壊れる。
+// 台帳(data/published.json)にある問題が、同じ番号・大きさ・答え・見せるマスのまま残っているかを見る。
+// 指紋の作り方は tools/build-puzzles.mjs の fingerprint と同じ
+test('公開済みの問題が消えたり変わったりしていない', () => {
+  const ledger = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/published.json'), 'utf8'));
+  const hash = (t) => { let h = 2166136261; for (const ch of t) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
+  const fp = (p) => `${p.id}|${p.R}x${p.C}|${hash(p.sol).toString(36)}|${hash(JSON.stringify(p.givens || {})).toString(36)}`;
+  const byKey = new Map(puzzles.map(p => [p.key || p.text, p]));
+  for (const [key, want] of Object.entries(ledger)) {
+    const p = byKey.get(key);
+    assert.ok(p, `公開済みの「${key}」が消えている`);
+    assert.strictEqual(fp(p), want, `公開済みの「${key}」が変わっている`);
+  }
+  assert.deepStrictEqual(puzzles.map(p => p.id), puzzles.map((_, i) => i + 1), 'id が 1 から順に並んでいない');
+});
