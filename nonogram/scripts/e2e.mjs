@@ -65,7 +65,8 @@ console.log('PC 1280×860');
   await page.evaluate(() => { const n = window.__nono; n.cells.fill(0); });
   await page.keyboard.press('Control+z'); // 状態の同期を戻すためではなく、undo が壊れないことの確認
   await page.evaluate(() => { const n = window.__nono; n.cells.fill(0); });
-  let row = 0; while (sol.slice(row * C, row * C + C).every(v => v === 0)) row++;
+  // 塗るマスと空くマスの両方がある行を選ぶ(白抜きの絵には全部塗る行がある)
+  let row = 0; while (sol.slice(row * C, row * C + C).every(v => v === 0) || sol.slice(row * C, row * C + C).every(v => v === 1)) row++;
   for (let cc = 0; cc < C; cc++) if (sol[row * C + cc]) { const p = await cellPos(page, row, cc); await page.mouse.click(p.x, p.y); }
   const clueX = await page.evaluate(() => { const L = window.__nono.L; return document.getElementById('cv').getBoundingClientRect().left + L.left - 12; });
   const rowY = (await cellPos(page, row, 0)).y;
@@ -134,6 +135,8 @@ console.log('PC 1280×860');
   // クリア
   await page.evaluate(() => { const n = window.__nono; const s = n.P.sol; for (let i = 0; i < s.length; i++) n.cells[i] = s[i]; const k = s.lastIndexOf(1); n.cells[k] = 0; });
   const last = await page.evaluate(() => { const n = window.__nono; const k = n.P.sol.lastIndexOf(1); return [Math.floor(k / n.P.C), k % n.P.C]; });
+  await page.evaluate(() => { const s = document.getElementById('stage'); s.scrollLeft = 1e5; s.scrollTop = 1e5; });
+  await page.waitForTimeout(100);
   const lp = await cellPos(page, last[0], last[1]);
   await page.mouse.click(lp.x, lp.y);
   await page.waitForTimeout(1000);
@@ -176,7 +179,8 @@ for (const dark of [false, true]) {
     await page.evaluate(() => { const s = document.getElementById('stage'); s.scrollLeft = 1e5; s.scrollTop = 1e5; });
     await page.waitForTimeout(100);
     const box = await page.evaluate(() => { const r = document.getElementById('cv').getBoundingClientRect(); return { x: r.left, y: r.top }; });
-    await page.touchscreen.tap(box.x + 14, box.y + 14);
+    const m = await page.evaluate(() => window.__nono.mapRect());
+    await page.touchscreen.tap(box.x + m.x + 1, box.y + m.y + 1);
     const pos = await page.evaluate(() => { const s = document.getElementById('stage'); return [s.scrollLeft, s.scrollTop]; });
     const cs = await page.evaluate(() => window.__nono.L.cs);
     check(pos[0] < cs && pos[1] < cs, '右下から左上の縮小図をタップすると左上に戻れる');

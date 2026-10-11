@@ -177,11 +177,18 @@ function generate(size, level, progress) {
 function analyze(rc, cc, R, C, givens, deadline) {
   const N = R * C, g = new Int8Array(N).fill(-1);
   if (givens) for (const k in givens) g[+k] = givens[k];
-  if (propagate(g, R, C, rc, cc, new Uint8Array(R).fill(1), new Uint8Array(C).fill(1)) < 0) return { level: null, contradiction: true, grid: g };
-  if (g.indexOf(-1) < 0) return { level: 'std', probes: 0, grid: g };
+  const rounds = propagate(g, R, C, rc, cc, new Uint8Array(R).fill(1), new Uint8Array(C).fill(1));
+  if (rounds < 0) return { level: null, contradiction: true, grid: g };
+  if (g.indexOf(-1) < 0) return { level: 'std', probes: 0, rounds, grid: g };
   const pr = probe(g, R, C, rc, cc, deadline || Date.now() + 5000);
   if (pr < 0) return { level: null, timeout: pr === -2, grid: g };
   return { level: g.indexOf(-1) < 0 ? 'oni' : null, probes: pr, grid: g };
+}
+
+// 行と列の理詰めだけで埋められるところまで埋める(仮置きはしない)。矛盾したら null
+function lineSolve(rc, cc, R, C, start) {
+  const g = Int8Array.from(start);
+  return propagate(g, R, C, rc, cc, new Uint8Array(R).fill(1), new Uint8Array(C).fill(1)) < 0 ? null : g;
 }
 
 // 解を最大 limit 個まで探す(推論で詰まったら分岐)。答えが1つかの確認と、ヒントのマス選びに使う
@@ -208,7 +215,7 @@ function lineOk(values, clue) {
   return solveLine(LINE_IN, n, clue, LINE_OUT);
 }
 
-const api = { generate, solveLine, makeClues, lineOk, analyze, findSolutions };
+const api = { generate, solveLine, makeClues, lineOk, analyze, findSolutions, lineSolve };
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = api;
 } else if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
