@@ -135,6 +135,8 @@ console.log('PC 1280×860');
   // クリア
   await page.evaluate(() => { const n = window.__nono; const s = n.P.sol; for (let i = 0; i < s.length; i++) n.cells[i] = s[i]; const k = s.lastIndexOf(1); n.cells[k] = 0; });
   const last = await page.evaluate(() => { const n = window.__nono; const k = n.P.sol.lastIndexOf(1); return [Math.floor(k / n.P.C), k % n.P.C]; });
+  await page.evaluate(() => { const s = document.getElementById('stage'); s.scrollLeft = 1e5; s.scrollTop = 1e5; });
+  await page.waitForTimeout(100);
   const lp = await cellPos(page, last[0], last[1]);
   await page.mouse.click(lp.x, lp.y);
   await page.waitForTimeout(1000);
@@ -177,7 +179,8 @@ for (const dark of [false, true]) {
     await page.evaluate(() => { const s = document.getElementById('stage'); s.scrollLeft = 1e5; s.scrollTop = 1e5; });
     await page.waitForTimeout(100);
     const box = await page.evaluate(() => { const r = document.getElementById('cv').getBoundingClientRect(); return { x: r.left, y: r.top }; });
-    await page.touchscreen.tap(box.x + 14, box.y + 14);
+    const m = await page.evaluate(() => window.__nono.mapRect());
+    await page.touchscreen.tap(box.x + m.x + 1, box.y + m.y + 1);
     const pos = await page.evaluate(() => { const s = document.getElementById('stage'); return [s.scrollLeft, s.scrollTop]; });
     const cs = await page.evaluate(() => window.__nono.L.cs);
     check(pos[0] < cs && pos[1] < cs, '右下から左上の縮小図をタップすると左上に戻れる');

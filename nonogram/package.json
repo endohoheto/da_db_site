@@ -9,6 +9,6 @@
     "build:puzzles": "node tools/build-puzzles.mjs"
   },
   "devDependencies": {
-    "@fontsource/dotgothic16": "^5.3.0"
+    "@fontsource/noto-sans-jp": "^5.3.1"
   }
 }

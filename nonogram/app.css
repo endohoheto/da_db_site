@@ -216,6 +216,7 @@ kbd { font: 600 12px ui-monospace, Menlo, monospace; background: var(--btn); bor
 .card .q { font-size: 28px; font-weight: 800; color: var(--grid-strong); }
 .card .no { font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; gap: 4px; }
 .card .no .lv { color: var(--ink-2); font-weight: 600; }
+.card .no .lv.hard { color: var(--memo); }
 .card .no .lv.oni { color: var(--shu); }
 .card .name { font-size: 12px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 1.4em; }
 .card .bar { height: 3px; background: var(--grid); border-radius: 2px; overflow: hidden; }

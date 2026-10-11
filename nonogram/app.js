@@ -7,7 +7,7 @@ const app = $('app'), cv = $('cv'), ctx = cv.getContext('2d'), stage = $('stage'
 const EMPTY = 0, FILL = 1, CROSS = 2, MFILL = 3, MCROSS = 4;
 const asFill = (v) => v === FILL || v === MFILL;
 const asCross = (v) => v === CROSS || v === MCROSS;
-const LEVELS = { std: '標準', oni: '鬼' };
+const LEVELS = { easy: 'やさしい', normal: 'ふつう', hard: 'むずかしい', oni: '鬼', std: 'ふつう' };
 const KINDS = { artist: 'アーティスト名', song: '曲名', album: 'アルバム名', tour: 'ツアー名' };
 const KEY = 'nonogram-v2';
 const DEFAULTS = { theme: 'auto', redLines: true, autoCross: false, haptics: true, showTimer: true, left: false };
@@ -70,7 +70,8 @@ async function loadPuzzles() {
   const res = await fetch('puzzles.json', { cache: 'no-cache' });
   if (!res.ok) throw new Error('puzzles.json ' + res.status);
   const d = await res.json();
-  PUZZLES = d.puzzles.map((p, i) => ({ ...p, key: p.text, no: i + 1, sol: Array.from(p.sol, Number), givens: p.givens || {} }));
+  // 同じ名前でも組み方の違う問題が複数あるので、キーは puzzles.json の key(名前#番号)
+  PUZZLES = d.puzzles.map((p, i) => ({ ...p, key: p.key || p.text, no: i + 1, sol: Array.from(p.sol, Number), givens: p.givens || {} }));
 }
 function initialCells(p) {
   const c = new Array(p.R * p.C).fill(EMPTY);
@@ -1042,5 +1043,5 @@ setMode(1);
 })();
 
 // テスト用の入口(画面の動作確認スクリプトが使う)
-window.__nono = { get PUZZLES() { return PUZZLES; }, open: (k) => openPuzzle(k), get P() { return P; }, get cells() { return cells; }, get L() { return L; }, get rowInfo() { return rowInfo; }, get zoom() { return zoom; }, store: () => store };
+window.__nono = { mapRect: () => mapRect(), get PUZZLES() { return PUZZLES; }, open: (k) => openPuzzle(k), get P() { return P; }, get cells() { return cells; }, get L() { return L; }, get rowInfo() { return rowInfo; }, get zoom() { return zoom; }, store: () => store };
 })();
