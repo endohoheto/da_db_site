@@ -73,7 +73,7 @@
   <div class="menu">
     <button data-open="listDlg"><b>問題一覧</b><span>解いた問題は、文字の絵と名前が並びます</span></button>
     <button id="checkBtn"><b>間違いを探す</b><span>答えと違うマスを数秒だけ赤で示します</span></button>
-    <button id="resetBtn"><b>全部消す</b><span>この盤面を最初からやり直します</span></button>
+    <button id="resetBtn"><b>この問題を最初からやり直す</b><span>塗ったマスとタイマーを消します。解き終えた問題も、もう一度解けます</span></button>
     <button data-open="transferDlg"><b>引き継ぎ</b><span>機種変更や別の端末へ、途中経過を移します</span></button>
     <button data-open="settingsDlg"><b>設定</b><span>表示、自動バツ、振動</span></button>
     <button data-open="helpDlg"><b>遊び方と操作</b><span>ルール、タッチ操作、キーボード</span></button>
@@ -107,6 +107,9 @@
   <label class="toggle"><input type="checkbox" id="setHaptic"><span><b>塗ったときに振動する</b><small>対応している端末だけ(多くの Android)</small></span></label>
   <label class="toggle"><input type="checkbox" id="setTimer"><span><b>タイマーを表示する</b><small>非表示でも時間は記録します</small></span></label>
   <label class="toggle"><input type="checkbox" id="setLeft"><span><b>左手で操作する</b><small>道具と戻すボタンの左右を入れ替えます</small></span></label>
+  <div class="actions danger-zone">
+    <button id="wipeBtn">すべての記録を消して最初から</button>
+  </div>
 </dialog>
 
 <!-- 引き継ぎ -->
@@ -146,6 +149,11 @@
       <li>盤面が画面より大きいとき、左上の角に全体の縮小図が出ます。押した場所へ飛びます</li>
       <li>右上の四角いボタンで全体表示に戻ります</li>
     </ul>
+    <h3>やり直す</h3>
+    <ul>
+      <li>メニューの「この問題を最初からやり直す」で、塗ったマスとタイマーを消せます。解き終えた問題も、もう一度解けます</li>
+      <li>設定の「すべての記録を消して最初から」で、全部の問題の記録を消せます</li>
+    </ul>
     <h3>キーボード</h3>
     <dl class="keys">
       <dt><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></dt><dd>カーソル移動</dd>
@@ -176,6 +184,7 @@
   <div class="actions">
     <button class="primary" id="nextBtn">次の問題</button>
     <button id="toListBtn">問題一覧</button>
+    <button id="againBtn">もう一度解く</button>
     <button data-close>絵を眺める</button>
   </div>
   <p class="clear-link"><a href="../">浅倉大介クレジットデータベースへ</a></p>
