@@ -79,7 +79,7 @@
     <button id="checkBtn"><b>間違いを探す</b><span>答えと違うマスを数秒だけ赤で示します</span></button>
     <button id="resetBtn"><b>この問題を最初からやり直す</b><span>塗ったマスとタイマーを消します。解き終えた問題も、もう一度解けます</span></button>
     <button id="rankMenu" hidden><b>ランキング</b><span>点数・1位の数(王冠)・問題ごとの最速タイムで競います</span></button>
-    <button data-open="accountDlg" id="acctMenu" hidden><b>アカウント(ID・パスワード)</b><span>登録すると途中経過を預けて、別の端末でも続きができます</span></button>
+    <button data-open="accountDlg" id="acctMenu" hidden><b>アカウント(ID・パスワード)</b><span>登録すると自動で保存され、別の端末でも続きができます</span></button>
     <button data-open="transferDlg"><b>引き継ぎ</b><span>機種変更や別の端末へ、途中経過を移します</span></button>
     <button data-open="settingsDlg"><b>設定</b><span>表示、自動バツ、振動</span></button>
     <button data-open="helpDlg"><b>遊び方と操作</b><span>ルール、タッチ操作、キーボード</span></button>
@@ -136,7 +136,7 @@
 <dialog id="accountDlg" class="sheet">
   <div class="sheet-head"><h2>アカウント</h2><button class="ib close" data-close aria-label="閉じる"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div id="acctOut">
-    <p class="note">IDとパスワードを決めて登録すると、途中経過とクリアの記録を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
+    <p class="note">IDとパスワードを決めて登録すると、途中経過とクリアの記録が自動で保存されます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
     <label class="field"><span class="label">ID(半角の英数字、3〜20文字)</span><input id="acctId" type="text" autocomplete="username" autocapitalize="off" spellcheck="false" inputmode="latin"></label>
     <label class="field"><span class="label">パスワード(6文字以上)</span><input id="acctPw" type="password" autocomplete="current-password"></label>
     <label class="field"><span class="label">表示名(新しく登録するときだけ。ランキングに出る名前、12文字まで)</span><input id="acctNick" type="text" maxlength="12" autocomplete="nickname" placeholder="例: 鬼の解き手"></label>
@@ -145,18 +145,18 @@
       <button id="acctRegister">新しく登録</button>
     </div>
     <p class="note" id="acctMsg" role="status"></p>
-    <p class="note small">パスワードを忘れると元に戻せません。メールアドレスなどは預かりません。ランキングに出るのは表示名だけで、IDは出ません(IDと同じ表示名にはできません)。</p>
+    <p class="note small">パスワードを忘れると元に戻せません。メールアドレスなどは使いません。ランキングに出るのは表示名だけで、IDは出ません(IDと同じ表示名にはできません)。</p>
   </div>
   <div id="acctIn" hidden>
-    <p class="note">ID「<b id="acctName"></b>」でログインしています。途中経過は自動で預けています。</p>
-    <p class="note" id="acctLast"></p>
+    <div class="acct-card">
+      <span class="acct-avatar" id="acctAvatar" aria-hidden="true"></span>
+      <span class="acct-who"><b id="acctNickShow"></b><small>ID: <span id="acctName"></span></small></span>
+    </div>
+    <button class="sync-line" id="acctSync" aria-live="polite"><i class="sync-dot"></i><span id="acctLast"></span></button>
     <label class="field"><span class="label" id="acctNickLabel">表示名(ランキングに出る名前)</span><input id="acctNickNew" type="text" maxlength="12" autocomplete="nickname"></label>
     <div class="actions"><button id="acctNickSave">表示名を変える</button></div>
     <p class="note" id="acctNickMsg" role="status"></p>
-    <div class="actions">
-      <button class="primary" id="acctSave">今すぐ預ける</button>
-      <button id="acctLogout">ログアウト</button>
-    </div>
+    <div class="acct-foot"><button class="text-btn" id="acctLogout">ログアウト</button></div>
   </div>
 </dialog>
 
@@ -197,7 +197,7 @@
       <li>右上の四角いボタンで全体表示に戻ります</li>
     </ul>
     <h3>別の端末で続きから</h3>
-    <p>メニューの「アカウント」で、IDとパスワードを決めて登録すると、途中経過を預けます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
+    <p>メニューの「アカウント」で、IDとパスワードを決めて登録すると、途中経過が自動で保存されます。別の端末で同じIDでログインすれば、続きから遊べます。ログインしなくても遊べます。</p>
     <h3>ランキング</h3>
     <p>アカウントを登録して表示名を決めると、ランキングに載ります。出るのは表示名だけで、ログイン用のIDは出ません。</p>
     <p><b>総合</b>は解いた問題の点数の合計(やさしい1・ふつう2・むずかしい4・鬼8)。<b>王冠</b>は、その問題の最速タイムで1位を持っている数です。<b>この問題</b>は、いま開いている問題の最速タイム順です。</p>

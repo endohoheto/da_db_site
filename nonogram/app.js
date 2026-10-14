@@ -836,7 +836,10 @@ window.addEventListener('pagehide', save);
 const dialogs = [...document.querySelectorAll('dialog')];
 const anyDialogOpen = () => dialogs.some(d => d.open);
 function closeDialogs() { for (const d of dialogs) if (d.open) d.close(); }
-function openDlg(id) { closeDialogs(); const d = $(id); if (id === 'listDlg') renderList(); if (id === 'settingsDlg') renderSettings(); d.showModal(); }
+function openDlg(id) { closeDialogs(); const d = $(id); if (id === 'listDlg') renderList(); if (id === 'settingsDlg') renderSettings();
+  // アカウント画面を開いたら、待っている変更をすぐ保存する(「保存されています」が本当になるように)
+  if (id === 'accountDlg' && typeof syncTimer !== 'undefined' && syncTimer) { clearTimeout(syncTimer); syncTimer = 0; push(); }
+  d.showModal(); }
 for (const d of dialogs) {
   // 背景を押したら閉じる
   d.addEventListener('click', e => { if (e.target === d) d.close(); });
@@ -1037,7 +1040,7 @@ $('importBtn').onclick = async () => {
 // パスワードはこの端末でハッシュにしてから送る。端末に残すのもハッシュだけ
 const SYNC_URL = (window.NONO_SYNC_URL || '').trim();
 const ACCOUNT_KEY = 'nonogram-account';
-let account = null, syncTimer = 0, syncing = false, lastSync = '';
+let account = null, syncTimer = 0, syncing = false, lastSync = '', syncErr = false;
 try { account = JSON.parse(localStorage.getItem(ACCOUNT_KEY) || 'null'); } catch {}
 
 async function deriveKey(id, pw) {
@@ -1060,7 +1063,7 @@ const ERR = {
   wrong: 'IDかパスワードが違います',
   bad_id: 'IDは半角の英数字と _ - で、3〜20文字にしてください',
   too_many: 'まちがいが続いたので、10分ほど待ってからもう一度どうぞ',
-  too_big: '記録が大きすぎて預けられませんでした',
+  too_big: '記録が大きすぎて保存できませんでした',
   network: 'つながりませんでした。電波のある場所でもう一度どうぞ',
   not_ready: '保存係(サーバー)の準備ができていません。少し時間をおいてもう一度どうぞ',
   server: '保存係(サーバー)でエラーが起きました。少し時間をおいてもう一度どうぞ',
@@ -1098,16 +1101,16 @@ async function pullAndMerge() {
 }
 async function push() {
   if (!account || !SYNC_URL || syncing) return;
-  syncing = true;
+  syncing = true; renderAccount();
   try {
     const r = await api('save', { id: account.id, key: account.key, data: await packStore() });
     if (!r.ok) throw new Error(r.error);
-    lastSync = r.updated;
-    renderAccount();
+    lastSync = r.updated; syncErr = false;
   } catch (e) {
+    syncErr = true;
     const code = e && e.message;
     if (code === 'wrong') { toast('ログインが切れました。アカウント画面からもう一度ログインしてください', 6000); setAccount(null); }
-  } finally { syncing = false; }
+  } finally { syncing = false; renderAccount(); }
 }
 function syncSoon() {
   if (!account || !SYNC_URL) return;
@@ -1122,17 +1125,23 @@ function setAccount(a) {
 function renderAccount() {
   if (!SYNC_URL) return;
   const on = !!account;
-  // 上の帯のボタン: ログイン前は「ログイン」、ログイン中はIDを出す
+  // 上の帯のボタン: ログイン前は「ログイン」、ログイン中は表示名(なければID)を出す
   $('acctBtn').hidden = false;
   $('acctBtn').classList.toggle('on', on);
-  $('acctBtnText').textContent = on ? account.id : 'ログイン';
-  $('acctBtn').setAttribute('aria-label', on ? `ID ${account.id} でログイン中` : 'ログイン');
+  $('acctBtnText').textContent = on ? (account.name || account.id) : 'ログイン';
+  $('acctBtn').setAttribute('aria-label', on ? `${account.name || account.id} でログイン中` : 'ログイン');
   $('acctOut').hidden = on; $('acctIn').hidden = !on;
   if (on) {
     $('acctName').textContent = account.id;
+    $('acctNickShow').textContent = account.name || '(表示名なし)';
+    $('acctAvatar').textContent = [...(account.name || account.id)][0].toUpperCase();
+    // 保存は自動。ここは「ちゃんと保存されている」が一目でわかる一行だけにする(失敗したときだけ押して再試行)
+    const when = lastSync ? new Date(lastSync).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }) : '';
+    $('acctSync').className = 'sync-line' + (syncing ? ' busy' : syncErr ? ' err' : '');
+    $('acctSync').disabled = syncing;
     if (document.activeElement !== $('acctNickNew')) $('acctNickNew').value = account.name || '';
     $('acctNickLabel').textContent = account.name ? '表示名(ランキングに出る名前)' : '表示名を決めると、ランキングに載ります';
-    $('acctLast').textContent = lastSync ? '最後に預けた時刻: ' + new Date(lastSync).toLocaleString('ja-JP') : 'まだ預けていません';
+    $('acctLast').textContent = syncing ? '保存しています…' : syncErr ? '保存できませんでした。タップでもう一度' : when ? `自動で保存されています・${when}` : '自動で保存されます';
   }
 }
 async function signIn(register) {
@@ -1156,7 +1165,7 @@ async function signIn(register) {
     setAccount(account);
     $('acctPw').value = ''; $('acctNick').value = ''; msg.textContent = '';
     sendClears().catch(() => {});
-    toast(register ? `ID「${id}」を登録しました。これから途中経過を自動で預けます` : `ID「${id}」でログインしました`, 4000);
+    toast(register ? `ID「${id}」を登録しました。これから自動で保存されます` : `ID「${id}」でログインしました`, 4000);
   } catch (e) {
     if (!localStorage.getItem(ACCOUNT_KEY)) account = null;
     msg.textContent = errText(e && e.message && ERR[e.message] ? e.message : 'network');
@@ -1166,7 +1175,8 @@ if (SYNC_URL) {
   $('acctMenu').hidden = false;
   $('acctLogin').onclick = () => signIn(false);
   $('acctRegister').onclick = () => signIn(true);
-  $('acctSave').onclick = async () => { await push(); toast(lastSync ? '預けました' : errText('network')); };
+  $('acctSync').onclick = () => { clearTimeout(syncTimer); syncTimer = 0; push(); };
+
   $('acctNickSave').onclick = async () => {
     const name = $('acctNickNew').value.trim(), m = $('acctNickMsg');
     if (!name) { m.textContent = '表示名を入れてください'; return; }
