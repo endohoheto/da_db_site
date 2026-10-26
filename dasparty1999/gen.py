@@ -108,7 +108,7 @@ SHOWS.append(dict(
     # The VHS jacket and Sony list one track, Keyboard Solo〜Piano Solo; the ★ songs are it.
     R('08', 'SEQUENCE MEDITATION ～超電導思考回路～', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     # 09–13 are one piece, a piano medley; the site lists its parts (owner).
-    R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura'), 'Pf Solo'),
     R('10', 'Toy Box In The Morning', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     R('12', 'Mickey Mouse Club March', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
@@ -143,7 +143,8 @@ SHOWS.append(dict(
     R('31', '月虹 -GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     G('All'),
     NAV,
-    R('32', 'MC', False, True, None),
+    # The blog has 「MC+雛形あきこ」 here; the site has only 「MC」 (owner asked for her name).
+    R('32', 'MC', False, True, None, '雛形あきこ'),
   ]))
 
 # ---- Yoyogi: BD DISC 3 does not say which of the three shows a track is from. --
@@ -209,7 +210,8 @@ SHOWS.append(dict(
     R('09', 'COUNT DOWN', False, False, None),
     R('10', 'DYNAMITE PASSION', False, False, None),
     R('11', 'GALAXY GANG', False, False, None),
-    R('12', 'Paradise City', False, False, None),
+    # Not marked as a cover on the site; Guns N' Roses (owner confirmed, no other candidate found).
+    R('12', 'Paradise City', False, False, None, "原曲: GUNS N' ROSES"),
     # The TV-size cut was broadcast but is not on the BD; the BD has the full song, no.14 (owner).
     R('13', "DA's PARTY 2000 -TV Size ver-", False, True, None),
     R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
