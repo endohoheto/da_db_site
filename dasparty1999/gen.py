@@ -23,10 +23,16 @@ def G(name, note=''): return ('G', name, note)
 # the acts, not at exact positions.
 NAV = ('G', "Navigator's Talk", '', 'nav')
 NAV_OPEN = ('G', "Navigator's Talk", 'オープニング', 'nav')
-# Medleys: the site lists each part as a row; the first row is the piece, the rest are
-# its parts. A medley is one song in the count and gets one number.
-MEDLEY = {('v0214', '05'): ('06', '07', '08'), ('s0829', '09'): ('10', '11', '12', '13')}
-PART = {(sid, n) for (sid, _), parts in MEDLEY.items() for n in parts}
+# One piece the site lists as several rows: a medley, or several songs that Sony lists as
+# a single BD track. The piece gets one numbered row titled with the BD track name, and
+# the site's rows hang under it as its contents (owner). It is one song in the count.
+# A piece with no single BD track (the 2/14 piano medley) is named here instead.
+MEDLEY = {
+  ('v0214', '05'): ('Pf Solo', ('05', '06', '07', '08')),
+  ('s0829', '08'): ('', ('08', '09', '10', '11', '12', '13', '14')),
+  ('s0829', '30'): ('', ('30', '31')),
+}
+PART = {(sid, n) for (sid, _), (_, parts) in MEDLEY.items() for n in parts}
 # A row: number, title, on the VHS (★), broadcast (☆), the BD track it is on.
 # The optional note is shown under the title (the original artist of a cover, …).
 NOTE = {}
@@ -52,7 +58,7 @@ SHOWS.append(dict(
     R('04', 'E.v.o.l.u.t.i.o.n', True, True, ('D1', 'E.v.o.l.u.t.i.o.n for Valentine / Daisuke Asakura')),
     # 05–08 are one piano medley. Only its last song, Image of Tomorrow, is on the VHS and
     # the BD (owner; the blog's ★ is on that line), as Image of Tomorrow for Valentine.
-    R('05', "TEAR'S LIBERATION", False, True, None, 'Pf Solo'),
+    R('05', "TEAR'S LIBERATION", False, True, None),
     R('06', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, None),
     R('07', 'Melody Fair', False, True, None),
     R('08', 'Image of Tomorrow', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
@@ -107,7 +113,7 @@ SHOWS.append(dict(
     NAV,
     # The VHS jacket and Sony list one track, Keyboard Solo〜Piano Solo; the ★ songs are it.
     R('08', 'SEQUENCE MEDITATION ～超電導思考回路～', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    # 09–13 are one piece, a piano medley; the site lists its parts (owner).
+    # 09–13 are the piano part (owner).
     R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura'), 'Pf Solo'),
     R('10', 'Toy Box In The Morning', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
@@ -302,8 +308,8 @@ e = html.escape
 # Song, show and artist names follow the Sony page wherever Sony names them; the
 # blog's spelling stays only for what Sony never mentions. Where the blog splits a
 # performance more finely than Sony's track list (a medley, two songs Sony lists as
-# one track, the TV-size cut), the blog's row is kept as it is and Sony's track
-# title is shown under it.
+# one track), the blog's rows are kept as they are under a row named for Sony's track
+# (MEDLEY); where they are not under such a row, Sony's title is shown under them.
 KEEP = {('v0214', '08'),
         ('s0829', '08'), ('s0829', '09'), ('s0829', '10'), ('s0829', '11'),
         ('s0829', '12'), ('s0829', '13'), ('s0829', '14'),
@@ -374,19 +380,30 @@ def bd_code(s, r):
     if r[4] and s['disc'] == 'DISC 3': return YD[(s['id'], r[0])][0]
     return r[4][0] if r[4] else None
 
+def parts_of(s, head):
+    return [x for x in s['rows'] if x[0] != 'G' and x[0] in MEDLEY[head][1]]
+
+def piece_title(s, head):
+    name, _ = MEDLEY[head]
+    if name: return name
+    t = {split_artist(x[4][1])[0] for x in parts_of(s, head)}
+    assert len(t) == 1, (head, t)
+    return t.pop()
+
+def piece_marks(s, rows):
+    # a piece is broadcast / on the VHS / on the BD if any of its songs is
+    bd = next((bd_code(s, x) for x in rows if bd_code(s, x) in ('D1', 'D2', 'D3', 'D3?')), None)
+    return any(x[3] for x in rows), any(x[2] for x in rows), bd
+
 def stats(s):
     # MC and the count-down itself are on the setlist but are not songs
-    songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')
+    units = [[r] for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')
              and (s['id'], r[0]) not in PART]
-    def whole(r):
-        # a medley counts once, and is on the VHS/BD if any of its parts is
-        parts = MEDLEY.get((s['id'], r[0]), ())
-        return [r] + [x for x in s['rows'] if x[0] != 'G' and x[0] in parts]
-    oa = sum(1 for r in songs if any(x[3] for x in whole(r)))
-    vhs = sum(1 for r in songs if any(x[2] for x in whole(r)))
-    bd = sum(1 for r in songs if any(bd_code(s, x) in ('D1', 'D2', 'D3', 'D3?') for x in whole(r)))
-    q = sum(1 for r in songs if bd_code(s, r) == 'Q')
-    return len(songs), oa, vhs, bd, q
+    units += [parts_of(s, h) for h in MEDLEY if h[0] == s['id']]
+    marks = [piece_marks(s, u) for u in units]
+    q = sum(1 for u in units if len(u) == 1 and bd_code(s, u[0]) == 'Q')
+    return (len(units), sum(1 for m in marks if m[0]), sum(1 for m in marks if m[1]),
+            sum(1 for m in marks if m[2]), q)
 
 DISC_LABEL = {'D1': 'DISC 1', 'D2': 'DISC 2', 'D3': 'DISC 3', 'D3?': 'DISC 3'}
 def bd_cell(k):
@@ -417,9 +434,19 @@ for s in SHOWS:
             rows.append(f'<tr class="g"><th colspan="5" scope="rowgroup">{e(r[1])}{note}</th></tr>')
             continue
         no, title, v, o, b = r
+        key = (s['id'], no)
+        head = next((h for h, (_, ps) in MEDLEY.items() if h[0] == s['id'] and no in ps), None)
+        if head and no == MEDLEY[head][1][0]:
+            ho, hv, hk = piece_marks(s, parts_of(s, head))
+            shown += 1
+            rows.append(
+              f'<tr class="piece"><td class="no">{shown:02d}</td><td class="t">{e(piece_title(s, head))}</td>'
+              f'<td class="m{" oa" if ho else " no"}">{"●" if ho else "―"}</td>'
+              f'<td class="m{" vhs" if hv else " no"}">{"●" if hv else "―"}</td>'
+              f'{bd_cell(hk)}</tr>')
         sub = ''
         k = bd_code(s, r)
-        if b and b[1] and (s['id'], no) in KEEP:
+        if b and b[1] and key in KEEP and not (head and split_artist(b[1])[0] == piece_title(s, head)):
             sub = f'<span class="sony">BD表記: {e(split_artist(b[1])[0])}</span>'
         if k == 'elsewhere':
             where = ' または '.join(f'この回の{n_}曲目' if sid == s['id'] else YSHOW[sid]
@@ -431,15 +458,11 @@ for s in SHOWS:
             sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
-        key = (s['id'], no)
         if key in PART or title in ('MC', 'COUNT DOWN'):
             num = ''
         else:
             shown += 1; num = f'{shown:02d}'
         cls = ['part'] if key in PART else []
-        head = next((m for m, ps in MEDLEY.items() if m[0] == s['id'] and no in ps), None)
-        if head and sub.startswith('<span class="sony">BD表記') and head in KEEP:
-            sub = ''   # the medley's first row already names the track
         if v and not b and not k: cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
         c = f' class="{" ".join(cls)}"' if cls else ''
@@ -676,9 +699,9 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
       <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。BD に入るかは分かりません。</li>
-      <li>メドレーは1曲として数えています。表では最初の曲に番号を付け、続く曲はその内訳として並べています。映像のみ(MV)の行は曲に数えていません。</li>
+      <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
       <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
-      <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。メドレーなど、公式の曲目より細かく分かれているところはデータベースの分け方のままにし、公式の曲目を「BD表記」として添えています。</li>
+      <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。公式と曲名が違う曲には、公式の曲名を「BD表記」として添えています。</li>
       <li>BD の内容は、発売後に映像で確認して追記します。</li>
     </ol>
   </section>
