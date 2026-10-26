@@ -510,14 +510,14 @@ for t in SONY_D['D3']:
     # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
     # itself, carried over as aired (per the site owner).
     if t.startswith("Navigator's Talk"):
-        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>')
+        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">● Viewsic放送のナビ部分をそのまま収録</td></tr>')
         continue
     cells = []
     for sid, _ in yshort:
         s = next(x for x in SHOWS if x['id'] == sid)
         hit = [r for r in s['rows'] if r[0] != 'G' and r[4] and r[4][1] == t]
         if not hit: cells.append('<td class="m no">―</td>')
-        elif any(r[3] for r in hit): cells.append('<td class="m oa">☆</td>')
+        elif any(r[3] for r in hit): cells.append('<td class="m oa mk">●</td>')
         else: cells.append('<td class="m pl">演奏</td>')
     title, artist = split_artist(t)
     # an artist heading whenever the act changes, as in the show tables
@@ -627,6 +627,8 @@ section.matrix table {{ table-layout:fixed; }}
 /* the show tables colour 放送/VHS/BD by position; these counts mean something else */
 section.matrix .stat span {{ color:var(--dim); }}
 section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
+/* the mark is the point of the cell: as big as the ● in the show tables, not the 10.5px labels */
+section.matrix td.mk {{ font-size:12.5px; }}
 tr.talk td.t {{ color:var(--dim); }}
 tr.talk td.m {{ white-space:normal; font-size:11px; }}
 tr.nav td.t {{ color:var(--dim); font-size:11.5px; }}
@@ -694,7 +696,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
       <div class="stat">{d3_stat}</div>
     </div>
-    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
+    <p class="sn"><b class="oa">●</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
       <tbody>
