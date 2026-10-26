@@ -316,8 +316,10 @@ for s in SHOWS:
 yshort = [('y1231a', '12/31<br>Grand Finale'), ('y1231b', '12/31<br>Count Down'), ('y0101', '1/1<br>Happy New Year')]
 mrows = []
 for t in SONY_D['D3']:
+    # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
+    # itself, carried over as aired (per the site owner).
     if t.startswith("Navigator's Talk"):
-        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>')
+        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>')
         continue
     cells = []
     for sid, _ in yshort:
@@ -414,7 +416,12 @@ tr.lost td.t {{ color:var(--pink); }}
 tr.new td.t {{ color:var(--cyan); }}
 sup {{ font-size:9px; }}
 td.pl {{ color:var(--text); font-size:11px; }}
-tr.talk td {{ color:var(--dim); }}
+/* Three show columns with two-line headings: nowrap would let them take the row
+   and squeeze the title to a few characters on a phone, so the widths are fixed. */
+section.matrix table {{ table-layout:fixed; }}
+section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
+tr.talk td.t {{ color:var(--dim); }}
+tr.talk td.m {{ white-space:normal; font-size:11px; }}
 footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 @media (max-width:480px) {{
   header.top {{ padding:18px 16px; }}
@@ -457,7 +464,8 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="card">
       <h2>代々木の放送とDISC 3</h2>
       <p>代々木3公演で放送(☆)のある曲のうち、DISC 3の曲目に無いのは
-        1/1の「1000年の誓い」だけ。</p>
+        1/1の「1000年の誓い」だけ。
+        Mad SoldiersのNavigator's Talk 1〜6は、Viewsic放送のナビ部分そのまま。</p>
     </div>
   </div>
 

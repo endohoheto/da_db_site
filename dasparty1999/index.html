@@ -73,7 +73,12 @@ tr.lost td.t { color:var(--pink); }
 tr.new td.t { color:var(--cyan); }
 sup { font-size:9px; }
 td.pl { color:var(--text); font-size:11px; }
-tr.talk td { color:var(--dim); }
+/* Three show columns with two-line headings: nowrap would let them take the row
+   and squeeze the title to a few characters on a phone, so the widths are fixed. */
+section.matrix table { table-layout:fixed; }
+section.matrix .m { width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }
+tr.talk td.t { color:var(--dim); }
+tr.talk td.m { white-space:normal; font-size:11px; }
 footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 @media (max-width:480px) {
   header.top { padding:18px 16px; }
@@ -116,7 +121,8 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <div class="card">
       <h2>代々木の放送とDISC 3</h2>
       <p>代々木3公演で放送(☆)のある曲のうち、DISC 3の曲目に無いのは
-        1/1の「1000年の誓い」だけ。</p>
+        1/1の「1000年の誓い」だけ。
+        Mad SoldiersのNavigator's Talk 1〜6は、Viewsic放送のナビ部分そのまま。</p>
     </div>
   </div>
 
@@ -356,31 +362,31 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th><th class="m">12/31<br>Grand Finale</th><th class="m">12/31<br>Count Down</th><th class="m">1/1<br>Happy New Year</th></tr></thead>
       <tbody>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">LEMON TEA<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">Boys Jump The Midnight<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">Spicy Marmalade<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
 <tr><td class="t">灼熱BLADE<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">高熱BLOOD<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">Blind Game again<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">GATE Ⅱ～sensitive gate<span class="sony">Daisuke Asakura</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）<span class="sony">Daisuke Asakura</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">TRY AGAIN<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">Neo Age<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">陽炎-KAGEROH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">月虹-GEKKOH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">雪幻-winter dust-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">WHITE BREATH<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m no">―</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">dope light<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
 <tr><td class="t">FATE WEATHER<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="t">Shining Collection<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="t">Genetic Bomb<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m" colspan="3">セトリ外</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
 <tr><td class="t">DA’s Party 2000<span class="sony">Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ</span></td><td class="m no">―</td><td class="m oa">☆</td><td class="m pl">演奏</td></tr>
       </tbody>
     </table></div>
