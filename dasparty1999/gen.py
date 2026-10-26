@@ -72,9 +72,9 @@ SHOWS.append(dict(
     G('T.M.Revolution'),
     R('13', 'WHITE BREATH', True, True, ('D1', 'WHITE BREATH / T.M.Revolution')),
     R('14', '蒼い霹靂', False, True, None),
-    # Broadcast only, like Blind Game again above; a digest of it was also aired on
-    # the TV programme 貴教革命 (owner).
-    R('15', 'THUNDERBIRD', False, True, None, '番組『貴教革命』でダイジェストが放送'),
+    # Broadcast only, like Blind Game again above; the TV programme 貴教革命 also aired
+    # it, as a digest in its own edit, not the Viewsic one (owner).
+    R('15', 'THUNDERBIRD', False, True, None, '番組『貴教革命』でも別編集のダイジェストとして放送'),
     R('16', "Burnin' X'mas", True, True, ('D1', "Burnin' X'mas / T.M.Revolution")),
     R('17', 'HOT LIMIT', True, True, ('D1', 'HOT LIMIT / T.M.Revolution')),
     R('18', 'WILD RUSH', True, True, ('D1', 'WILD RUSH / T.M.Revolution')),
