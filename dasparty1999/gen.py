@@ -162,7 +162,7 @@ SHOWS.append(dict(
     R('07', 'SIREN’S MELODY', False, False, None),
     G('Mad Soldiers'),
     R('08', 'Boys Jump The Midnight', False, False, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
-    R('09', 'LEMON TEA', False, False, ('D3', 'LEMON TEA / Mad Soldiers')),
+    R('09', 'LEMON TEA', False, False, ('D3', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     MV('10', '高熱BLOOD'),
     G('コタニキンヤ'),
     R('11', 'Spicy Marmalade', False, False, ('D3', 'Spicy Marmalade / コタニキンヤ')),
@@ -219,7 +219,7 @@ SHOWS.append(dict(
   oa_all=False, disc='DISC 3',
   rows=[
     G('Mad Soldiers'),
-    R('01', 'LEMON TEA', False, True, ('D3', 'LEMON TEA / Mad Soldiers')),
+    R('01', 'LEMON TEA', False, True, ('D3', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     R('02', 'Boys Jump The Midnight', False, True, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
     MV('03', '高熱BLOOD'),
     G('コタニキンヤ'),
