@@ -73,20 +73,15 @@ tr.lost td.t { color:var(--pink); }
 tr.new td.t { color:var(--cyan); }
 sup { font-size:9px; }
 td.pl { color:var(--text); font-size:11px; }
-/* Fixed layout so the long flow text can't take the row and squeeze the title column
-   to a few characters on a phone. */
+/* Three show columns with two-line headings: nowrap would let them take the row
+   and squeeze the title to a few characters on a phone, so the widths are fixed. */
 section.matrix table { table-layout:fixed; }
-section.matrix th:first-child { width:44%; }
-td.flow { font-size:11.5px; line-height:1.6; }
-/* inline-block + nowrap: each piece wraps to the next line as a whole instead of
-   running past the cell edge on a phone. */
-td.flow .st { display:inline-block; color:var(--text); white-space:nowrap; }
-td.flow .ar { display:inline-block; color:var(--cyan); margin-left:6px; white-space:nowrap; }
-.notice { margin:12px 0 0; font-size:11px; line-height:1.8; color:var(--amber); opacity:.9; }
+section.matrix .m { width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }
 .flowbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
   font-size:11px; color:var(--dim); }
 .flowbar span { border:1px solid var(--border); border-radius:3px; padding:3px 8px; }
 tr.talk td.t { color:var(--dim); }
+tr.talk td.m { white-space:normal; font-size:11px; }
 tr.nav td.t { color:var(--dim); font-size:11.5px; }
 footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 @media (max-width:480px) {
@@ -146,7 +141,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 
   <nav class="toc">
     <a href="#v0214">1999.2.14 横浜アリーナ</a><a href="#s0829">1999.8.29 東京ベイNK</a><a href="#y1231a">1999.12.31 Grand Finale</a><a href="#y1231b">1999.12.31 Count Down</a><a href="#y0101">2000.1.1 Happy New Year</a>
-    <a href="#disc3">DISC 3 収録元</a>
+    <a href="#disc3">DISC 3 対照</a>
   </nav>
 
   <section class="show" id="v0214">
@@ -382,38 +377,38 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <div class="sh">
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
-      <div class="venue">公式の曲目ごとに、どの回の演奏が放送を経て BD に入ったか</div>
+      <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
     </div>
-    <p class="sn">同じ曲を別の回でも演奏していて放送が無いものは、下に添えています(<a href="#notice">※</a>)。</p>
+    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし(<a href="#notice">※</a>)</p>
     <div class="tw"><table>
-      <thead><tr><th>DISC 3 曲目(公式)</th><th>収録の流れ</th></tr></thead>
+      <thead><tr><th>DISC 3 曲目(公式)</th><th class="m">12/31<br>Grand Finale</th><th class="m">12/31<br>Count Down</th><th class="m">1/1<br>Happy New Year</th></tr></thead>
       <tbody>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">LEMON TEA<span class="sony">Mad Soldiers</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">Boys Jump The Midnight<span class="sony">Mad Soldiers</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">Spicy Marmalade<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale、12/31 Count Down でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">灼熱BLADE<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">高熱BLOOD<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">Blind Game again<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">GATE Ⅱ～sensitive gate<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">12/31 Grand Finale</span> / <span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">どちらの回の映像かは発売後に確認</span></td></tr>
-<tr><td class="t">TRY AGAIN<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
-<tr><td class="t">Neo Age<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">陽炎-KAGEROH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">月虹-GEKKOH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">雪幻-winter dust-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">WHITE BREATH<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Count Down でも演奏(放送なし)</span></td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">dope light<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr><td class="t">FATE WEATHER<span class="sony">Iceman</span></td><td class="flow"><span class="st">12/31 Grand Finale</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
-<tr><td class="t">Shining Collection<span class="sony">Iceman</span></td><td class="flow"><span class="st">12/31 Grand Finale</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
-<tr><td class="t">Genetic Bomb<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
-<tr><td class="t">DA’s Party 2000<span class="sony">Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ</span></td><td class="flow"><span class="st">12/31 Count Down</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">1/1 Happy New Year でも演奏(放送なし)</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">LEMON TEA<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">Boys Jump The Midnight<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">Spicy Marmalade<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
+<tr><td class="t">灼熱BLADE<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">高熱BLOOD<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">Blind Game again<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">GATE Ⅱ～sensitive gate<span class="sony">Daisuke Asakura</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）<span class="sony">Daisuke Asakura</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">TRY AGAIN<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">Neo Age<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">陽炎-KAGEROH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">月虹-GEKKOH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">雪幻-winter dust-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">WHITE BREATH<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m no">―</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">dope light<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr><td class="t">FATE WEATHER<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="t">Shining Collection<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="t">Genetic Bomb<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
+<tr><td class="t">DA’s Party 2000<span class="sony">Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ</span></td><td class="m no">―</td><td class="m oa">☆</td><td class="m pl">演奏</td></tr>
       </tbody>
     </table></div>
   </section>
