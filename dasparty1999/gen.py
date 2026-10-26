@@ -143,10 +143,11 @@ SHOWS.append(dict(
     NAV,
     R('30', '陽炎-KAGEROH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     R('31', '月虹 -GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    G('All'),
+    # She joined the closing All block as a guest; the blog has 「MC+雛形あきこ」 here and
+    # the site only 「MC」, so the guest goes on the block heading, not on the MC row.
+    G('All', 'ゲスト: 雛形あきこ'),
     NAV,
-    # The blog has 「MC+雛形あきこ」 here; the site has only 「MC」 (owner asked for her name).
-    R('32', 'MC', False, True, None, '雛形あきこ'),
+    R('32', 'MC', False, True, None),
   ]))
 
 # ---- Yoyogi: BD DISC 3 does not say which of the three shows a track is from. --
