@@ -426,8 +426,6 @@ for s in SHOWS:
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
         key = (s['id'], no)
-        if key in MEDLEY:
-            sub = f'<span class="sony">ここから{len(MEDLEY[key]) + 1}曲のメドレー</span>' + sub
         if key in PART or title in ('MC', 'COUNT DOWN'):
             num = ''
         else:
