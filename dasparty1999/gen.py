@@ -49,11 +49,11 @@ SHOWS.append(dict(
     R('03', 'Blind Game again', True, True, None),
     G('浅倉大介'),
     R('04', 'E.v.o.l.u.t.i.o.n', True, True, ('D1', 'E.v.o.l.u.t.i.o.n for Valentine / Daisuke Asakura')),
-    # 05–08 are one medley on the blog ("Pf Solo TEAR'S LIBERATION〜…〜Image Of Tomorrow★");
-    # the VHS and the BD list it as one track, Image of Tomorrow for Valentine.
-    R('05', "TEAR'S LIBERATION", True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura'), 'Pf Solo'),
-    R('06', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
-    R('07', 'Melody Fair', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
+    # 05–08 are one piano medley. Only its last song, Image of Tomorrow, is on the VHS and
+    # the BD (owner; the blog's ★ is on that line), as Image of Tomorrow for Valentine.
+    R('05', "TEAR'S LIBERATION", False, True, None, 'Pf Solo'),
+    R('06', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, None),
+    R('07', 'Melody Fair', False, True, None),
     R('08', 'Image of Tomorrow', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
     R('09', 'SIREN’S MELODY', True, True, ('D1', "SIREN'S MELODY / Daisuke Asakura")),
     G('Fayray'),
@@ -296,7 +296,7 @@ e = html.escape
 # performance more finely than Sony's track list (a medley, two songs Sony lists as
 # one track, the TV-size cut), the blog's row is kept as it is and Sony's track
 # title is shown under it.
-KEEP = {('v0214', '05'), ('v0214', '06'), ('v0214', '07'), ('v0214', '08'),
+KEEP = {('v0214', '08'),
         ('s0829', '08'), ('s0829', '09'), ('s0829', '10'), ('s0829', '11'),
         ('s0829', '12'), ('s0829', '13'), ('s0829', '14'),
         ('s0829', '30'), ('s0829', '31'), ('y1231b', '13')}
@@ -371,9 +371,13 @@ def stats(s):
     # MC and the count-down itself are on the setlist but are not songs
     songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')
              and (s['id'], r[0]) not in PART]
-    oa = sum(1 for r in songs if r[3])
-    vhs = sum(1 for r in songs if r[2])
-    bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
+    def whole(r):
+        # a medley counts once, and is on the VHS/BD if any of its parts is
+        parts = MEDLEY.get((s['id'], r[0]), ())
+        return [r] + [x for x in s['rows'] if x[0] != 'G' and x[0] in parts]
+    oa = sum(1 for r in songs if any(x[3] for x in whole(r)))
+    vhs = sum(1 for r in songs if any(x[2] for x in whole(r)))
+    bd = sum(1 for r in songs if any(bd_code(s, x) in ('D1', 'D2', 'D3', 'D3?') for x in whole(r)))
     q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
     return len(songs), oa, vhs, bd, q
 
@@ -428,7 +432,8 @@ for s in SHOWS:
         else:
             shown += 1; num = f'{shown:02d}'
         cls = ['part'] if key in PART else []
-        if key in PART and sub.startswith('<span class="sony">BD表記'):
+        head = next((m for m, ps in MEDLEY.items() if m[0] == s['id'] and no in ps), None)
+        if head and sub.startswith('<span class="sony">BD表記') and head in KEEP:
             sub = ''   # the medley's first row already names the track
         if v and not b and not k: cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
