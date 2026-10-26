@@ -53,7 +53,9 @@ SHOWS.append(dict(
     G('MC-K2'),
     R('01', 'Spicy Marmalade', True, True, ('D1', 'Spicy Marmalade /コタニキンヤ')),
     R('02', "God You're SAVE", False, True, None),
-    R('03', 'Blind Game again', True, True, None),
+    # Broadcast only: not on the VHS and so not on the BD (owner, correcting an earlier
+    # note that it was on the VHS edited).
+    R('03', 'Blind Game again', False, True, None),
     G('浅倉大介'),
     R('04', 'E.v.o.l.u.t.i.o.n', True, True, ('D1', 'E.v.o.l.u.t.i.o.n for Valentine / Daisuke Asakura')),
     # 05–08 are one piano medley. Only its last song, Image of Tomorrow, is on the VHS and
@@ -370,11 +372,11 @@ for s_ in SHOWS:
         if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
 
-# On the 2/14 VHS these three are in (edited, like much of the VHS — per the site
+# On the 2/14 VHS these two are in (edited, like much of the VHS — per the site
 # owner) although the VHS credits don't list them. The VHS credits and Sony's DISC 1
 # list are the same 16 songs in the same order, so DISC 1 is the VHS programme and
 # has them too. Editing is not marked per song; one note at the top covers it.
-UNLISTED = {('v0214', '03'), ('v0214', '15'), ('v0214', '23')}
+UNLISTED = {('v0214', '15'), ('v0214', '23')}
 
 def bd_code(s, r):
     if (s['id'], r[0]) in UNLISTED: return 'D1'
