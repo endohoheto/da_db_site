@@ -104,8 +104,8 @@ SHOWS.append(dict(
   ]))
 
 # ---- Yoyogi: BD DISC 3 does not say which of the three shows a track is from. --
-# A song played at only one of the three can only be from that show (D3).
-# A song played at more than one is marked D3* and left undecided.
+# The rows only say "this song is on DISC 3"; which performance it came from is worked
+# out below (YD), from the broadcast marks.
 SHOWS.append(dict(
   id='y1231a', short='Grand Finale', date='1999.12.31 (FRI)', venue='国立代々木競技場 第一体育館',
   name='DA’s Party Grand Finale 1999 featuring Iceman', oa_all=False, disc='DISC 3',
@@ -223,20 +223,6 @@ used['D2'].add('Keyboard Solo〜Piano Solo / Daisuke Asakura')  # the ('Q') bloc
 for k, lst in SONY_D.items():
     missing = [t for t in lst if t not in used[k] and not t.startswith("Navigator's Talk")]
     assert not missing, (k, missing)
-# D3 (unique) must really be unique among the Yoyogi shows, D3* really multiple.
-yo = [s for s in SHOWS if s['disc'] == 'DISC 3']
-cnt = {}
-for s in yo:
-    seen = set()
-    for r in s['rows']:
-        if r[0] != 'G' and r[4] and r[4][0].startswith('D3'):
-            seen.add(r[4][1])
-    for t in seen: cnt[t] = cnt.get(t, 0) + 1
-for s in yo:
-    for r in s['rows']:
-        if r[0] != 'G' and r[4] and r[4][0].startswith('D3'):
-            assert (r[4][0] == 'D3*') == (cnt[r[4][1]] > 1), (s['id'], r)
-
 def split_artist(t):
     # Sony is inconsistent about spaces around the slash ('Blind Game again /コタニキンヤ').
     a, _, b = t.rpartition('/')
@@ -288,19 +274,48 @@ for s in SHOWS:
         rows.append((no, title, v, o, b))
     s['rows'] = rows
 
+# ---- where each DISC 3 track came from ----------------------------------------
+# Sony: DISC 3 is footage Viewsic broadcast from Yoyogi. So a DISC 3 track can only come
+# from a performance that was broadcast — a ☆ in the blog. Where exactly one ☆
+# performance of the song exists, that is the source; where two exist, both stay open.
+# A performance that was not broadcast cannot be on the disc, even if the song is.
+YSHOW = {'y1231a': '12/31 Grand Finale', 'y1231b': '12/31 Count Down', 'y0101': '1/1 Happy New Year'}
+SRC = {}
+for s_ in SHOWS:
+    if s_['disc'] != 'DISC 3': continue
+    for r in s_['rows']:
+        if r[0] != 'G' and r[4] and r[3] and (s_['id'], r[0]) not in KEEP:
+            SRC.setdefault(r[4][1], []).append((s_['id'], r[0]))
+for t in SONY_D['D3']:
+    if not t.startswith("Navigator's Talk"):
+        assert SRC.get(t), ('DISC 3 track with no broadcast performance', t)
+YD = {}
+for s_ in SHOWS:
+    if s_['disc'] != 'DISC 3': continue
+    for r in s_['rows']:
+        if r[0] == 'G' or not r[4]: continue
+        key = (s_['id'], r[0]); src = SRC[r[4][1]]
+        if key in KEEP: YD[key] = ('tv', src)
+        elif key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
+        else: YD[key] = ('elsewhere', src)
+
+def bd_code(s, r):
+    if r[4] and s['disc'] == 'DISC 3': return YD[(s['id'], r[0])][0]
+    return r[4][0] if r[4] else None
+
 def stats(s):
     songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] != 'MC']
     oa = sum(1 for r in songs if r[3])
     vhs = sum(1 for r in songs if r[2])
-    bd = sum(1 for r in songs if r[4] and r[4][0] != 'Q')
-    q = sum(1 for r in songs if r[4] and r[4][0] == 'Q')
+    bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
+    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
     return len(songs), oa, vhs, bd, q
 
-def bd_cell(bd):
-    if not bd: return '<td class="m no">―</td>'
-    k = bd[0]
+def bd_cell(k):
+    if k in (None, 'elsewhere'): return '<td class="m no">―</td>'
     if k == 'Q': return '<td class="m q" title="公式の曲目からは特定できない">?</td>'
-    if k == 'D3*': return '<td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td>'
+    if k == 'tv': return '<td class="m q" title="TV Size。BDの曲目は「DA’s Party 2000」">?</td>'
+    if k == 'D3?': return '<td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td>'
     return f'<td class="m bd">{e(k)}</td>'
 
 out = []
@@ -314,8 +329,13 @@ for s in SHOWS:
             continue
         no, title, v, o, b = r
         sub = ''
+        k = bd_code(s, r)
         if b and b[1] and (s['id'], no) in KEEP:
             sub = f'<span class="sony">BD表記: {e(split_artist(b[1])[0])}</span>'
+        if k == 'elsewhere':
+            where = ' または '.join(f'この回の{n_}曲目' if sid == s['id'] else YSHOW[sid]
+                                    for sid, n_ in YD[(s['id'], no)][1])
+            sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
         cls = []
         if v and not b: cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
@@ -324,14 +344,14 @@ for s in SHOWS:
           f'<tr{c}><td class="no">{e(no)}</td><td class="t">{e(title)}{sub}</td>'
           f'<td class="m{" oa" if o else " no"}">{"●" if o else "―"}</td>'
           f'<td class="m{" vhs" if v else " no"}">{"●" if v else "―"}</td>'
-          f'{bd_cell(b)}</tr>')
+          f'{bd_cell(k)}</tr>')
     note = ''
     if s['oa_all']:
         note = '<p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。</p>'
     if s['disc'] == 'DISC 3':
         note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
-                'BDのDISC 3は「代々木 1999.12.31～2000.1.1」としか書かれていないため、'
-                '代々木の複数公演で演奏された曲は <b>D3<sup>*</sup></b>(どの回の映像かは未確定)にしています。</p>')
+                'DISC 3 は代々木の模様を Viewsic が放送した映像(公式)なので、放送●の演奏だけが収録元になります。'
+                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>')
     qline = f'<span>BD ? {q}</span>' if q else ''
     out.append(f'''
   <section class="show" id="{s['id']}">
@@ -350,24 +370,30 @@ for s in SHOWS:
     </table></div>
   </section>''')
 
-# DISC 3 matrix: which Yoyogi show played each Sony track, and was it broadcast.
-yshort = [('y1231a', '12/31<br>Grand Finale'), ('y1231b', '12/31<br>Count Down'), ('y0101', '1/1<br>Happy New Year')]
+# DISC 3 flow: for each track on the disc, the show it was played at, the broadcast it
+# went out on, and the disc — plus the other times it was played but not broadcast.
 mrows = []
 for t in SONY_D['D3']:
     # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
     # itself, carried over as aired (per the site owner).
     if t.startswith("Navigator's Talk"):
-        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>')
+        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td>'
+                     f'<td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>')
         continue
-    cells = []
-    for sid, _ in yshort:
-        s = next(x for x in SHOWS if x['id'] == sid)
-        hit = [r for r in s['rows'] if r[0] != 'G' and r[4] and r[4][1] == t]
-        if not hit: cells.append('<td class="m no">―</td>')
-        elif any(r[3] for r in hit): cells.append('<td class="m oa">☆</td>')
-        else: cells.append('<td class="m pl">演奏</td>')
+    src = SRC[t]
+    srcs = {sid for sid, _ in src}
+    others = []
+    for sid, lab in YSHOW.items():
+        s_ = next(x for x in SHOWS if x['id'] == sid)
+        hit = [r for r in s_['rows'] if r[0] != 'G' and r[4] and r[4][1] == t and (sid, r[0]) not in src]
+        if hit and sid not in srcs: others.append(lab)
+    open_ = len(src) > 1
+    head = ' / '.join(f'<span class="st">{e(YSHOW[sid])}</span>' for sid, _ in src)
+    flow = f'{head}<span class="ar">▸ 放送 ▸ BD</span>'
+    if open_: flow += '<span class="sony">どちらの回の映像かは未確定</span>'
+    if others: flow += f'<span class="sony">{e("、".join(others))} でも演奏(放送なし)</span>'
     title, artist = split_artist(t)
-    mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td>{"".join(cells)}</tr>')
+    mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td><td class="flow">{flow}</td></tr>')
 
 # summary lists
 lost = []; new = []
@@ -454,12 +480,19 @@ tr.lost td.t {{ color:var(--pink); }}
 tr.new td.t {{ color:var(--cyan); }}
 sup {{ font-size:9px; }}
 td.pl {{ color:var(--text); font-size:11px; }}
-/* Three show columns with two-line headings: nowrap would let them take the row
-   and squeeze the title to a few characters on a phone, so the widths are fixed. */
+/* Fixed layout so the long flow text can't take the row and squeeze the title column
+   to a few characters on a phone. */
 section.matrix table {{ table-layout:fixed; }}
-section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
+section.matrix th:first-child {{ width:44%; }}
+td.flow {{ font-size:11.5px; line-height:1.6; }}
+/* inline-block + nowrap: each piece wraps to the next line as a whole instead of
+   running past the cell edge on a phone. */
+td.flow .st {{ display:inline-block; color:var(--text); white-space:nowrap; }}
+td.flow .ar {{ display:inline-block; color:var(--cyan); margin-left:6px; white-space:nowrap; }}
+.flowbar {{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
+  font-size:11px; color:var(--dim); }}
+.flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
 tr.talk td.t {{ color:var(--dim); }}
-tr.talk td.m {{ white-space:normal; font-size:11px; }}
 footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 @media (max-width:480px) {{
   header.top {{ padding:18px 16px; }}
@@ -480,11 +513,12 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、
       Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray
       『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
+    <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
-      <span><b class="bd">D3<sup>*</sup></b> 代々木のどの回か未確定</span>
+      <span><b class="bd">D3?</b> 別の回の放送にもあり、どちらの映像か未確定</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
     </div>
   </header>
@@ -500,16 +534,17 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <p style="margin-top:6px">代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。</p>
     </div>
     <div class="card">
-      <h2>代々木の放送とDISC 3</h2>
-      <p>代々木3公演で放送(☆)のある曲のうち、DISC 3の曲目に無いのは
-        1/1の「1000年の誓い」だけ。
-        Mad SoldiersのNavigator's Talk 1〜6は、Viewsic放送のナビ部分そのまま。</p>
+      <h2>DISC 3 はどの回の映像か</h2>
+      <p>DISC 3 は Viewsic の放送映像(公式)。放送のある演奏と突き合わせると、
+        ほぼ全曲の収録元の回が1つに決まる。決まらないのは
+        THE ELECTROMANCER(12/31 Grand Finale と 1/1 の両方で放送)だけ。
+        放送があってDISC 3に無いのは 1/1 の「1000年の誓い」だけ。</p>
     </div>
   </div>
 
   <nav class="toc">
     {''.join(f'<a href="#{s["id"]}">{e(s["date"].split()[0])} {e(s["short"])}</a>' for s in SHOWS)}
-    <a href="#disc3">DISC 3 対照</a>
+    <a href="#disc3">DISC 3 収録元</a>
   </nav>
 {''.join(out)}
 
@@ -517,11 +552,11 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="sh">
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
-      <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
+      <div class="venue">公式の曲目ごとに、どの回の演奏が放送を経て BD に入ったか</div>
     </div>
-    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
+    <p class="sn">収録元は、ブログで放送ありの演奏から。同じ曲を別の回でも演奏していて放送が無いものは、下に添えています。</p>
     <div class="tw"><table>
-      <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
+      <thead><tr><th>DISC 3 曲目(公式)</th><th>収録の流れ</th></tr></thead>
       <tbody>
 {chr(10).join(mrows)}
       </tbody>
