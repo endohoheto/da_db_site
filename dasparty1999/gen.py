@@ -82,7 +82,8 @@ SHOWS.append(dict(
     R('20', "WHAT'S WRONG?", False, True, None),
     R('21', 'Dizzy Boogie', False, True, None),
     R('22', 'BEAT MY LIFE', False, True, None),
-    R('23', 'GALAXY GANG', True, True, None),
+    # Broadcast only, like Blind Game again and THUNDERBIRD above (owner).
+    R('23', 'GALAXY GANG', False, True, None),
     R('24', 'Shining Collection', True, True, ('D1', 'Shining Collection / Iceman')),
     R('25', 'DARK HALF 〜TOUCH YOUR DARKNESS', True, True, ('D1', 'DARK HALF～TOUCH YOUR DARKNESS / Iceman')),
     R('26', 'LOST COMPLEX', True, True, ('D1', 'LOST COMPLEX / Iceman')),
@@ -380,14 +381,7 @@ ALT_OA = {
   ('v0214', '15'): '貴教革命',   # THUNDERBIRD, as a digest
 }
 
-# On the 2/14 VHS this one is in (edited, like much of the VHS — per the site
-# owner) although the VHS credits don't list it. The VHS credits and Sony's DISC 1
-# list are the same 16 songs in the same order, so DISC 1 is the VHS programme and
-# has it too. Editing is not marked per song; one note at the top covers it.
-UNLISTED = {('v0214', '23')}
-
 def bd_code(s, r):
-    if (s['id'], r[0]) in UNLISTED: return 'D1'
     if r[4] and s['disc'] == 'DISC 3': return YD[(s['id'], r[0])][0]
     return r[4][0] if r[4] else None
 
@@ -474,8 +468,6 @@ for s in SHOWS:
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
         if k == 'D3?':
             sub = '<span class="sony">12/31 Grand Finale と 1/1 のどちらの映像かは未確定</span>'
-        if (s['id'], no) in UNLISTED:
-            sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
         if key in ALT_OA:
@@ -550,7 +542,7 @@ d3_stat = (f'<span>曲 {len(d3_songs)}</span><span>Navigator\'s Talk {d3_talks}<
 assert sum(d3_from.values()) + d3_open == len(d3_songs)
 
 # summary lists
-lost = []; new = []
+lost = []; new = []  # lost: on the VHS but on no BD track list; must stay empty
 for s in SHOWS[:2]:
     for r in s['rows']:
         if r[0] == 'G': continue
@@ -674,12 +666,6 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 
   <div class="cards">
     <div class="card">
-      <h2>曲目には無いが収録</h2>
-      <ul>{li(lost)}</ul>
-      <p style="margin-top:6px">VHSのクレジットにもBDの曲目にも載っていないが、VHSに入っている3曲。
-        DISC 1 は VHS と同じ内容なので、BDにも入る。</p>
-    </div>
-    <div class="card">
       <h2>VHS と BD の曲目</h2>
       {f'<ul>{li(new)}</ul>' if new else ''}
       <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。
@@ -743,5 +729,6 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 </html>
 '''
 open(sys.argv[1], 'w', encoding='utf-8').write(page)
-print('lost', lost); print('new', new)
+assert not lost, lost
+print('new', new)
 for s in SHOWS: print(s['id'], stats(s))
