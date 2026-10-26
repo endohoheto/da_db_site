@@ -430,7 +430,7 @@ for s in SHOWS:
                             f'{bd_cell(None)}</tr>')
                 continue
             rows.append(f'<tr class="nav"><td class="no"></td>'
-                        f'<td class="t">{label}<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
+                        f'<td class="t">{label}</td>'
                         '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
                         '<td class="m bdc q">不明</td></tr>')
             continue
