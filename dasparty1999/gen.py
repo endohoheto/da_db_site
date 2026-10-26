@@ -350,8 +350,7 @@ for s in SHOWS:
         note = '<p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。</p>'
     if s['disc'] == 'DISC 3':
         note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
-                'DISC 3 は代々木の模様を Viewsic が放送した映像(公式)なので、放送●の演奏だけが収録元になります。'
-                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>')
+                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています(<a href="#notice">※</a>)。</p>')
     qline = f'<span>BD ? {q}</span>' if q else ''
     out.append(f'''
   <section class="show" id="{s['id']}">
@@ -390,7 +389,7 @@ for t in SONY_D['D3']:
     open_ = len(src) > 1
     head = ' / '.join(f'<span class="st">{e(YSHOW[sid])}</span>' for sid, _ in src)
     flow = f'{head}<span class="ar">▸ 放送 ▸ BD</span>'
-    if open_: flow += '<span class="sony">どちらの回の映像かは未確定</span>'
+    if open_: flow += '<span class="sony">どちらの回の映像かは発売後に確認</span>'
     if others: flow += f'<span class="sony">{e("、".join(others))} でも演奏(放送なし)</span>'
     title, artist = split_artist(t)
     mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td><td class="flow">{flow}</td></tr>')
@@ -489,6 +488,7 @@ td.flow {{ font-size:11.5px; line-height:1.6; }}
    running past the cell edge on a phone. */
 td.flow .st {{ display:inline-block; color:var(--text); white-space:nowrap; }}
 td.flow .ar {{ display:inline-block; color:var(--cyan); margin-left:6px; white-space:nowrap; }}
+.notice {{ margin:12px 0 0; font-size:11px; line-height:1.8; color:var(--amber); opacity:.9; }}
 .flowbar {{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
   font-size:11px; color:var(--dim); }}
 .flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
@@ -514,11 +514,13 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray
       『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
     <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
+    <p class="notice" id="notice">※ DISC 3(代々木)の各曲がどの回の映像かは、公式の「Viewsic が放送した映像」という記載と、
+      管理人の放送記録から割り出したものです。発売後に映像で確認し、追って追記します。</p>
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
-      <span><b class="bd">D3?</b> 別の回の放送にもあり、どちらの映像か未確定</span>
+      <span><b class="bd">D3?</b> 2つの回で放送があり、どちらの映像か発売後に確認</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
     </div>
   </header>
@@ -535,9 +537,10 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     </div>
     <div class="card">
       <h2>DISC 3 はどの回の映像か</h2>
-      <p>DISC 3 は Viewsic の放送映像(公式)。放送のある演奏と突き合わせると、
-        ほぼ全曲の収録元の回が1つに決まる。決まらないのは
-        THE ELECTROMANCER(12/31 Grand Finale と 1/1 の両方で放送)だけ。
+      <p>ほとんどが 1/1 Happy New Year の放送から。
+        FATE WEATHER と Shining Collection は 12/31 Grand Finale、
+        DA’s Party 2000 は 12/31 Count Down から。
+        THE ELECTROMANCER は両日で放送があり、発売後に確認。
         放送があってDISC 3に無いのは 1/1 の「1000年の誓い」だけ。</p>
     </div>
   </div>
@@ -554,7 +557,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
       <div class="venue">公式の曲目ごとに、どの回の演奏が放送を経て BD に入ったか</div>
     </div>
-    <p class="sn">収録元は、ブログで放送ありの演奏から。同じ曲を別の回でも演奏していて放送が無いものは、下に添えています。</p>
+    <p class="sn">同じ曲を別の回でも演奏していて放送が無いものは、下に添えています(<a href="#notice">※</a>)。</p>
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th><th>収録の流れ</th></tr></thead>
       <tbody>
