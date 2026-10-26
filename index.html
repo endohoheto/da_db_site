@@ -130,6 +130,45 @@ td.n { text-align:right; color:var(--text); white-space:nowrap; padding-right:0;
 .note { color:var(--dim); font-size:10.5px; letter-spacing:1px; margin-top:20px;
   opacity:.75; line-height:1.8; }
 .en { font-size:11.5px; line-height:1.9; letter-spacing:.3px; }
+/* Countdown card. Official artwork can't be reproduced here, so the card is built from
+   type alone and the announcement is quoted with its source linked. */
+.cd { margin-top:34px; border:1px solid var(--purple); border-radius:6px; padding:22px 22px 18px;
+  background:linear-gradient(135deg, rgba(176,124,255,0.10), rgba(0,255,242,0.04)); }
+/* .cd .clock sets display:grid, which outranks both the UA's [hidden] rule and a plain
+   `.cd [hidden]`, so the clock would stay up next to 本日. Hence !important. */
+.cd[hidden], .cd [hidden] { display:none !important; }
+.cd .kind { font-size:10.5px; letter-spacing:3px; color:var(--purple); }
+.cd .title { margin:8px 0 4px; font-size:17px; line-height:1.5; color:var(--text);
+  font-weight:normal; letter-spacing:1px; text-transform:none; }
+.cd .when { font-size:12px; color:var(--dim); letter-spacing:1px; }
+.cd .clock { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:18px 0; }
+.cd .clock div { border:1px solid var(--border); border-radius:4px; padding:10px 4px 8px;
+  text-align:center; background:rgba(5,7,13,0.6); }
+.cd .clock b { display:block; font-size:clamp(20px, 6vw, 28px); color:var(--cyan);
+  font-weight:normal; font-variant-numeric:tabular-nums; }
+.cd .clock span { font-size:9.5px; letter-spacing:2px; color:var(--dim); }
+.cd .today { margin:18px 0; font-size:20px; letter-spacing:3px; color:var(--cyan); text-align:center; }
+.cd .discs { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+  gap:8px; margin:0 0 14px; }
+.cd .disc { border:1px solid var(--border); border-radius:4px; padding:12px 12px 10px;
+  background:rgba(5,7,13,0.6); font-size:11px; line-height:1.7; color:var(--dim); }
+.cd .disc .no { color:var(--purple); letter-spacing:2px; font-size:10.5px; }
+.cd .disc .no span { border:1px solid var(--purple); border-radius:2px; padding:0 4px;
+  margin-left:4px; font-size:9px; }
+.cd .disc .date { color:var(--cyan); font-size:14px; margin-top:4px; }
+.cd .disc .venue { color:var(--text); font-size:12px; }
+.cd .disc .ev { margin-top:6px; font-size:10px; letter-spacing:.3px; opacity:.85; }
+.cd .disc .acts { margin-top:6px; border-top:1px solid rgba(0,255,242,0.08); padding-top:6px; }
+.cd .spec { display:flex; flex-wrap:wrap; gap:4px 18px; margin:0 0 14px; font-size:11px;
+  line-height:1.7; }
+.cd .spec div { display:flex; gap:8px; }
+.cd .spec dt { color:var(--purple); letter-spacing:1px; white-space:nowrap; }
+.cd .spec dd { color:var(--text); margin:0; }
+.cd blockquote { margin:0; padding:10px 14px; border-left:2px solid var(--purple);
+  color:var(--dim); font-size:12px; line-height:1.85; background:rgba(176,124,255,0.05); }
+.cd blockquote p { margin:0; font-size:12px; line-height:1.85; }
+.cd cite { display:block; margin-top:8px; font-style:normal; font-size:10.5px; letter-spacing:1px; }
+.cd a { color:var(--cyan); }
 footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   color:var(--dim); font-size:10.5px; letter-spacing:1px; line-height:1.9; opacity:.75; }
 @media (max-width:480px) {
@@ -137,6 +176,8 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   .mark { gap:13px; }
   .mark img { width:44px; height:44px; }
   th, td { font-size:12px; }
+  .cd { padding:18px 14px 14px; }
+  .cd .clock { gap:5px; }
 }
 </style>
 </head>
@@ -162,6 +203,58 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
 
   <a class="enter" id="enter"
      href="https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec">ENTER ▸</a>
+
+  <!-- Countdown. Ships `hidden`: the script below reveals it only before data-until, so once
+       the date has passed it disappears by itself without anyone editing the page.
+       Times carry +09:00 so the count is right for a visitor in any time zone.
+       Every line in the card is quoted from the source; nothing is filled in from memory. -->
+  <aside class="cd" id="countdown" hidden
+         data-target="2026-10-28T00:00:00+09:00" data-until="2026-10-29T00:00:00+09:00"
+         aria-labelledby="cd-title">
+    <div class="kind">BLU-RAY 3枚組 / 初Blu-ray化</div>
+    <h2 class="title" id="cd-title">DA’s Party 1999 SPECIAL EDITION</h2>
+    <div class="when">2026年10月28日(水)発売</div>
+    <div class="clock" data-cd="clock" aria-live="off">
+      <div><b data-cd="d">--</b><span>DAYS</span></div>
+      <div><b data-cd="h">--</b><span>HOURS</span></div>
+      <div><b data-cd="m">--</b><span>MIN</span></div>
+      <div><b data-cd="s">--</b><span>SEC</span></div>
+    </div>
+    <div class="today" data-cd="today" hidden>本日発売</div>
+    <div class="discs">
+      <div class="disc">
+        <div class="no">DISC 1</div>
+        <div class="date">1999.2.14</div>
+        <div class="venue">横浜アリーナ</div>
+        <div class="ev">DA’s SPECIAL Valentine Party!!! in Yokohama Arena</div>
+        <div class="acts">浅倉大介 / T.M.Revolution / Iceman / Fayray / コタニキンヤ</div>
+      </div>
+      <div class="disc">
+        <div class="no">DISC 2</div>
+        <div class="date">1999.8.29</div>
+        <div class="venue">東京ベイNKホール</div>
+        <div class="ev">DA’s Party Special Summer Festival!!! In Tokyo Bay NK Hall</div>
+        <div class="acts">浅倉大介 / Mad Soldiers / the end of genesis T.M.R. evolution turbo type D(T.M.R-e) / Iceman / コタニキンヤ</div>
+      </div>
+      <div class="disc">
+        <div class="no">DISC 3 <span>BONUS</span></div>
+        <div class="date">1999.12.31〜2000.1.1</div>
+        <div class="venue">国立代々木競技場 第一体育館</div>
+        <div class="ev">DA’s Party Special Yoyogi National Stadium</div>
+        <div class="ev">Viewsic(現MUSIC ON! TV)放送映像・初商品化</div>
+        <div class="acts">Mad Soldiers(ナビゲーター) / 浅倉大介 / Iceman / T.M.R-e / コタニキンヤ</div>
+      </div>
+    </div>
+    <dl class="spec">
+      <div><dt>品番</dt><dd>MHXL-190〜2</dd></div>
+      <div><dt>価格</dt><dd>16,500円(税込)</dd></div>
+      <div><dt>初回仕様限定盤</dt><dd>Mad Soldiersフォトカード封入、三方背スリーブケース</dd></div>
+    </dl>
+    <blockquote cite="https://barks.jp/news/1100671/">
+      <p>浅倉大介が2026年にソロ活動35周年を迎える。これを記念して、1999年に行われたライブイベント＜DA’s Party＞のBlu-ray映像作品が10月28日（水）にリリース予定だ。</p>
+      <cite>— <a href="https://barks.jp/news/1100671/" target="_blank" rel="noopener">BARKS「浅倉大介、1999年主宰イベント『DA’s Party』が初Blu-ray化。ダイジェストムービー公開」</a>(2026.10.26)より引用</cite>
+    </blockquote>
+  </aside>
 
   <section>
     <h2>Contents<span class="ja">収録しているもの</span></h2>
@@ -253,6 +346,30 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   document.getElementById('enter').addEventListener('click', function () {
     gtag('event', 'enter_app');
   });
+
+  (function () {
+    var el = document.getElementById('countdown');
+    var target = Date.parse(el.dataset.target), until = Date.parse(el.dataset.until);
+    // A malformed date would otherwise count down to NaN forever; better to show nothing.
+    if (isNaN(target) || isNaN(until)) return;
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function q(k) { return el.querySelector('[data-cd="' + k + '"]'); }
+    function tick() {
+      var now = Date.now();
+      if (now >= until) { el.hidden = true; return false; }
+      el.hidden = false;
+      var left = Math.max(0, Math.floor((target - now) / 1000));
+      q('clock').hidden = left === 0;
+      q('today').hidden = left !== 0;
+      q('d').textContent = Math.floor(left / 86400);
+      q('h').textContent = pad(Math.floor(left / 3600) % 24);
+      q('m').textContent = pad(Math.floor(left / 60) % 60);
+      q('s').textContent = pad(left % 60);
+      return true;
+    }
+    if (!tick()) return;
+    var timer = setInterval(function () { if (!tick()) clearInterval(timer); }, 1000);
+  })();
 </script>
 </body>
 </html>
