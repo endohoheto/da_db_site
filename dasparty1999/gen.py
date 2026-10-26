@@ -466,6 +466,9 @@ for s in SHOWS:
 # DISC 3 matrix: which Yoyogi show played each Sony track, and was it broadcast.
 yshort = [('y1231a', '12/31<br>Grand Finale'), ('y1231b', '12/31<br>Count Down'), ('y0101', '1/1<br>Happy New Year')]
 mrows = []
+# Sony credits the solo tracks to "Daisuke Asakura"; the show tables (from the site) say 浅倉大介.
+MATRIX_ARTIST = {'Daisuke Asakura': '浅倉大介'}
+last_artist = None
 for t in SONY_D['D3']:
     # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
     # itself, carried over as aired (per the site owner).
@@ -480,7 +483,12 @@ for t in SONY_D['D3']:
         elif any(r[3] for r in hit): cells.append('<td class="m oa">☆</td>')
         else: cells.append('<td class="m pl">演奏</td>')
     title, artist = split_artist(t)
-    mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td>{"".join(cells)}</tr>')
+    # an artist heading whenever the act changes, as in the show tables
+    artist = MATRIX_ARTIST.get(artist, artist)
+    if artist != last_artist:
+        mrows.append(f'<tr class="g"><th colspan="4" scope="rowgroup">{e(artist)}</th></tr>')
+        last_artist = artist
+    mrows.append(f'<tr><td class="t">{e(title)}</td>{"".join(cells)}</tr>')
 
 # summary lists
 lost = []; new = []
