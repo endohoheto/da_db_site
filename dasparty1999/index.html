@@ -35,6 +35,7 @@ h1 { margin:8px 0 6px; font-size:clamp(18px, 4.6vw, 24px); color:var(--cyan); fo
 .vhs, .legend .vhs { color:var(--pink); }
 .bd, .legend .bd { color:var(--cyan); }
 .q { color:var(--purple); }
+td.ed { font-size:10.5px; }
 .no { color:rgba(99,128,140,0.55); }
 .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin:0 0 22px; }
 .card { border:1px solid var(--border); border-radius:6px; background:var(--card); padding:14px 16px; }
@@ -113,6 +114,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
+      <span><b class="vhs">編集</b> VHSでは編集して収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
       <span><b class="bd">D3?</b> 2つの回で放送があり、どちらの映像か発売後に確認</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
@@ -121,8 +123,9 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 
   <div class="cards">
     <div class="card">
-      <h2>VHSにあってBDの曲目に無い</h2>
+      <h2>VHSでは編集して収録 / BDの曲目に記載なし</h2>
       <ul><li><span class="d">1999.2.14</span>Blind Game again</li><li><span class="d">1999.2.14</span>THUNDERBIRD</li><li><span class="d">1999.2.14</span>GALAXY GANG</li></ul>
+      <p style="margin-top:6px">VHSには編集された形で入っている3曲。BDの曲目には記載が無いので、BDでの扱いは発売後に確認。</p>
     </div>
     <div class="card">
       <h2>VHS未収録 → BDで初収録</h2>
@@ -149,7 +152,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
       <div class="date">1999.2.14 (SUN)</div>
       <h2>DA&#x27;s SPECIAL Valentine Party!!! in Yokohama Arena</h2>
       <div class="venue">横浜アリーナ <span class="disc">BD DISC 1</span></div>
-      <div class="stat"><span>演奏 24</span><span>放送 24</span><span>VHS 19</span><span>BD 16</span></div>
+      <div class="stat"><span>演奏 24</span><span>放送 24</span><span>VHS 19</span><span>BD 16</span><span>BD ? 3</span></div>
     </div>
     <p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。</p>
     <div class="tw"><table>
@@ -158,7 +161,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 <tr class="g"><th colspan="5" scope="rowgroup">MC-K2</th></tr>
 <tr><td class="no">01</td><td class="t">Spicy Marmalade</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">02</td><td class="t">GOD You&#x27;ra SAVE</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr class="lost"><td class="no">03</td><td class="t">Blind Game again</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m no">―</td></tr>
+<tr><td class="no">03</td><td class="t">Blind Game again<span class="sony">VHSでは編集して収録。BDの曲目には記載なし</span></td><td class="m oa">●</td><td class="m vhs ed">編集</td><td class="m q" title="VHSでは編集して収録。BDの曲目には記載なし">?</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">浅倉大介solo</th></tr>
 <tr><td class="no">04</td><td class="t">E.v.o.l.u.t.i.o.n for Valentine</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">05</td><td class="t">Pf Solo TEAR&#x27;S LIBERATION〜THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)〜Melody Fiar (Bee Gees)〜Image Of Tomorrow<span class="sony">BD表記: Image of Tomorrow for Valentine</span></td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
@@ -170,7 +173,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 <tr class="g"><th colspan="5" scope="rowgroup">T.M.Revolution</th></tr>
 <tr><td class="no">10</td><td class="t">WHITE BREATH</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">11</td><td class="t">蒼い霹靂</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr class="lost"><td class="no">12</td><td class="t">THUNDERBIRD</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m no">―</td></tr>
+<tr><td class="no">12</td><td class="t">THUNDERBIRD<span class="sony">VHSでは編集して収録。BDの曲目には記載なし</span></td><td class="m oa">●</td><td class="m vhs ed">編集</td><td class="m q" title="VHSでは編集して収録。BDの曲目には記載なし">?</td></tr>
 <tr><td class="no">13</td><td class="t">Burnin&#x27; X&#x27;mas</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">14</td><td class="t">HOT LIMIT</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">15</td><td class="t">WILD RUSH</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
@@ -179,7 +182,7 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 <tr><td class="no">17</td><td class="t">WHAT’S WRONG?</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">18</td><td class="t">Dizzy Boogie</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">19</td><td class="t">BEAT MY LIFE</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr class="lost"><td class="no">20</td><td class="t">GALAXY GANG</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m no">―</td></tr>
+<tr><td class="no">20</td><td class="t">GALAXY GANG<span class="sony">VHSでは編集して収録。BDの曲目には記載なし</span></td><td class="m oa">●</td><td class="m vhs ed">編集</td><td class="m q" title="VHSでは編集して収録。BDの曲目には記載なし">?</td></tr>
 <tr><td class="no">21</td><td class="t">Shining Collection</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">22</td><td class="t">DARK HALF～TOUCH YOUR DARKNESS</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>
 <tr><td class="no">23</td><td class="t">LOST COMPLEX</td><td class="m oa">●</td><td class="m vhs">●</td><td class="m bd">D1</td></tr>

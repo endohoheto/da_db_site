@@ -299,7 +299,13 @@ for s_ in SHOWS:
         elif key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
 
+# On the 2/14 VHS these three are in, but edited into the programme rather than as
+# whole songs (per the site owner). Sony's track list doesn't name them, which says
+# nothing either way about whether the same edit is on the BD — so '?', not '―'.
+EDITED = {('v0214', '03'), ('v0214', '12'), ('v0214', '20')}
+
 def bd_code(s, r):
+    if (s['id'], r[0]) in EDITED: return 'edit'
     if r[4] and s['disc'] == 'DISC 3': return YD[(s['id'], r[0])][0]
     return r[4][0] if r[4] else None
 
@@ -308,12 +314,13 @@ def stats(s):
     oa = sum(1 for r in songs if r[3])
     vhs = sum(1 for r in songs if r[2])
     bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
-    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
+    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv', 'edit'))
     return len(songs), oa, vhs, bd, q
 
 def bd_cell(k):
     if k in (None, 'elsewhere'): return '<td class="m no">―</td>'
     if k == 'Q': return '<td class="m q" title="公式の曲目からは特定できない">?</td>'
+    if k == 'edit': return '<td class="m q" title="VHSでは編集して収録。BDの曲目には記載なし">?</td>'
     if k == 'tv': return '<td class="m q" title="TV Size。BDの曲目は「DA’s Party 2000」">?</td>'
     if k == 'D3?': return '<td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td>'
     return f'<td class="m bd">{e(k)}</td>'
@@ -336,14 +343,17 @@ for s in SHOWS:
             where = ' または '.join(f'この回の{n_}曲目' if sid == s['id'] else YSHOW[sid]
                                     for sid, n_ in YD[(s['id'], no)][1])
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
+        if k == 'edit':
+            sub = '<span class="sony">VHSでは編集して収録。BDの曲目には記載なし</span>'
         cls = []
-        if v and not b: cls.append('lost')
+        if v and not b and k != 'edit': cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
         c = f' class="{" ".join(cls)}"' if cls else ''
         rows.append(
           f'<tr{c}><td class="no">{e(no)}</td><td class="t">{e(title)}{sub}</td>'
           f'<td class="m{" oa" if o else " no"}">{"●" if o else "―"}</td>'
-          f'<td class="m{" vhs" if v else " no"}">{"●" if v else "―"}</td>'
+          + (f'<td class="m vhs ed">編集</td>' if k == 'edit' else
+             f'<td class="m{" vhs" if v else " no"}">{"●" if v else "―"}</td>') +
           f'{bd_cell(k)}</tr>')
     note = ''
     if s['oa_all']:
@@ -441,6 +451,7 @@ h1 {{ margin:8px 0 6px; font-size:clamp(18px, 4.6vw, 24px); color:var(--cyan); f
 .vhs, .legend .vhs {{ color:var(--pink); }}
 .bd, .legend .bd {{ color:var(--cyan); }}
 .q {{ color:var(--purple); }}
+td.ed {{ font-size:10.5px; }}
 .no {{ color:rgba(99,128,140,0.55); }}
 .cards {{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin:0 0 22px; }}
 .card {{ border:1px solid var(--border); border-radius:6px; background:var(--card); padding:14px 16px; }}
@@ -519,6 +530,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
+      <span><b class="vhs">編集</b> VHSでは編集して収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
       <span><b class="bd">D3?</b> 2つの回で放送があり、どちらの映像か発売後に確認</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
@@ -527,8 +539,9 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 
   <div class="cards">
     <div class="card">
-      <h2>VHSにあってBDの曲目に無い</h2>
+      <h2>VHSでは編集して収録 / BDの曲目に記載なし</h2>
       <ul>{li(lost)}</ul>
+      <p style="margin-top:6px">VHSには編集された形で入っている3曲。BDの曲目には記載が無いので、BDでの扱いは発売後に確認。</p>
     </div>
     <div class="card">
       <h2>VHS未収録 → BDで初収録</h2>
