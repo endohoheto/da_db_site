@@ -70,7 +70,7 @@ SHOWS.append(dict(
     ('07', 'Craving', False, True, None),
     G('浅倉大介ソロ', 'BDの曲目は「Keyboard Solo〜Piano Solo / Daisuke Asakura」の1行だけで、このブロックのどの曲までが入るかは公式の曲目からはわかりません'),
     ('08', 'SEQUENCE MEDITATION', True, True, ('Q', None)),
-    ('', '(Piano)', False, True, None),
+    G('(Piano)'),
     ('09', 'GATE Ⅱ-sensitive gate', True, True, ('Q', None)),
     ('10', 'Toy Box In The Morning', False, True, ('Q', None)),
     ('11', 'ENDLESS SUMMER -君が滲んだ夏-', False, True, ('Q', None)),
