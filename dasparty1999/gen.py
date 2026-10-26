@@ -118,7 +118,9 @@ SHOWS.append(dict(
     NAV,
     R('15', 'Deep Sky Heart', False, True, None),
     R('16', 'Fall in YOU', False, True, None),
-    R('17', 'Windy scene', False, True, None),
+    # On 木村由姫's own VHS 「first impression」 (PIVL-5140, 1999.12.22) as a live track;
+    # the database lists it there (owner pointed it out). Not on the DA's Party VHS.
+    R('17', 'Windy scene', False, True, None, '木村由姫のVHS『first impression』(1999.12.22)に収録'),
     R('18', 'Summer Rain', False, True, None),
     G('Mad Soldiers'),
     NAV,
