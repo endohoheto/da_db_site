@@ -72,7 +72,8 @@ SHOWS.append(dict(
     G('T.M.Revolution'),
     R('13', 'WHITE BREATH', True, True, ('D1', 'WHITE BREATH / T.M.Revolution')),
     R('14', '蒼い霹靂', False, True, None),
-    R('15', 'THUNDERBIRD', True, True, None),
+    # Broadcast only, like Blind Game again above (owner).
+    R('15', 'THUNDERBIRD', False, True, None),
     R('16', "Burnin' X'mas", True, True, ('D1', "Burnin' X'mas / T.M.Revolution")),
     R('17', 'HOT LIMIT', True, True, ('D1', 'HOT LIMIT / T.M.Revolution')),
     R('18', 'WILD RUSH', True, True, ('D1', 'WILD RUSH / T.M.Revolution')),
@@ -372,11 +373,11 @@ for s_ in SHOWS:
         if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
 
-# On the 2/14 VHS these two are in (edited, like much of the VHS — per the site
-# owner) although the VHS credits don't list them. The VHS credits and Sony's DISC 1
+# On the 2/14 VHS this one is in (edited, like much of the VHS — per the site
+# owner) although the VHS credits don't list it. The VHS credits and Sony's DISC 1
 # list are the same 16 songs in the same order, so DISC 1 is the VHS programme and
-# has them too. Editing is not marked per song; one note at the top covers it.
-UNLISTED = {('v0214', '15'), ('v0214', '23')}
+# has it too. Editing is not marked per song; one note at the top covers it.
+UNLISTED = {('v0214', '23')}
 
 def bd_code(s, r):
     if (s['id'], r[0]) in UNLISTED: return 'D1'
