@@ -10,6 +10,8 @@
 - `og-card.png` — 共有時のカード画像 (1200x630)
 - `nonogram/` — 文字のノノグラム(別アプリ、`/da_db_site/nonogram/`)。アーティスト名などの公開されている名前だけを持ちます。
   問題の作り方・テストは `nonogram/README.md`。中身を変えたら `nonogram/sw.js` の `VERSION` を上げる
+- `dasparty1999/` — DA's Party 1999 の収録対照表(セトリ × 放送 × VHS × BD)。`gen.py` が HTML を生成する。
+  セトリ・★・☆ は管理人のブログ、BD の曲目はソニーミュージック公式だけが出典。直すときは `gen.py` のデータを直して再生成
 - `favicon.png` ほか — アイコン
 
 画像は `da_db` 側の `site/make-icons.py` / `site/make-og-card.py` で生成しています。
