@@ -69,15 +69,17 @@ SHOWS.append(dict(
     ('05', '太陽のグラヴィティー', False, True, None),
     ('06', 'Same night, Same face', False, True, None),
     ('07', 'Craving', False, True, None),
-    G('浅倉大介ソロ', 'BDの曲目は「Keyboard Solo〜Piano Solo / Daisuke Asakura」の1行だけで、このブロックのどの曲までが入るかは公式の曲目からはわかりません'),
-    ('08', 'SEQUENCE MEDITATION', True, True, ('Q', None)),
+    # The VHS jacket (photo from the owner) lists exactly Sony's 11 DISC 2 tracks in the
+    # same order, so DISC 2 is the VHS programme. Its one solo track covers the ★ songs.
+    G('浅倉大介ソロ', 'VHSのクレジットもBDの曲目も「Keyboard Solo〜Piano Solo」の1行。VHSに入っている3曲(★)がこのトラック'),
+    ('08', 'SEQUENCE MEDITATION', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     G('(Piano)'),
-    ('09', 'GATE Ⅱ-sensitive gate', True, True, ('Q', None)),
-    ('10', 'Toy Box In The Morning', False, True, ('Q', None)),
-    ('11', 'ENDLESS SUMMER -君が滲んだ夏-', False, True, ('Q', None)),
-    ('12', 'ミッキーマウス・クラブ・マーチ', False, True, ('Q', None)),
-    ('13', '突然シーモアが！', False, True, ('Q', None)),
-    ('14', 'GATE I -gate odyssey', True, True, ('Q', None)),
+    ('09', 'GATE Ⅱ-sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    ('10', 'Toy Box In The Morning', False, True, None),
+    ('11', 'ENDLESS SUMMER -君が滲んだ夏-', False, True, None),
+    ('12', 'ミッキーマウス・クラブ・マーチ', False, True, None),
+    ('13', '突然シーモアが！', False, True, None),
+    ('14', 'GATE I -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     G('木村由姫'),
     ('15', 'Deep Sky Heart', False, True, None),
     ('16', 'Fall in YOU', False, True, None),
@@ -220,7 +222,6 @@ for s in SHOWS:
             k = bd[0].rstrip('*')
             assert bd[1] in SONY_D[k], (s['id'], r)
             used[k].add(bd[1])
-used['D2'].add('Keyboard Solo〜Piano Solo / Daisuke Asakura')  # the ('Q') block
 for k, lst in SONY_D.items():
     missing = [t for t in lst if t not in used[k] and not t.startswith("Navigator's Talk")]
     assert not missing, (k, missing)
@@ -244,7 +245,8 @@ e = html.escape
 # performance more finely than Sony's track list (a medley, two songs Sony lists as
 # one track, the TV-size cut), the blog's row is kept as it is and Sony's track
 # title is shown under it.
-KEEP = {('v0214', '05'), ('s0829', '30'), ('s0829', '31'), ('y1231b', '12')}
+KEEP = {('v0214', '05'), ('s0829', '08'), ('s0829', '09'), ('s0829', '14'),
+        ('s0829', '30'), ('s0829', '31'), ('y1231b', '12')}
 SONY_NAME = {
   'v0214': "DA's SPECIAL Valentine Party!!! in Yokohama Arena",
   's0829': "DA's Party Special Summer Festival!!! In Tokyo Bay NK Hall",
@@ -265,13 +267,14 @@ for s in SHOWS:
         if r[0] == 'G':
             rows.append(('G', SONY_ARTIST.get(r[1], r[1]), r[2])); continue
         no, title, v, o, b = r
-        if (s['id'], no) not in KEEP:
-            if b and b[1]:
-                new = split_artist(b[1])[0]
-            else:
-                new = sony_by_key.get(norm(title), title)
-            ORIG[(s['id'], no, new)] = title
-            title = new
+        # A KEEP row is a piece of a longer BD track, so the track title is not its name;
+        # it can still be spelled Sony's way if Sony names the song elsewhere.
+        if b and b[1] and (s['id'], no) not in KEEP:
+            new = split_artist(b[1])[0]
+        else:
+            new = sony_by_key.get(norm(title), title)
+        ORIG[(s['id'], no, new)] = title
+        title = new
         rows.append((no, title, v, o, b))
     s['rows'] = rows
 
@@ -545,9 +548,10 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <p style="margin-top:6px">VHSには編集された形で入っている3曲。BDの曲目には記載が無いので、BDでの扱いは発売後に確認。</p>
     </div>
     <div class="card">
-      <h2>VHS未収録 → BDで初収録</h2>
+      <h2>VHS と BD の曲目</h2>
       {f'<ul>{li(new)}</ul>' if new else ''}
-      <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。</p>
+      <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。
+        8/29 は VHS のクレジットと DISC 2 の曲目が11曲とも同じ(曲順も同じ)。</p>
     </div>
     <div class="card">
       <h2>DISC 3 はどの回の映像か</h2>
@@ -584,6 +588,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     出典<br>
     セットリスト・VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
+    8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)<br>
     曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはブログの表記)。<br>
     メドレーなど、公式の曲目より細かく分かれているところはブログの分け方のままにし、公式の曲目を「BD表記」として併記しています。
   </footer>
