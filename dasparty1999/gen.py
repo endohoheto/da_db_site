@@ -12,6 +12,10 @@ SONY = 'https://www.sonymusic.co.jp/artist/DaisukeAsakura/info/586852'
 # unnumbered: no=''
 
 def G(name, note=''): return ('G', name, note)
+# The broadcast (not the setlist) had a navigator between acts, as at the year-end
+# shows; whether it is on the BD is not known (per the site owner). Placed between
+# the acts, not at exact positions.
+NAV = ('G', "Navigator's Talk", '', 'nav')
 
 SHOWS = []
 
@@ -64,6 +68,7 @@ SHOWS.append(dict(
     ('02', 'Time in my heart', True, True, ('D2', 'Time in my Heart / コタニキンヤ')),
     # No ★ on the blog, but it is on the VHS (owner's correction, 2026-10-26).
     ('03', 'Blind Game Again', True, True, ('D2', 'Blind Game again / コタニキンヤ')),
+    NAV,
     G('Fayray'),
     ('04', 'YURA・YURA ～Vibration', False, True, None),
     ('05', '太陽のグラヴィティー', False, True, None),
@@ -71,6 +76,7 @@ SHOWS.append(dict(
     ('07', 'Craving', False, True, None),
     # The VHS jacket (photo from the owner) lists exactly Sony's 11 DISC 2 tracks in the
     # same order, so DISC 2 is the VHS programme. Its one solo track covers the ★ songs.
+    NAV,
     G('浅倉大介ソロ', 'VHSのクレジットもBDの曲目も「Keyboard Solo〜Piano Solo」の1行。VHSに入っている3曲(★)がこのトラック'),
     ('08', 'SEQUENCE MEDITATION', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     G('(Piano)'),
@@ -80,18 +86,22 @@ SHOWS.append(dict(
     ('12', 'ミッキーマウス・クラブ・マーチ', False, True, None),
     ('13', '突然シーモアが！', False, True, None),
     ('14', 'GATE I -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    NAV,
     G('木村由姫'),
     ('15', 'Deep Sky Heart', False, True, None),
     ('16', 'Fall in YOU', False, True, None),
     ('17', 'Windy scene', False, True, None),
     ('18', 'Summer Rain', False, True, None),
+    NAV,
     G('Mad Soldiers'),
     ('19', 'LEMON TEA', True, True, ('D2', 'LEMON TEA / Mad Soldiers')),
+    NAV,
     G('pool bit boys'),
     ('20', 'SPIRAL', False, True, None),
     ('21', 'Scarletの憂鬱', False, True, None),
     ('22', 'Venus Accident', False, True, None),
     ('23', 'EARTH STRIKER', False, True, None),
+    NAV,
     G('Iceman'),
     ('24', 'Strike Back of PSYCO', True, True, ('D2', 'Strike Back of PSYCO / Iceman')),
     ('25', 'Wish Matrix', False, True, None),
@@ -99,9 +109,11 @@ SHOWS.append(dict(
     ('27', 'FATE WEATHER', True, True, ('D2', 'FATE WEATHER / Iceman')),
     ('28', 'GALAXY GANG', True, True, ('D2', 'GALAXY GANG / Iceman')),
     ('29', 'Shining Collection', True, True, ('D2', 'Shining Collection / Iceman')),
+    NAV,
     G('the end of genesis T.M.R.evolution turbo type D'),
     ('30', '陽炎-KAGEROH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     ('31', '月虹-GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    NAV,
     G('All'),
     ('', 'MC+雛形あきこ', False, True, None),
   ]))
@@ -265,7 +277,7 @@ for s in SHOWS:
     rows = []
     for r in s['rows']:
         if r[0] == 'G':
-            rows.append(('G', SONY_ARTIST.get(r[1], r[1]), r[2])); continue
+            rows.append(('G', SONY_ARTIST.get(r[1], r[1])) + tuple(r[2:])); continue
         no, title, v, o, b = r
         # A KEEP row is a piece of a longer BD track, so the track title is not its name;
         # it can still be spelled Sony's way if Sony names the song elsewhere.
@@ -334,6 +346,12 @@ for s in SHOWS:
     n, oa, vhs, bd, q = stats(s)
     rows = []
     for r in s['rows']:
+        if r[0] == 'G' and r[3:] == ('nav',):
+            rows.append('<tr class="nav"><td class="no"></td>'
+                        '<td class="t">Navigator\'s Talk<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
+                        '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
+                        '<td class="m q" title="BDに収録されるかは不明">?</td></tr>')
+            continue
         if r[0] == 'G':
             note = f'<span class="gn">{e(r[2])}</span>' if r[2] else ''
             rows.append(f'<tr class="g"><th colspan="5" scope="rowgroup">{e(r[1])}{note}</th></tr>')
@@ -360,7 +378,10 @@ for s in SHOWS:
           f'{bd_cell(k)}</tr>')
     note = ''
     if s['oa_all']:
-        note = '<p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。</p>'
+        note = '<p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。'
+        if s['id'] == 's0829':
+            note += '放送では年末の回と同じく出演者の間にナビゲーターが入ります(表では出演者の切り替わりに置いた目安の位置)。'
+        note += '</p>'
     if s['disc'] == 'DISC 3':
         note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
                 '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています(<a href="#notice">※</a>)。</p>')
@@ -506,6 +527,7 @@ td.flow .ar {{ display:inline-block; color:var(--cyan); margin-left:6px; white-s
   font-size:11px; color:var(--dim); }}
 .flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
 tr.talk td.t {{ color:var(--dim); }}
+tr.nav td.t {{ color:var(--dim); font-size:11.5px; }}
 footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 @media (max-width:480px) {{
   header.top {{ padding:18px 16px; }}
