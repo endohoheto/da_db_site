@@ -167,6 +167,9 @@ td.n { text-align:right; color:var(--text); white-space:nowrap; padding-right:0;
 .cd .feat { display:block; margin:0 0 14px; border:1px solid var(--cyan); border-radius:4px;
   padding:11px 14px; color:var(--cyan); text-decoration:none; font-size:12px; letter-spacing:1px;
   text-align:center; transition:background .15s ease; }
+.featlink { margin:14px 0 0; font-size:11px; letter-spacing:1px; line-height:1.7; }
+.featlink a { color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim); }
+.featlink a:hover { color:var(--cyan); border-color:var(--cyan); }
 .cd .feat:hover { background:rgba(0,255,242,0.13); }
 .cd blockquote { margin:0; padding:10px 14px; border-left:2px solid var(--purple);
   color:var(--dim); font-size:12px; line-height:1.85; background:rgba(176,124,255,0.05); }
@@ -207,6 +210,11 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
 
   <a class="enter" id="enter"
      href="https://script.google.com/macros/s/AKfycbxd7Sk2duwKqOzwJvf5YxOzUI22cJF6vX52QFKwod-UuklJ03O-u237XsqDAl1t6FmGsw/exec">ENTER ▸</a>
+
+  <!-- The standing way into the DA's Party 1999 table once the countdown card (which links
+       there itself) has gone. Visible in the markup so it still works without scripts; the
+       countdown script hides it only while the card is up, so the two never show together. -->
+  <p class="featlink" id="featlink"><a href="dasparty1999/">▸ DA’s Party 1999 収録対照表 ― セトリ × 放送 × VHS × BD</a></p>
 
   <!-- Countdown. Ships `hidden`: the script below reveals it only before data-until, so once
        the date has passed it disappears by itself without anyone editing the page.
@@ -353,7 +361,7 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   });
 
   (function () {
-    var el = document.getElementById('countdown');
+    var el = document.getElementById('countdown'), link = document.getElementById('featlink');
     var target = Date.parse(el.dataset.target), until = Date.parse(el.dataset.until);
     // A malformed date would otherwise count down to NaN forever; better to show nothing.
     if (isNaN(target) || isNaN(until)) return;
@@ -361,8 +369,8 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
     function q(k) { return el.querySelector('[data-cd="' + k + '"]'); }
     function tick() {
       var now = Date.now();
-      if (now >= until) { el.hidden = true; return false; }
-      el.hidden = false;
+      if (now >= until) { el.hidden = true; link.hidden = false; return false; }
+      el.hidden = false; link.hidden = true;
       var left = Math.max(0, Math.floor((target - now) / 1000));
       q('clock').hidden = left === 0;
       q('today').hidden = left !== 0;
