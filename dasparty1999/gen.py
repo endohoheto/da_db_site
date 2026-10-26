@@ -365,12 +365,11 @@ def stats(s):
     q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
     return len(songs), oa, vhs, bd, q
 
+DISC_LABEL = {'D1': 'DISC 1', 'D2': 'DISC 2', 'D3': 'DISC 3', 'D3?': 'DISC 3'}
 def bd_cell(k):
-    if k in (None, 'elsewhere'): return '<td class="m no">―</td>'
-    if k == 'Q': return '<td class="m q" title="公式の曲目からは特定できない">?</td>'
-    if k == 'tv': return '<td class="m q" title="TV Size。BDの曲目は「DA’s Party 2000」">?</td>'
-    if k == 'D3?': return '<td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td>'
-    return f'<td class="m bd">{e(k)}</td>'
+    if k in (None, 'elsewhere'): return '<td class="m bdc no">―</td>'
+    if k in ('Q', 'tv'): return '<td class="m bdc q">不明</td>'
+    return f'<td class="m bdc bd">{DISC_LABEL[k]}</td>'
 
 out = []
 for s in SHOWS:
@@ -381,12 +380,12 @@ for s in SHOWS:
             rows.append('<tr class="nav"><td class="no"></td>'
                         '<td class="t">Navigator\'s Talk<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
                         '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
-                        '<td class="m q" title="BDに収録されるかは不明">?</td></tr>')
+                        '<td class="m bdc q">不明</td></tr>')
             continue
         if r[0] == 'G' and r[3:] == ('mv',):
             rows.append(f'<tr class="nav"><td class="no">{e(r[2])}</td>'
                         f'<td class="t">{e(r[1])}<span class="sony">映像のみ(MV)</span></td>'
-                        '<td class="m"></td><td class="m"></td><td class="m"></td></tr>')
+                        '<td class="m"></td><td class="m"></td><td class="m bdc"></td></tr>')
             continue
         if r[0] == 'G':
             note = f'<span class="gn">{e(r[2])}</span>' if r[2] else ''
@@ -401,6 +400,8 @@ for s in SHOWS:
             where = ' または '.join(f'この回の{n_}曲目' if sid == s['id'] else YSHOW[sid]
                                     for sid, n_ in YD[(s['id'], no)][1])
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
+        if k == 'D3?':
+            sub = '<span class="sony">12/31 Grand Finale と 1/1 のどちらの映像かは未確定</span>'
         if (s['id'], no) in UNLISTED:
             sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
@@ -415,15 +416,7 @@ for s in SHOWS:
           f'<td class="m{" vhs" if v else " no"}">{"●" if v else "―"}</td>'
           f'{bd_cell(k)}</tr>')
     note = ''
-    if s['oa_all']:
-        note = '<p class="sn">ブログの記載「全てViewsicにて中継あり」により、放送は全曲●。'
-        if s['id'] == 's0829':
-            note += '放送では年末の回と同じく出演者の間にナビゲーターが入ります(表では出演者の切り替わりに置いた目安の位置)。'
-        note += '</p>'
-    if s['disc'] == 'DISC 3':
-        note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
-                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>')
-    qline = f'<span>BD ? {q}</span>' if q else ''
+    qline = f'<span>BD 不明 {q}</span>' if q else ''
     out.append(f'''
   <section class="show" id="{s['id']}">
     <div class="sh">
@@ -434,7 +427,7 @@ for s in SHOWS:
     </div>
     {note}
     <div class="tw"><table>
-      <thead><tr><th class="no">#</th><th>曲</th><th class="m">放送</th><th class="m">VHS</th><th class="m">BD</th></tr></thead>
+      <thead><tr><th class="no">#</th><th>曲</th><th class="m">放送</th><th class="m">VHS</th><th class="m bdc">BD</th></tr></thead>
       <tbody>
 {chr(10).join(rows)}
       </tbody>
@@ -501,11 +494,9 @@ header.top {{ margin:16px 0 22px; border:1px solid var(--purple); border-radius:
 h1 {{ margin:8px 0 6px; font-size:clamp(18px, 4.6vw, 24px); color:var(--cyan); font-weight:normal;
   letter-spacing:1px; line-height:1.4; }}
 .lead {{ color:var(--dim); font-size:12.5px; line-height:1.9; margin:0; }}
-.legend {{ display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:14px; font-size:11px; color:var(--dim); }}
-.legend b {{ font-weight:normal; }}
-.oa, .legend .oa {{ color:var(--amber); }}
-.vhs, .legend .vhs {{ color:var(--pink); }}
-.bd, .legend .bd {{ color:var(--cyan); }}
+.oa {{ color:var(--amber); }}
+.vhs {{ color:var(--pink); }}
+.bd {{ color:var(--cyan); }}
 .q {{ color:var(--purple); }}
 .no {{ color:rgba(99,128,140,0.55); }}
 .cards {{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin:0 0 22px; }}
@@ -549,13 +540,16 @@ td.pl {{ color:var(--text); font-size:11px; }}
    and squeeze the title to a few characters on a phone, so the widths are fixed. */
 section.matrix table {{ table-layout:fixed; }}
 section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
-.notice {{ margin:12px 0 0; font-size:12px; line-height:1.85; color:var(--dim); }}
-.flowbar {{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
-  font-size:11px; color:var(--dim); }}
-.flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
 tr.talk td.t {{ color:var(--dim); }}
 tr.talk td.m {{ white-space:normal; font-size:11px; }}
 tr.nav td.t {{ color:var(--dim); font-size:11.5px; }}
+.howto {{ margin:14px 0 0; font-size:12px; line-height:1.8; color:var(--dim); }}
+th.bdc, td.bdc {{ width:4.8em; }}
+/* Notes read like the rest of the page: plain list, no marks, not highlighted. */
+section.notes {{ margin:26px 0 0; padding-top:18px; border-top:1px solid var(--border); }}
+section.notes h2 {{ margin:0 0 10px; font-size:11px; letter-spacing:2.5px; color:var(--purple); font-weight:normal; }}
+section.notes ol {{ margin:0; padding-left:2.2em; color:var(--dim); font-size:12px; line-height:1.85; }}
+section.notes li {{ margin:0 0 6px; }}
 footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 @media (max-width:480px) {{
   header.top {{ padding:18px 16px; }}
@@ -574,15 +568,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="kind">SPECIAL ― DA’s Party 1999</div>
     <h1>DA’s Party 1999<br>収録対照表</h1>
     <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
-    <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
-    <p class="notice">VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は VHS と同じ内容です。DISC 3(代々木)の各曲がどの回の映像かは、公式の「Viewsic が放送した映像」という記載と管理人の放送記録から割り出しました。発売後に映像で確認して追記します。</p>
-    <div class="legend">
-      <span><b class="oa">●</b> 放送(Viewsic)</span>
-      <span><b class="vhs">●</b> VHS収録</span>
-      <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
-      <span><b class="bd">D3?</b> 2つの回で放送があり、どちらの映像か発売後に確認</span>
-      <span><b class="q">?</b> 公式曲目から特定不可</span>
-    </div>
+    <p class="howto">表の「放送」「VHS」は ● が収録あり、― がなし。「BD」は収録されているディスクです。注記はページの最後にまとめています。</p>
   </header>
 
   <div class="cards">
@@ -629,14 +615,24 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     </table></div>
   </section>
 
+  <section class="notes" id="notes">
+    <h2>注記</h2>
+    <ol>
+      <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
+      <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
+      <li>8/29 の放送では、年末の回と同じく出演者の間にナビゲーターが入ります。表では出演者の切り替わりに置いていますが、正確な位置ではありません。BD に入るかは分かりません。</li>
+      <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
+      <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。メドレーなど、公式の曲目より細かく分かれているところはデータベースの分け方のままにし、公式の曲目を「BD表記」として添えています。</li>
+      <li>BD の内容は、発売後に映像で確認して追記します。</li>
+    </ol>
+  </section>
+
   <footer>
     出典<br>
     セットリスト: 浅倉大介 クレジットデータベース(ライブ)<br>
-    VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
+    VHS収録・放送: <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
-    2/14・8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)<br>
-    曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはデータベースの表記)。<br>
-    メドレーなど、公式の曲目より細かく分かれているところはデータベースの分け方のままにし、公式の曲目を「BD表記」として併記しています。
+    2/14・8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)
   </footer>
 </main>
 </body>
