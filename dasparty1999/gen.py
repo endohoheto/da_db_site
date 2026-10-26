@@ -490,6 +490,16 @@ for t in SONY_D['D3']:
         last_artist = artist
     mrows.append(f'<tr><td class="t">{e(title)}</td>{"".join(cells)}</tr>')
 
+# DISC 3 counts: tracks, navigator segments, and which show each track came from
+d3_songs = [t for t in SONY_D['D3'] if not t.startswith("Navigator's Talk")]
+d3_talks = len(SONY_D['D3']) - len(d3_songs)
+d3_from = {sid: sum(1 for t in d3_songs if len(SRC[t]) == 1 and SRC[t][0][0] == sid) for sid in YSHOW}
+d3_open = sum(1 for t in d3_songs if len(SRC[t]) > 1)
+d3_stat = (f'<span>曲 {len(d3_songs)}</span><span>Navigator\'s Talk {d3_talks}</span>'
+           + ''.join(f'<span>{e(YSHOW[sid])} から {n}</span>' for sid, n in d3_from.items())
+           + (f'<span>未確定 {d3_open}</span>' if d3_open else ''))
+assert sum(d3_from.values()) + d3_open == len(d3_songs)
+
 # summary lists
 lost = []; new = []
 for s in SHOWS[:2]:
@@ -577,6 +587,8 @@ td.pl {{ color:var(--text); font-size:11px; }}
 /* Three show columns with two-line headings: nowrap would let them take the row
    and squeeze the title to a few characters on a phone, so the widths are fixed. */
 section.matrix table {{ table-layout:fixed; }}
+/* the show tables colour 放送/VHS/BD by position; these counts mean something else */
+section.matrix .stat span {{ color:var(--dim); }}
 section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
 tr.talk td.t {{ color:var(--dim); }}
 tr.talk td.m {{ white-space:normal; font-size:11px; }}
@@ -643,6 +655,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
       <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
+      <div class="stat">{d3_stat}</div>
     </div>
     <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
     <div class="tw"><table>
