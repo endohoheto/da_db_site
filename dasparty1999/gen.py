@@ -246,9 +246,47 @@ def norm(t):
     import unicodedata, re
     t = unicodedata.normalize('NFKC', t).lower()
     t = split_artist(t)[0]
-    return re.sub(r"[\s'’”\"〜～\-・()（）.!?]", '', t)
+    # NFKC has already turned ～ into ~, so the ASCII tilde has to go too.
+    return re.sub(r"[\s'’”\"〜～~\-・()（）.!?]", '', t)
 
 e = html.escape
+
+# ---- spell everything the way Sony does ---------------------------------------
+# Song, show and artist names follow the Sony page wherever Sony names them; the
+# blog's spelling stays only for what Sony never mentions. Where the blog splits a
+# performance more finely than Sony's track list (a medley, two songs Sony lists as
+# one track, the TV-size cut), the blog's row is kept as it is and Sony's track
+# title is shown under it.
+KEEP = {('v0214', '05'), ('s0829', '30'), ('s0829', '31'), ('y1231b', '12')}
+SONY_NAME = {
+  'v0214': "DA's SPECIAL Valentine Party!!! in Yokohama Arena",
+  's0829': "DA's Party Special Summer Festival!!! In Tokyo Bay NK Hall",
+}
+SONY_ARTIST = {'the end of genesis T.M.R.evolution turbo type D': 'the end of genesis T.M.R. evolution turbo type D'}
+sony_by_key = {}
+for lst in SONY_D.values():
+    for t in lst:
+        title = split_artist(t)[0]
+        sony_by_key.setdefault(norm(title), title)
+ORIG = {}
+for s in SHOWS:
+    s['name'] = SONY_NAME.get(s['id'], s['name'])
+    for old, new in SONY_ARTIST.items():
+        s['name'] = s['name'].replace(old, new)
+    rows = []
+    for r in s['rows']:
+        if r[0] == 'G':
+            rows.append(('G', SONY_ARTIST.get(r[1], r[1]), r[2])); continue
+        no, title, v, o, b = r
+        if (s['id'], no) not in KEEP:
+            if b and b[1]:
+                new = split_artist(b[1])[0]
+            else:
+                new = sony_by_key.get(norm(title), title)
+            ORIG[(s['id'], no, new)] = title
+            title = new
+        rows.append((no, title, v, o, b))
+    s['rows'] = rows
 
 def stats(s):
     songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] != 'MC']
@@ -276,7 +314,7 @@ for s in SHOWS:
             continue
         no, title, v, o, b = r
         sub = ''
-        if b and b[1] and norm(b[1]) != norm(title):
+        if b and b[1] and (s['id'], no) in KEEP:
             sub = f'<span class="sony">BD表記: {e(split_artist(b[1])[0])}</span>'
         cls = []
         if v and not b: cls.append('lost')
@@ -494,7 +532,8 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     出典<br>
     セットリスト・VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
-    曲名はセットリスト側の表記。BDの曲目表記が違うものは「BD表記」として併記しています。
+    曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはブログの表記)。<br>
+    メドレーなど、公式の曲目より細かく分かれているところはブログの分け方のままにし、公式の曲目を「BD表記」として併記しています。
   </footer>
 </main>
 </body>
