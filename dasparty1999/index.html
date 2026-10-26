@@ -73,12 +73,19 @@ tr.lost td.t { color:var(--pink); }
 tr.new td.t { color:var(--cyan); }
 sup { font-size:9px; }
 td.pl { color:var(--text); font-size:11px; }
-/* Three show columns with two-line headings: nowrap would let them take the row
-   and squeeze the title to a few characters on a phone, so the widths are fixed. */
+/* Fixed layout so the long flow text can't take the row and squeeze the title column
+   to a few characters on a phone. */
 section.matrix table { table-layout:fixed; }
-section.matrix .m { width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }
+section.matrix th:first-child { width:44%; }
+td.flow { font-size:11.5px; line-height:1.6; }
+/* inline-block + nowrap: each piece wraps to the next line as a whole instead of
+   running past the cell edge on a phone. */
+td.flow .st { display:inline-block; color:var(--text); white-space:nowrap; }
+td.flow .ar { display:inline-block; color:var(--cyan); margin-left:6px; white-space:nowrap; }
+.flowbar { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
+  font-size:11px; color:var(--dim); }
+.flowbar span { border:1px solid var(--border); border-radius:3px; padding:3px 8px; }
 tr.talk td.t { color:var(--dim); }
-tr.talk td.m { white-space:normal; font-size:11px; }
 footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
 @media (max-width:480px) {
   header.top { padding:18px 16px; }
@@ -99,11 +106,12 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、
       Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray
       『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
+    <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
-      <span><b class="bd">D3<sup>*</sup></b> 代々木のどの回か未確定</span>
+      <span><b class="bd">D3?</b> 別の回の放送にもあり、どちらの映像か未確定</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
     </div>
   </header>
@@ -119,16 +127,17 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
       <p style="margin-top:6px">代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。</p>
     </div>
     <div class="card">
-      <h2>代々木の放送とDISC 3</h2>
-      <p>代々木3公演で放送(☆)のある曲のうち、DISC 3の曲目に無いのは
-        1/1の「1000年の誓い」だけ。
-        Mad SoldiersのNavigator's Talk 1〜6は、Viewsic放送のナビ部分そのまま。</p>
+      <h2>DISC 3 はどの回の映像か</h2>
+      <p>DISC 3 は Viewsic の放送映像(公式)。放送のある演奏と突き合わせると、
+        ほぼ全曲の収録元の回が1つに決まる。決まらないのは
+        THE ELECTROMANCER(12/31 Grand Finale と 1/1 の両方で放送)だけ。
+        放送があってDISC 3に無いのは 1/1 の「1000年の誓い」だけ。</p>
     </div>
   </div>
 
   <nav class="toc">
     <a href="#v0214">1999.2.14 横浜アリーナ</a><a href="#s0829">1999.8.29 東京ベイNK</a><a href="#y1231a">1999.12.31 Grand Finale</a><a href="#y1231b">1999.12.31 Count Down</a><a href="#y0101">2000.1.1 Happy New Year</a>
-    <a href="#disc3">DISC 3 対照</a>
+    <a href="#disc3">DISC 3 収録元</a>
   </nav>
 
   <section class="show" id="v0214">
@@ -237,41 +246,41 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
       <div class="date">1999.12.31 (FRI)</div>
       <h2>DA’s Party Grand Finale 1999 featuring Iceman</h2>
       <div class="venue">国立代々木競技場 第一体育館 <span class="disc">BD DISC 3</span></div>
-      <div class="stat"><span>演奏 24</span><span>放送 3</span><span>VHS 0</span><span>BD 16</span></div>
+      <div class="stat"><span>演奏 24</span><span>放送 3</span><span>VHS 0</span><span>BD 3</span></div>
     </div>
-    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。BDのDISC 3は「代々木 1999.12.31～2000.1.1」としか書かれていないため、代々木の複数公演で演奏された曲は <b>D3<sup>*</sup></b>(どの回の映像かは未確定)にしています。</p>
+    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。DISC 3 は代々木の模様を Viewsic が放送した映像(公式)なので、放送●の演奏だけが収録元になります。同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>
     <div class="tw"><table>
       <thead><tr><th class="no">#</th><th>曲</th><th class="m">放送</th><th class="m">VHS</th><th class="m">BD</th></tr></thead>
       <tbody>
 <tr class="g"><th colspan="5" scope="rowgroup">浅倉大介</th></tr>
 <tr><td class="no">01</td><td class="t">white dimension (Iceman)～CAUTION!-phychedelic mix</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">02</td><td class="t">GATE Ⅱ～sensitive gate</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">03</td><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">02</td><td class="t">GATE Ⅱ～sensitive gate<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">03</td><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td></tr>
 <tr><td class="no">04</td><td class="t">夢を見たいから</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">05</td><td class="t">1000年の誓い</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">06</td><td class="t">SIREN&#x27;S MELODY</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">Mad Soldiers</th></tr>
-<tr><td class="no">07</td><td class="t">Boys Jump The Midnight</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">08</td><td class="t">LEMON TEA</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">07</td><td class="t">Boys Jump The Midnight<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">08</td><td class="t">LEMON TEA<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">コタニキンヤ<span class="gn">MV. 高熱BLOOD</span></th></tr>
-<tr><td class="no">09</td><td class="t">Spicy Marmalade</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">10</td><td class="t">灼熱BLADE</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">11</td><td class="t">Blind Game again</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">12</td><td class="t">高熱BLOOD</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">09</td><td class="t">Spicy Marmalade<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">10</td><td class="t">灼熱BLADE<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">11</td><td class="t">Blind Game again<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">12</td><td class="t">高熱BLOOD<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">the end of genesis T.M.R. evolution turbo type D<span class="gn">MV.雪幻-winter dust</span></th></tr>
-<tr><td class="no">13</td><td class="t">陽炎-KAGEROH-</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">14</td><td class="t">月虹-GEKKOH-</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">15</td><td class="t">雪幻-winter dust-</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">13</td><td class="t">陽炎-KAGEROH-<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">14</td><td class="t">月虹-GEKKOH-<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
+<tr><td class="no">15</td><td class="t">雪幻-winter dust-<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">Iceman<span class="gn">MV.Genetic Bomb shortがフルのやつ</span></th></tr>
 <tr><td class="no">16</td><td class="t">white dimension</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">17</td><td class="t">dope light</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">17</td><td class="t">dope light<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">18</td><td class="t">Wish Matrix</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">19</td><td class="t">Beauty and Beast 0&#x27;00&quot;</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">19</td><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">20</td><td class="t">BLEACHING</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">21</td><td class="t">ICE BREAKER</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">22</td><td class="t">FATE WEATHER</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr><td class="no">23</td><td class="t">Shining Collection</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
-<tr><td class="no">24</td><td class="t">Genetic Bomb</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">24</td><td class="t">Genetic Bomb<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -280,29 +289,29 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
       <div class="date">1999.12.31 (FRI)</div>
       <h2>DA’s Party Let’s Count Down 99-00</h2>
       <div class="venue">国立代々木競技場 第一体育館 <span class="disc">BD DISC 3</span></div>
-      <div class="stat"><span>演奏 13</span><span>放送 2</span><span>VHS 0</span><span>BD 4</span></div>
+      <div class="stat"><span>演奏 13</span><span>放送 2</span><span>VHS 0</span><span>BD 1</span><span>BD ? 1</span></div>
     </div>
-    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。BDのDISC 3は「代々木 1999.12.31～2000.1.1」としか書かれていないため、代々木の複数公演で演奏された曲は <b>D3<sup>*</sup></b>(どの回の映像かは未確定)にしています。</p>
+    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。DISC 3 は代々木の模様を Viewsic が放送した映像(公式)なので、放送●の演奏だけが収録元になります。同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>
     <div class="tw"><table>
       <thead><tr><th class="no">#</th><th>曲</th><th class="m">放送</th><th class="m">VHS</th><th class="m">BD</th></tr></thead>
       <tbody>
 <tr class="g"><th colspan="5" scope="rowgroup">コタニキンヤ</th></tr>
-<tr><td class="no">01</td><td class="t">Spicy Marmalade</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">01</td><td class="t">Spicy Marmalade<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">02</td><td class="t">憂鬱なSevendays</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">Iceman</th></tr>
 <tr><td class="no">03</td><td class="t">Eyes Bright</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">04</td><td class="t">Dear My Friend</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">05</td><td class="t">DAY DREAM BELIEVER</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">the end of genesis T.M.R. evolution turbo type D</th></tr>
-<tr><td class="no">06</td><td class="t">WHITE BREATH</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">06</td><td class="t">WHITE BREATH<span class="sony">BDのDISC 3は 1/1 Happy New Year の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">07</td><td class="t">I DON’T WANT TO MISS A THING</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">08</td><td class="t">HEART OF SWORD～夜明け前～</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">All</th></tr>
 <tr><td class="no">09</td><td class="t">DYNAMITE PASSION</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">10</td><td class="t">GALAXY GANG</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">11</td><td class="t">Paradise City</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">12</td><td class="t">DA’s Party 2000-TV Size（中継あり）<span class="sony">BD表記: DA’s Party 2000</span></td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">13</td><td class="t">DA’s Party 2000</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">12</td><td class="t">DA’s Party 2000-TV Size（中継あり）<span class="sony">BD表記: DA’s Party 2000</span></td><td class="m oa">●</td><td class="m no">―</td><td class="m q" title="TV Size。BDの曲目は「DA’s Party 2000」">?</td></tr>
+<tr><td class="no">13</td><td class="t">DA’s Party 2000</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -311,43 +320,43 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
       <div class="date">2000.1.1 (SAT)</div>
       <h2>DA’s Party Happy New Year Welcome 2000 featuring the end of genesis T.M.R. evolution turbo type D</h2>
       <div class="venue">国立代々木競技場 第一体育館 <span class="disc">BD DISC 3</span></div>
-      <div class="stat"><span>演奏 25</span><span>放送 18</span><span>VHS 0</span><span>BD 19</span></div>
+      <div class="stat"><span>演奏 25</span><span>放送 18</span><span>VHS 0</span><span>BD 17</span></div>
     </div>
-    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。BDのDISC 3は「代々木 1999.12.31～2000.1.1」としか書かれていないため、代々木の複数公演で演奏された曲は <b>D3<sup>*</sup></b>(どの回の映像かは未確定)にしています。</p>
+    <p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。DISC 3 は代々木の模様を Viewsic が放送した映像(公式)なので、放送●の演奏だけが収録元になります。同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>
     <div class="tw"><table>
       <thead><tr><th class="no">#</th><th>曲</th><th class="m">放送</th><th class="m">VHS</th><th class="m">BD</th></tr></thead>
       <tbody>
 <tr class="g"><th colspan="5" scope="rowgroup">Mad Soldiers</th></tr>
-<tr><td class="no">01</td><td class="t">LEMON TEA</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">02</td><td class="t">Boys Jump The Midnight</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">01</td><td class="t">LEMON TEA</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">02</td><td class="t">Boys Jump The Midnight</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">コタニキンヤ<span class="gn">MV. 高熱BLOOD</span></th></tr>
-<tr><td class="no">03</td><td class="t">Spicy Marmalade</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">04</td><td class="t">灼熱BLADE</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">05</td><td class="t">高熱BLOOD</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">06</td><td class="t">Blind Game again</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">03</td><td class="t">Spicy Marmalade</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">04</td><td class="t">灼熱BLADE</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">05</td><td class="t">高熱BLOOD</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">06</td><td class="t">Blind Game again</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">浅倉大介</th></tr>
 <tr><td class="no">07</td><td class="t">white dimension</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">08</td><td class="t">CAUTION</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">09</td><td class="t">GATE Ⅱ～sensitive gate</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">10</td><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">09</td><td class="t">GATE Ⅱ～sensitive gate</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">10</td><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td></tr>
 <tr><td class="no">11</td><td class="t">TRY AGAIN</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr><td class="no">12</td><td class="t">1000年の誓い</td><td class="m oa">●</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">13</td><td class="t">Neo Age</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">Iceman<span class="gn">MV.Genetic Bomb shortがフルのやつ</span></th></tr>
 <tr><td class="no">14</td><td class="t">white dimension</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">15</td><td class="t">dope light</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">16</td><td class="t">Beauty and Beast 0&#x27;00&quot;</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">17</td><td class="t">Genetic Bomb</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">15</td><td class="t">dope light</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">16</td><td class="t">Beauty and Beast 0&#x27;00&quot;</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">17</td><td class="t">Genetic Bomb</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">the end of genesis T.M.R. evolution turbo type D<span class="gn">MV.雪幻-winter dust</span></th></tr>
-<tr><td class="no">18</td><td class="t">WHITE BREATH</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">19</td><td class="t">陽炎-KAGEROH-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">20</td><td class="t">月虹-GEKKOH-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
-<tr><td class="no">21</td><td class="t">雪幻-winter dust-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">18</td><td class="t">WHITE BREATH</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">19</td><td class="t">陽炎-KAGEROH-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">20</td><td class="t">月虹-GEKKOH-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
+<tr><td class="no">21</td><td class="t">雪幻-winter dust-</td><td class="m oa">●</td><td class="m no">―</td><td class="m bd">D3</td></tr>
 <tr><td class="no">22</td><td class="t">HEART OF SWORD～夜明け前～</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr><td class="no">23</td><td class="t">BLACK OR WHITE?</td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="no">24</td><td class="t">WHITE BREATH</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">24</td><td class="t">WHITE BREATH<span class="sony">BDのDISC 3は この回の18曲目 の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
 <tr class="g"><th colspan="5" scope="rowgroup">EC All</th></tr>
-<tr><td class="no">25</td><td class="t">DA’s Party 2000</td><td class="m no">―</td><td class="m no">―</td><td class="m bd multi" title="代々木の複数公演で演奏。どの回の映像かは公式に記載なし">D3<sup>*</sup></td></tr>
+<tr><td class="no">25</td><td class="t">DA’s Party 2000<span class="sony">BDのDISC 3は 12/31 Count Down の演奏(放送映像)</span></td><td class="m no">―</td><td class="m no">―</td><td class="m no">―</td></tr>
       </tbody>
     </table></div>
   </section>
@@ -356,38 +365,38 @@ footer { color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }
     <div class="sh">
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
-      <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
+      <div class="venue">公式の曲目ごとに、どの回の演奏が放送を経て BD に入ったか</div>
     </div>
-    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
+    <p class="sn">収録元は、ブログで放送ありの演奏から。同じ曲を別の回でも演奏していて放送が無いものは、下に添えています。</p>
     <div class="tw"><table>
-      <thead><tr><th>DISC 3 曲目(公式)</th><th class="m">12/31<br>Grand Finale</th><th class="m">12/31<br>Count Down</th><th class="m">1/1<br>Happy New Year</th></tr></thead>
+      <thead><tr><th>DISC 3 曲目(公式)</th><th>収録の流れ</th></tr></thead>
       <tbody>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">LEMON TEA<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">Boys Jump The Midnight<span class="sony">Mad Soldiers</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">Spicy Marmalade<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
-<tr><td class="t">灼熱BLADE<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">高熱BLOOD<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">Blind Game again<span class="sony">コタニキンヤ</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">GATE Ⅱ～sensitive gate<span class="sony">Daisuke Asakura</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）<span class="sony">Daisuke Asakura</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">TRY AGAIN<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">Neo Age<span class="sony">Daisuke Asakura</span></td><td class="m no">―</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">陽炎-KAGEROH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">月虹-GEKKOH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">雪幻-winter dust-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">WHITE BREATH<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="m no">―</td><td class="m pl">演奏</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">dope light<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr><td class="t">FATE WEATHER<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="t">Shining Collection<span class="sony">Iceman</span></td><td class="m oa">☆</td><td class="m no">―</td><td class="m no">―</td></tr>
-<tr><td class="t">Genetic Bomb<span class="sony">Iceman</span></td><td class="m pl">演奏</td><td class="m no">―</td><td class="m oa">☆</td></tr>
-<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>
-<tr><td class="t">DA’s Party 2000<span class="sony">Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ</span></td><td class="m no">―</td><td class="m oa">☆</td><td class="m pl">演奏</td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 1<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">LEMON TEA<span class="sony">Mad Soldiers</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">Boys Jump The Midnight<span class="sony">Mad Soldiers</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 2<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">Spicy Marmalade<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale、12/31 Count Down でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">灼熱BLADE<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">高熱BLOOD<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">Blind Game again<span class="sony">コタニキンヤ</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 3<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">GATE Ⅱ～sensitive gate<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">12/31 Grand Finale</span> / <span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">どちらの回の映像かは未確定</span></td></tr>
+<tr><td class="t">TRY AGAIN<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
+<tr><td class="t">Neo Age<span class="sony">Daisuke Asakura</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 4<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">陽炎-KAGEROH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">月虹-GEKKOH-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">雪幻-winter dust-<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">WHITE BREATH<span class="sony">the end of genesis T.M.R. evolution turbo type D</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Count Down でも演奏(放送なし)</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 5<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">dope light<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">Beauty and Beast 0&#x27;00&quot;<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr><td class="t">FATE WEATHER<span class="sony">Iceman</span></td><td class="flow"><span class="st">12/31 Grand Finale</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
+<tr><td class="t">Shining Collection<span class="sony">Iceman</span></td><td class="flow"><span class="st">12/31 Grand Finale</span><span class="ar">▸ 放送 ▸ BD</span></td></tr>
+<tr><td class="t">Genetic Bomb<span class="sony">Iceman</span></td><td class="flow"><span class="st">1/1 Happy New Year</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">12/31 Grand Finale でも演奏(放送なし)</span></td></tr>
+<tr class="talk"><td class="t">Navigator&#x27;s Talk 6<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>
+<tr><td class="t">DA’s Party 2000<span class="sony">Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ</span></td><td class="flow"><span class="st">12/31 Count Down</span><span class="ar">▸ 放送 ▸ BD</span><span class="sony">1/1 Happy New Year でも演奏(放送なし)</span></td></tr>
       </tbody>
     </table></div>
   </section>
