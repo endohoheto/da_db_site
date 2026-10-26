@@ -201,7 +201,8 @@ SHOWS.append(dict(
     G('Iceman'),
     R('03', 'Eyes Bright', False, False, None),
     R('04', 'Dear My Friend 〜make your shine way', False, False, None),
-    R('05', 'DAYDREAM BELIEVER', False, False, None),
+    # The Monkees' 1967 single, the first release (owner: use the earliest).
+    R('05', 'DAYDREAM BELIEVER', False, False, None, '原曲: THE MONKEES'),
     G('the end of genesis T.M.R.evolution turbo type D'),
     R('06', 'WHITE BREATH', False, False, ('D3', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
     R('07', "I don't want to miss a thing", False, False, None, '原曲: AEROSMITH'),
