@@ -422,7 +422,7 @@ for s in SHOWS:
         note += '</p>'
     if s['disc'] == 'DISC 3':
         note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
-                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています(<a href="#notice">※</a>)。</p>')
+                '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています。</p>')
     qline = f'<span>BD ? {q}</span>' if q else ''
     out.append(f'''
   <section class="show" id="{s['id']}">
@@ -549,6 +549,7 @@ td.pl {{ color:var(--text); font-size:11px; }}
    and squeeze the title to a few characters on a phone, so the widths are fixed. */
 section.matrix table {{ table-layout:fixed; }}
 section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
+.notice {{ margin:12px 0 0; font-size:12px; line-height:1.85; color:var(--dim); }}
 .flowbar {{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
   font-size:11px; color:var(--dim); }}
 .flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
@@ -572,13 +573,9 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
   <header class="top">
     <div class="kind">SPECIAL ― DA’s Party 1999</div>
     <h1>DA’s Party 1999<br>収録対照表</h1>
-    <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、
-      Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray
-      『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
+    <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
     <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
-    <p class="notice" id="notice">※ VHS(BD の DISC 1・2 も同じ内容)は、曲が編集されて入っている場合が多くあります。<br>
-      ※ DISC 3(代々木)の各曲がどの回の映像かは、公式の「Viewsic が放送した映像」という記載と、
-      管理人の放送記録から割り出したものです。発売後に映像で確認し、追って追記します。</p>
+    <p class="notice">VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は VHS と同じ内容です。DISC 3(代々木)の各曲がどの回の映像かは、公式の「Viewsic が放送した映像」という記載と管理人の放送記録から割り出しました。発売後に映像で確認して追記します。</p>
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
@@ -623,7 +620,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
       <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
     </div>
-    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし(<a href="#notice">※</a>)</p>
+    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
       <tbody>
