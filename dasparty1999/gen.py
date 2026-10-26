@@ -210,7 +210,8 @@ SHOWS.append(dict(
     R('10', 'DYNAMITE PASSION', False, False, None),
     R('11', 'GALAXY GANG', False, False, None),
     R('12', 'Paradise City', False, False, None),
-    R('13', "DA's PARTY 2000 -TV Size ver-", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    # The TV-size cut was broadcast but is not on the BD; the BD has the full song, no.14 (owner).
+    R('13', "DA's PARTY 2000 -TV Size ver-", False, True, None),
     R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
@@ -300,7 +301,7 @@ e = html.escape
 KEEP = {('v0214', '08'),
         ('s0829', '08'), ('s0829', '09'), ('s0829', '10'), ('s0829', '11'),
         ('s0829', '12'), ('s0829', '13'), ('s0829', '14'),
-        ('s0829', '30'), ('s0829', '31'), ('y1231b', '13')}
+        ('s0829', '30'), ('s0829', '31')}
 SONY_NAME = {
   'v0214': "DA's SPECIAL Valentine Party!!! in Yokohama Arena",
   's0829': "DA's Party Special Summer Festival!!! In Tokyo Bay NK Hall",
@@ -353,8 +354,7 @@ for s_ in SHOWS:
     for r in s_['rows']:
         if r[0] == 'G' or not r[4]: continue
         key = (s_['id'], r[0]); src = SRC[r[4][1]]
-        if key in KEEP: YD[key] = ('tv', src)
-        elif key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
+        if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
 
 # On the 2/14 VHS these three are in (edited, like much of the VHS — per the site
@@ -379,13 +379,13 @@ def stats(s):
     oa = sum(1 for r in songs if any(x[3] for x in whole(r)))
     vhs = sum(1 for r in songs if any(x[2] for x in whole(r)))
     bd = sum(1 for r in songs if any(bd_code(s, x) in ('D1', 'D2', 'D3', 'D3?') for x in whole(r)))
-    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
+    q = sum(1 for r in songs if bd_code(s, r) == 'Q')
     return len(songs), oa, vhs, bd, q
 
 DISC_LABEL = {'D1': 'DISC 1', 'D2': 'DISC 2', 'D3': 'DISC 3', 'D3?': 'DISC 3'}
 def bd_cell(k):
     if k in (None, 'elsewhere'): return '<td class="m bdc no">―</td>'
-    if k in ('Q', 'tv'): return '<td class="m bdc q">不明</td>'
+    if k == 'Q': return '<td class="m bdc q">不明</td>'
     return f'<td class="m bdc bd">{DISC_LABEL[k]}</td>'
 
 out = []
