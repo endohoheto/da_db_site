@@ -22,6 +22,11 @@ def G(name, note=''): return ('G', name, note)
 # shows; whether it is on the BD is not known (per the site owner). Placed between
 # the acts, not at exact positions.
 NAV = ('G', "Navigator's Talk", '', 'nav')
+NAV_OPEN = ('G', "Navigator's Talk", 'オープニング', 'nav')
+# Medleys: the site lists each part as a row; the first row is the piece, the rest are
+# its parts. A medley is one song in the count and gets one number.
+MEDLEY = {('v0214', '05'): ('06', '07', '08'), ('s0829', '09'): ('10', '11', '12', '13')}
+PART = {(sid, n) for (sid, _), parts in MEDLEY.items() for n in parts}
 # A row: number, title, on the VHS (★), broadcast (☆), the BD track it is on.
 # The optional note is shown under the title (the original artist of a cover, …).
 NOTE = {}
@@ -82,56 +87,61 @@ SHOWS.append(dict(
   id='s0829', short='東京ベイNK', date='1999.8.29 (SUN)', venue='東京ベイNKホール',
   name='DA’s Party Special Summer Festival!!!', oa_all=True, disc='DISC 2',
   rows=[
+    # The broadcast has the navigator at the opening and at the start of every act
+    # (owner); whether it is on the BD is not known.
+    NAV_OPEN,
     G('コタニキンヤ'),
+    NAV,
     R('01', 'Spicy Marmalade', True, True, ('D2', 'Spicy Marmalade / コタニキンヤ')),
     R('02', 'Time in my heart', True, True, ('D2', 'Time in my Heart / コタニキンヤ')),
     # No ★ on the blog, but it is on the VHS (owner's correction; the VHS jacket lists it).
     R('03', 'Blind Game Again', True, True, ('D2', 'Blind Game again / コタニキンヤ')),
-    NAV,
     G('Fayray'),
+    NAV,
     R('04', 'YURA・YURA ～Vibration', False, True, None),
     R('05', '太陽のグラヴィティー', False, True, None),
     R('06', 'Same night, Same face', False, True, None),
     R('07', 'Craving', False, True, None),
-    NAV,
     G('浅倉大介'),
+    NAV,
     # The VHS jacket and Sony list one track, Keyboard Solo〜Piano Solo; the ★ songs are it.
     R('08', 'SEQUENCE MEDITATION ～超電導思考回路～', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    # 09–13 are one piece, a piano medley; the site lists its parts (owner).
     R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    R('10', 'Toy Box In The Morning', False, True, None),
-    R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', False, True, None),
-    R('12', 'Mickey Mouse Club March', False, True, None),
-    R('13', '突然シーモアが！', False, True, None),
+    R('10', 'Toy Box In The Morning', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('12', 'Mickey Mouse Club March', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('13', '突然シーモアが！', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     R('14', 'GATEⅠ -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    NAV,
     G('木村由姫'),
+    NAV,
     R('15', 'Deep Sky Heart', False, True, None),
     R('16', 'Fall in YOU', False, True, None),
     R('17', 'Windy scene', False, True, None),
     R('18', 'Summer Rain', False, True, None),
-    NAV,
     G('Mad Soldiers'),
-    R('19', 'LEMON TEA', True, True, ('D2', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     NAV,
+    R('19', 'LEMON TEA', True, True, ('D2', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     G('pool bit boys'),
+    NAV,
     R('20', 'SPIRAL', False, True, None),
     R('21', 'Scarletの憂鬱', False, True, None),
     R('22', 'Venus Accident', False, True, None),
     R('23', 'EARTH STRIKER', False, True, None),
-    NAV,
     G('Iceman'),
+    NAV,
     R('24', 'Strike Back of PSYCO', True, True, ('D2', 'Strike Back of PSYCO / Iceman')),
     R('25', 'Wish Matrix', False, True, None),
     R('26', 'Expander Drive Machine～発展途上人型アンドロイドの見た夢', True, True, ('D2', 'Expander Drive Machine〜発展途上人型アンドロイドの見た夢 / Iceman')),
     R('27', 'FATE WEATHER', True, True, ('D2', 'FATE WEATHER / Iceman')),
     R('28', 'GALAXY GANG', True, True, ('D2', 'GALAXY GANG / Iceman')),
     R('29', 'Shining Collection', True, True, ('D2', 'Shining Collection / Iceman')),
-    NAV,
     G('the end of genesis T.M.R.evolution turbo type D'),
+    NAV,
     R('30', '陽炎-KAGEROH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     R('31', '月虹 -GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    NAV,
     G('All'),
+    NAV,
     R('32', 'MC', False, True, None),
   ]))
 
@@ -287,7 +297,8 @@ e = html.escape
 # one track, the TV-size cut), the blog's row is kept as it is and Sony's track
 # title is shown under it.
 KEEP = {('v0214', '05'), ('v0214', '06'), ('v0214', '07'), ('v0214', '08'),
-        ('s0829', '08'), ('s0829', '09'), ('s0829', '14'),
+        ('s0829', '08'), ('s0829', '09'), ('s0829', '10'), ('s0829', '11'),
+        ('s0829', '12'), ('s0829', '13'), ('s0829', '14'),
         ('s0829', '30'), ('s0829', '31'), ('y1231b', '13')}
 SONY_NAME = {
   'v0214': "DA's SPECIAL Valentine Party!!! in Yokohama Arena",
@@ -358,7 +369,8 @@ def bd_code(s, r):
 
 def stats(s):
     # MC and the count-down itself are on the setlist but are not songs
-    songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')]
+    songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')
+             and (s['id'], r[0]) not in PART]
     oa = sum(1 for r in songs if r[3])
     vhs = sum(1 for r in songs if r[2])
     bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
@@ -375,15 +387,17 @@ out = []
 for s in SHOWS:
     n, oa, vhs, bd, q = stats(s)
     rows = []
+    shown = 0   # the number a reader sees: songs only, so a medley counts once and MVs not at all
     for r in s['rows']:
         if r[0] == 'G' and r[3:] == ('nav',):
-            rows.append('<tr class="nav"><td class="no"></td>'
-                        '<td class="t">Navigator\'s Talk<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
+            label = 'Navigator\'s Talk' + (f'({r[2]})' if r[2] else '')
+            rows.append(f'<tr class="nav"><td class="no"></td>'
+                        f'<td class="t">{label}<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
                         '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
                         '<td class="m bdc q">不明</td></tr>')
             continue
         if r[0] == 'G' and r[3:] == ('mv',):
-            rows.append(f'<tr class="nav"><td class="no">{e(r[2])}</td>'
+            rows.append(f'<tr class="nav"><td class="no"></td>'
                         f'<td class="t">{e(r[1])}<span class="sony">映像のみ(MV)</span></td>'
                         '<td class="m"></td><td class="m"></td><td class="m bdc"></td></tr>')
             continue
@@ -406,12 +420,21 @@ for s in SHOWS:
             sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
-        cls = []
+        key = (s['id'], no)
+        if key in MEDLEY:
+            sub = f'<span class="sony">ここから{len(MEDLEY[key]) + 1}曲のメドレー</span>' + sub
+        if key in PART or title in ('MC', 'COUNT DOWN'):
+            num = ''
+        else:
+            shown += 1; num = f'{shown:02d}'
+        cls = ['part'] if key in PART else []
+        if key in PART and sub.startswith('<span class="sony">BD表記'):
+            sub = ''   # the medley's first row already names the track
         if v and not b and not k: cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
         c = f' class="{" ".join(cls)}"' if cls else ''
         rows.append(
-          f'<tr{c}><td class="no">{e(no)}</td><td class="t">{e(title)}{sub}</td>'
+          f'<tr{c}><td class="no">{e(num)}</td><td class="t">{e(title)}{sub}</td>'
           f'<td class="m{" oa" if o else " no"}">{"●" if o else "―"}</td>'
           f'<td class="m{" vhs" if v else " no"}">{"●" if v else "―"}</td>'
           f'{bd_cell(k)}</tr>')
@@ -535,6 +558,7 @@ tr.g th {{ color:var(--purple); font-size:11px; letter-spacing:1.5px; padding-to
 tr.lost td.t {{ color:var(--pink); }}
 tr.new td.t {{ color:var(--cyan); }}
 sup {{ font-size:9px; }}
+tr.part td.t {{ padding-left:22px; }}
 td.pl {{ color:var(--text); font-size:11px; }}
 /* Three show columns with two-line headings: nowrap would let them take the row
    and squeeze the title to a few characters on a phone, so the widths are fixed. */
@@ -620,7 +644,8 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <ol>
       <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
-      <li>8/29 の放送では、年末の回と同じく出演者の間にナビゲーターが入ります。表では出演者の切り替わりに置いていますが、正確な位置ではありません。BD に入るかは分かりません。</li>
+      <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。BD に入るかは分かりません。</li>
+      <li>メドレーは1曲として数えています。表では最初の曲に番号を付け、続く曲はその内訳として並べています。映像のみ(MV)の行は曲に数えていません。</li>
       <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
       <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。メドレーなど、公式の曲目より細かく分かれているところはデータベースの分け方のままにし、公式の曲目を「BD表記」として添えています。</li>
       <li>BD の内容は、発売後に映像で確認して追記します。</li>
