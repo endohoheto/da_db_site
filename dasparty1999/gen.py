@@ -34,6 +34,7 @@ def R(no, title, vhs, oa, bd, note=''):
     if note: NOTE[(len(SHOWS), no)] = note
     return (no, title, vhs, oa, bd)
 # A music video screened between acts (the site's 「映像のみ」 rows): not a performance.
+# It is the next act's video, so it sits at the top of that act's block.
 def MV(no, title): return ('G', title, no, 'mv')
 
 SHOWS = []
@@ -163,19 +164,19 @@ SHOWS.append(dict(
     G('Mad Soldiers'),
     R('08', 'Boys Jump The Midnight', False, False, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
     R('09', 'LEMON TEA', False, False, ('D3', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
-    MV('10', '高熱BLOOD'),
     G('コタニキンヤ'),
+    MV('10', '高熱BLOOD'),
     R('11', 'Spicy Marmalade', False, False, ('D3', 'Spicy Marmalade / コタニキンヤ')),
     R('12', '灼熱BLADE', False, False, ('D3', '灼熱BLADE / コタニキンヤ')),
     R('13', 'Blind Game Again', False, False, ('D3', 'Blind Game again /コタニキンヤ')),
     R('14', '高熱BLOOD', False, False, ('D3', '高熱BLOOD / コタニキンヤ')),
-    MV('15', '雪幻 -winter dust-'),
     G('the end of genesis T.M.R.evolution turbo type D'),
+    MV('15', '雪幻 -winter dust-'),
     R('16', '陽炎-KAGEROH-', False, False, ('D3', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
     R('17', '月虹 -GEKKOH-', False, False, ('D3', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     R('18', '雪幻 -winter dust-', False, False, ('D3', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
-    MV('19', 'Genetic Bomb'),
     G('Iceman'),
+    MV('19', 'Genetic Bomb'),
     R('20', 'white dimension', False, False, None),
     R('21', 'dope light', False, False, ('D3', 'dope light / Iceman')),
     R('22', 'Wish Matrix', False, False, None),
@@ -221,8 +222,8 @@ SHOWS.append(dict(
     G('Mad Soldiers'),
     R('01', 'LEMON TEA', False, True, ('D3', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     R('02', 'Boys Jump The Midnight', False, True, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
-    MV('03', '高熱BLOOD'),
     G('コタニキンヤ'),
+    MV('03', '高熱BLOOD'),
     R('04', 'Spicy Marmalade', False, True, ('D3', 'Spicy Marmalade / コタニキンヤ')),
     R('05', '灼熱BLADE', False, True, ('D3', '灼熱BLADE / コタニキンヤ')),
     R('06', '高熱BLOOD', False, True, ('D3', '高熱BLOOD / コタニキンヤ')),
@@ -235,8 +236,8 @@ SHOWS.append(dict(
     R('12', 'TRY AGAIN', False, True, ('D3', 'TRY AGAIN / Daisuke Asakura')),
     R('13', '1000年の誓い', False, True, None),
     R('14', 'Neo Age', False, True, ('D3', 'Neo Age / Daisuke Asakura')),
-    MV('15', 'Genetic Bomb'),
     G('Iceman'),
+    MV('15', 'Genetic Bomb'),
     R('16', 'white dimension', False, False, None),
     R('17', 'dope light', False, True, ('D3', 'dope light / Iceman')),
     R('18', 'Beauty and Beast 0\'00"', False, True, ('D3', 'Beauty and Beast 0\'00" / Iceman')),
