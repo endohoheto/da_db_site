@@ -72,9 +72,8 @@ SHOWS.append(dict(
     G('T.M.Revolution'),
     R('13', 'WHITE BREATH', True, True, ('D1', 'WHITE BREATH / T.M.Revolution')),
     R('14', '蒼い霹靂', False, True, None),
-    # Broadcast only, like Blind Game again above; the TV programme 貴教革命 also aired
-    # it, as a digest in its own edit, not the Viewsic one (owner).
-    R('15', 'THUNDERBIRD', False, True, None, '番組『貴教革命』でも別編集のダイジェストとして放送'),
+    # Broadcast only, like Blind Game again above (owner).
+    R('15', 'THUNDERBIRD', False, True, None),
     R('16', "Burnin' X'mas", True, True, ('D1', "Burnin' X'mas / T.M.Revolution")),
     R('17', 'HOT LIMIT', True, True, ('D1', 'HOT LIMIT / T.M.Revolution')),
     R('18', 'WILD RUSH', True, True, ('D1', 'WILD RUSH / T.M.Revolution')),
@@ -374,6 +373,13 @@ for s_ in SHOWS:
         if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
 
+# Performances another programme also aired, in its own edit rather than the Viewsic
+# one (owner: there are more of these). One label for all of them, the programme in
+# brackets; the end note says what the label means.
+ALT_OA = {
+  ('v0214', '15'): '貴教革命',   # THUNDERBIRD, as a digest
+}
+
 # On the 2/14 VHS this one is in (edited, like much of the VHS — per the site
 # owner) although the VHS credits don't list it. The VHS credits and Sony's DISC 1
 # list are the same 16 songs in the same order, so DISC 1 is the VHS programme and
@@ -472,6 +478,8 @@ for s in SHOWS:
             sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
+        if key in ALT_OA:
+            sub += f'<span class="sony">別編集でOAあり({e(ALT_OA[key])})</span>'
         if key in PART or title in ('MC', 'COUNT DOWN'):
             num = ''
         else:
@@ -713,6 +721,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <h2>注記</h2>
     <ol>
       <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
+      <li>「別編集でOAあり」は、Viewsic の放送とは別に、ほかの番組で別に編集された映像が放送されたものです。かっこ内は番組名です。表の「放送」欄は Viewsic の放送だけを示しています。</li>
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
       <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。BD に入るかは分かりません。ただし、BD に1曲も入っていない出演者の前のものは入りません。</li>
       <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
