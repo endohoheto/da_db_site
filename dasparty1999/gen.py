@@ -95,7 +95,8 @@ SHOWS.append(dict(
   name='DA’s Party Special Summer Festival!!!', oa_all=True, disc='DISC 2',
   rows=[
     # The broadcast has the navigator at the opening and at the start of every act
-    # (owner); whether it is on the BD is not known.
+    # (owner); whether it is on the BD is not known — except before an act none of
+    # whose songs are on the BD, where it cannot be (owner).
     NAV_OPEN,
     G('コタニキンヤ'),
     NAV,
@@ -416,9 +417,18 @@ for s in SHOWS:
     n, oa, vhs, bd, q = stats(s)
     rows = []
     shown = 0   # the number a reader sees: songs only, so a medley counts once and MVs not at all
-    for r in s['rows']:
+    for i, r in enumerate(s['rows']):
         if r[0] == 'G' and r[3:] == ('nav',):
             label = 'Navigator\'s Talk' + (f'({r[2]})' if r[2] else '')
+            act = []
+            for x in s['rows'][i + 1:]:
+                if x[0] == 'G' and x[3:] not in (('nav',), ('mv',)): break
+                if x[0] != 'G': act.append(x)
+            if not r[2] and not any(bd_code(s, x) for x in act):
+                rows.append(f'<tr class="nav"><td class="no"></td><td class="t">{label}</td>'
+                            '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
+                            f'{bd_cell(None)}</tr>')
+                continue
             rows.append(f'<tr class="nav"><td class="no"></td>'
                         f'<td class="t">{label}<span class="sony">放送では入る。BDに収録されるかは不明</span></td>'
                         '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
@@ -698,7 +708,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <ol>
       <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
-      <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。BD に入るかは分かりません。</li>
+      <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。BD に入るかは分かりません。ただし、BD に1曲も入っていない出演者の前のものは入りません。</li>
       <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
       <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
       <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。公式と曲名が違う曲には、公式の曲名を「BD表記」として添えています。</li>
