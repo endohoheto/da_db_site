@@ -1,6 +1,8 @@
 # Generates dasparty1999/index.html:  python3 dasparty1999/gen.py dasparty1999/index.html
 # Sources, and nothing else:
-#   - setlists, ★ (VHS) and ☆ (broadcast): the owner's blog
+#   - setlists (order, titles, who played): the database's own live list, as the site
+#     shows it (getPerformanceSetlist), 2026-10-26
+#   - ★ (VHS) and ☆ (broadcast): the owner's blog, matched to the site's rows
 #   - BD contents: the Sony Music official page only
 #   - 2/14 and 8/29 VHS track lists: the VHS jackets (photos from the owner); each is
 #     the same list, in the same order, as Sony's DISC 1 / DISC 2
@@ -20,6 +22,14 @@ def G(name, note=''): return ('G', name, note)
 # shows; whether it is on the BD is not known (per the site owner). Placed between
 # the acts, not at exact positions.
 NAV = ('G', "Navigator's Talk", '', 'nav')
+# A row: number, title, on the VHS (★), broadcast (☆), the BD track it is on.
+# The optional note is shown under the title (the original artist of a cover, …).
+NOTE = {}
+def R(no, title, vhs, oa, bd, note=''):
+    if note: NOTE[(len(SHOWS), no)] = note
+    return (no, title, vhs, oa, bd)
+# A music video screened between acts (the site's 「映像のみ」 rows): not a performance.
+def MV(no, title): return ('G', title, no, 'mv')
 
 SHOWS = []
 
@@ -29,37 +39,42 @@ SHOWS.append(dict(
   name='DA’s Special Valentine Party!!!', oa_all=True, disc='DISC 1',
   rows=[
     G('MC-K2'),
-    ('01', 'Spicy Marmalade', True, True, ('D1', 'Spicy Marmalade /コタニキンヤ')),
-    ('02', "GOD You'ra SAVE", False, True, None),
-    ('03', 'Blind Game again', True, True, None),
-    G('浅倉大介solo'),
-    ('04', 'key solo E.v.o.l.u.t.i.o.n.', True, True, ('D1', 'E.v.o.l.u.t.i.o.n for Valentine / Daisuke Asakura')),
-    ('05', 'Pf Solo TEAR\'S LIBERATION〜THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)〜Melody Fiar (Bee Gees)〜Image Of Tomorrow', True, True,
-       ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
-    ('06', 'SIREN’S MELODY', True, True, ('D1', "SIREN'S MELODY / Daisuke Asakura")),
+    R('01', 'Spicy Marmalade', True, True, ('D1', 'Spicy Marmalade /コタニキンヤ')),
+    R('02', "God You're SAVE", False, True, None),
+    R('03', 'Blind Game again', True, True, None),
+    G('浅倉大介'),
+    R('04', 'E.v.o.l.u.t.i.o.n', True, True, ('D1', 'E.v.o.l.u.t.i.o.n for Valentine / Daisuke Asakura')),
+    # 05–08 are one medley on the blog ("Pf Solo TEAR'S LIBERATION〜…〜Image Of Tomorrow★");
+    # the VHS and the BD list it as one track, Image of Tomorrow for Valentine.
+    R('05', "TEAR'S LIBERATION", True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura'), 'Pf Solo'),
+    R('06', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
+    R('07', 'Melody Fair', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
+    R('08', 'Image of Tomorrow', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
+    R('09', 'SIREN’S MELODY', True, True, ('D1', "SIREN'S MELODY / Daisuke Asakura")),
     G('Fayray'),
-    ('07', '太陽のグラヴィティー', True, True, ('D1', '太陽のグラヴィティー/ Fayray')),
-    ('08', 'YURA・YURA ～Vibration', True, True, ('D1', 'YURA・YURA～Vibration/ Fayray')),
-    ('09', 'Power Veil', True, True, ('D1', 'Powder Veil / Fayray')),
+    R('10', '太陽のグラヴィティー', True, True, ('D1', '太陽のグラヴィティー/ Fayray')),
+    R('11', 'YURA・YURA ～Vibration', True, True, ('D1', 'YURA・YURA～Vibration/ Fayray')),
+    R('12', 'Powder Veil', True, True, ('D1', 'Powder Veil / Fayray')),
     G('T.M.Revolution'),
-    ('10', 'WHITE BREATH', True, True, ('D1', 'WHITE BREATH / T.M.Revolution')),
-    ('11', '蒼い霹靂', False, True, None),
-    ('12', 'THUNDERBIRD', True, True, None),
-    ('13', 'Burnin’ X’mas', True, True, ('D1', "Burnin' X'mas / T.M.Revolution")),
-    ('14', 'HOT LIMIT', True, True, ('D1', 'HOT LIMIT / T.M.Revolution')),
-    ('15', 'WILD RUSH', True, True, ('D1', 'WILD RUSH / T.M.Revolution')),
+    R('13', 'WHITE BREATH', True, True, ('D1', 'WHITE BREATH / T.M.Revolution')),
+    R('14', '蒼い霹靂', False, True, None),
+    R('15', 'THUNDERBIRD', True, True, None),
+    R('16', "Burnin' X'mas", True, True, ('D1', "Burnin' X'mas / T.M.Revolution")),
+    R('17', 'HOT LIMIT', True, True, ('D1', 'HOT LIMIT / T.M.Revolution')),
+    R('18', 'WILD RUSH', True, True, ('D1', 'WILD RUSH / T.M.Revolution')),
     G('Iceman'),
-    ('16', 'CRAZY JET', True, True, ('D1', 'CRAZY JET / Iceman')),
-    ('17', 'WHAT’S WRONG?', False, True, None),
-    ('18', 'Dizzy Boogie', False, True, None),
-    ('19', 'BEAT MY LIFE', False, True, None),
-    ('20', 'GALAXY GANG', True, True, None),
-    ('21', 'Shining Collection', True, True, ('D1', 'Shining Collection / Iceman')),
-    ('22', 'DARK HALF ～TOUCH YOUR DARKNESS', True, True, ('D1', 'DARK HALF～TOUCH YOUR DARKNESS / Iceman')),
-    ('23', 'LOST COMPLEX', True, True, ('D1', 'LOST COMPLEX / Iceman')),
+    R('19', 'CRAZY JET', True, True, ('D1', 'CRAZY JET / Iceman')),
+    R('20', "WHAT'S WRONG?", False, True, None),
+    R('21', 'Dizzy Boogie', False, True, None),
+    R('22', 'BEAT MY LIFE', False, True, None),
+    R('23', 'GALAXY GANG', True, True, None),
+    R('24', 'Shining Collection', True, True, ('D1', 'Shining Collection / Iceman')),
+    R('25', 'DARK HALF 〜TOUCH YOUR DARKNESS', True, True, ('D1', 'DARK HALF～TOUCH YOUR DARKNESS / Iceman')),
+    R('26', 'LOST COMPLEX', True, True, ('D1', 'LOST COMPLEX / Iceman')),
+    G('Iceman & T.M.Revolution'),
+    R('27', 'Something feel like Heaven', True, True, ('D1', 'Something feel like Heaven / Iceman & T.M.Revolution')),
     G('All'),
-    ('24', 'Something Feel Like Heaven (Iceman & T.M.R)', True, True, ('D1', 'Something feel like Heaven / Iceman & T.M.Revolution')),
-    ('25', 'MC', False, True, None),
+    R('28', 'MC', False, True, None),
   ]))
 
 # ---- 1999/08/29 -------------------------------------------------------------
@@ -67,59 +82,57 @@ SHOWS.append(dict(
   id='s0829', short='東京ベイNK', date='1999.8.29 (SUN)', venue='東京ベイNKホール',
   name='DA’s Party Special Summer Festival!!!', oa_all=True, disc='DISC 2',
   rows=[
-    G('MC-K2'),
-    ('01', 'Spicy Marmalade', True, True, ('D2', 'Spicy Marmalade / コタニキンヤ')),
-    ('02', 'Time in my heart', True, True, ('D2', 'Time in my Heart / コタニキンヤ')),
-    # No ★ on the blog, but it is on the VHS (owner's correction, 2026-10-26).
-    ('03', 'Blind Game Again', True, True, ('D2', 'Blind Game again / コタニキンヤ')),
+    G('コタニキンヤ'),
+    R('01', 'Spicy Marmalade', True, True, ('D2', 'Spicy Marmalade / コタニキンヤ')),
+    R('02', 'Time in my heart', True, True, ('D2', 'Time in my Heart / コタニキンヤ')),
+    # No ★ on the blog, but it is on the VHS (owner's correction; the VHS jacket lists it).
+    R('03', 'Blind Game Again', True, True, ('D2', 'Blind Game again / コタニキンヤ')),
     NAV,
     G('Fayray'),
-    ('04', 'YURA・YURA ～Vibration', False, True, None),
-    ('05', '太陽のグラヴィティー', False, True, None),
-    ('06', 'Same night, Same face', False, True, None),
-    ('07', 'Craving', False, True, None),
-    # The VHS jacket (photo from the owner) lists exactly Sony's 11 DISC 2 tracks in the
-    # same order, so DISC 2 is the VHS programme. Its one solo track covers the ★ songs.
+    R('04', 'YURA・YURA ～Vibration', False, True, None),
+    R('05', '太陽のグラヴィティー', False, True, None),
+    R('06', 'Same night, Same face', False, True, None),
+    R('07', 'Craving', False, True, None),
     NAV,
-    G('浅倉大介ソロ', 'VHSのクレジットもBDの曲目も「Keyboard Solo〜Piano Solo」の1行。VHSに入っている3曲(★)がこのトラック'),
-    ('08', 'SEQUENCE MEDITATION', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    G('(Piano)'),
-    ('09', 'GATE Ⅱ-sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    ('10', 'Toy Box In The Morning', False, True, None),
-    ('11', 'ENDLESS SUMMER -君が滲んだ夏-', False, True, None),
-    ('12', 'ミッキーマウス・クラブ・マーチ', False, True, None),
-    ('13', '突然シーモアが！', False, True, None),
-    ('14', 'GATE I -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    G('浅倉大介'),
+    # The VHS jacket and Sony list one track, Keyboard Solo〜Piano Solo; the ★ songs are it.
+    R('08', 'SEQUENCE MEDITATION ～超電導思考回路～', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('10', 'Toy Box In The Morning', False, True, None),
+    R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', False, True, None),
+    R('12', 'Mickey Mouse Club March', False, True, None),
+    R('13', '突然シーモアが！', False, True, None),
+    R('14', 'GATEⅠ -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     NAV,
     G('木村由姫'),
-    ('15', 'Deep Sky Heart', False, True, None),
-    ('16', 'Fall in YOU', False, True, None),
-    ('17', 'Windy scene', False, True, None),
-    ('18', 'Summer Rain', False, True, None),
+    R('15', 'Deep Sky Heart', False, True, None),
+    R('16', 'Fall in YOU', False, True, None),
+    R('17', 'Windy scene', False, True, None),
+    R('18', 'Summer Rain', False, True, None),
     NAV,
     G('Mad Soldiers'),
-    ('19', 'LEMON TEA', True, True, ('D2', 'LEMON TEA / Mad Soldiers')),
+    R('19', 'LEMON TEA', True, True, ('D2', 'LEMON TEA / Mad Soldiers'), '原曲: SHEENA & THE ROKKETS'),
     NAV,
     G('pool bit boys'),
-    ('20', 'SPIRAL', False, True, None),
-    ('21', 'Scarletの憂鬱', False, True, None),
-    ('22', 'Venus Accident', False, True, None),
-    ('23', 'EARTH STRIKER', False, True, None),
+    R('20', 'SPIRAL', False, True, None),
+    R('21', 'Scarletの憂鬱', False, True, None),
+    R('22', 'Venus Accident', False, True, None),
+    R('23', 'EARTH STRIKER', False, True, None),
     NAV,
     G('Iceman'),
-    ('24', 'Strike Back of PSYCO', True, True, ('D2', 'Strike Back of PSYCO / Iceman')),
-    ('25', 'Wish Matrix', False, True, None),
-    ('26', 'Expander Drive Machine～発展途上人型アンドロイドの見た夢', True, True, ('D2', 'Expander Drive Machine〜発展途上人型アンドロイドの見た夢 / Iceman')),
-    ('27', 'FATE WEATHER', True, True, ('D2', 'FATE WEATHER / Iceman')),
-    ('28', 'GALAXY GANG', True, True, ('D2', 'GALAXY GANG / Iceman')),
-    ('29', 'Shining Collection', True, True, ('D2', 'Shining Collection / Iceman')),
+    R('24', 'Strike Back of PSYCO', True, True, ('D2', 'Strike Back of PSYCO / Iceman')),
+    R('25', 'Wish Matrix', False, True, None),
+    R('26', 'Expander Drive Machine～発展途上人型アンドロイドの見た夢', True, True, ('D2', 'Expander Drive Machine〜発展途上人型アンドロイドの見た夢 / Iceman')),
+    R('27', 'FATE WEATHER', True, True, ('D2', 'FATE WEATHER / Iceman')),
+    R('28', 'GALAXY GANG', True, True, ('D2', 'GALAXY GANG / Iceman')),
+    R('29', 'Shining Collection', True, True, ('D2', 'Shining Collection / Iceman')),
     NAV,
     G('the end of genesis T.M.R.evolution turbo type D'),
-    ('30', '陽炎-KAGEROH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('31', '月虹-GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('30', '陽炎-KAGEROH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('31', '月虹 -GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     NAV,
     G('All'),
-    ('', 'MC+雛形あきこ', False, True, None),
+    R('32', 'MC', False, True, None),
   ]))
 
 # ---- Yoyogi: BD DISC 3 does not say which of the three shows a track is from. --
@@ -127,100 +140,110 @@ SHOWS.append(dict(
 # out below (YD), from the broadcast marks.
 SHOWS.append(dict(
   id='y1231a', short='Grand Finale', date='1999.12.31 (FRI)', venue='国立代々木競技場 第一体育館',
-  name='DA’s Party Grand Finale 1999 featuring Iceman', oa_all=False, disc='DISC 3',
+  name="DA's Party Grand Finale 1999", oa_all=False, disc='DISC 3',
   rows=[
     G('浅倉大介'),
-    ('01', 'white dimension (Iceman)～CAUTION!-phychedelic mix', False, False, None),
-    ('02', 'GATE Ⅱ -sensitive gate', False, False, ('D3*', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
-    ('03', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3*', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
-    ('04', '夢を見たいから', False, False, None),
-    ('05', '1000年の誓い', False, False, None),
-    ('06', 'SIREN’S MELODY', False, False, None),
+    R('01', 'white dimension', False, False, None),
+    R('02', 'CAUTION! / psychedelic mix', False, False, None),
+    R('03', 'GATEⅡ -sensitive gate', False, False, ('D3', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
+    R('04', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
+    R('05', '夢を見たいから', False, False, None),
+    R('06', '1000年の誓い', False, False, None),
+    R('07', 'SIREN’S MELODY', False, False, None),
     G('Mad Soldiers'),
-    ('07', 'Boys Jump The Midnight', False, False, ('D3*', 'Boys Jump The Midnight / Mad Soldiers')),
-    ('08', 'LEMON TEA', False, False, ('D3*', 'LEMON TEA / Mad Soldiers')),
-    G('コタニキンヤ', 'MV. 高熱BLOOD'),
-    ('09', 'Spicy Marmalade', False, False, ('D3*', 'Spicy Marmalade / コタニキンヤ')),
-    ('10', '灼熱BLADE', False, False, ('D3*', '灼熱BLADE / コタニキンヤ')),
-    ('11', 'Blind Game Again', False, False, ('D3*', 'Blind Game again /コタニキンヤ')),
-    ('12', '高熱BLOOD', False, False, ('D3*', '高熱BLOOD / コタニキンヤ')),
-    G('the end of genesis T.M.R.evolution turbo type D', 'MV.雪幻-winter dust'),
-    ('13', '陽炎-KAGEROH-', False, False, ('D3*', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('14', '月虹-GEKKOH-', False, False, ('D3*', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('15', '雪幻-winter dust-', False, False, ('D3*', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
-    G('Iceman', 'MV.Genetic Bomb shortがフルのやつ'),
-    ('16', 'white dimension', False, False, None),
-    ('17', 'dope light', False, False, ('D3*', 'dope light / Iceman')),
-    ('18', 'Wish Matrix', False, False, None),
-    ('19', 'Beauty and Beast 0’00”', False, False, ('D3*', 'Beauty and Beast 0\'00" / Iceman')),
-    ('20', 'BLEACHING', False, False, None),
-    ('21', 'ICE BREAKER', False, False, None),
-    ('22', 'FATE WEATHER', False, True, ('D3', 'FATE WEATHER / Iceman')),
-    ('23', 'Shining Collection', False, True, ('D3', 'Shining Collection / Iceman')),
-    ('24', 'Genetic Bomb', False, False, ('D3*', 'Genetic Bomb / Iceman')),
+    R('08', 'Boys Jump The Midnight', False, False, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
+    R('09', 'LEMON TEA', False, False, ('D3', 'LEMON TEA / Mad Soldiers')),
+    MV('10', '高熱BLOOD'),
+    G('コタニキンヤ'),
+    R('11', 'Spicy Marmalade', False, False, ('D3', 'Spicy Marmalade / コタニキンヤ')),
+    R('12', '灼熱BLADE', False, False, ('D3', '灼熱BLADE / コタニキンヤ')),
+    R('13', 'Blind Game Again', False, False, ('D3', 'Blind Game again /コタニキンヤ')),
+    R('14', '高熱BLOOD', False, False, ('D3', '高熱BLOOD / コタニキンヤ')),
+    MV('15', '雪幻 -winter dust-'),
+    G('the end of genesis T.M.R.evolution turbo type D'),
+    R('16', '陽炎-KAGEROH-', False, False, ('D3', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('17', '月虹 -GEKKOH-', False, False, ('D3', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('18', '雪幻 -winter dust-', False, False, ('D3', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
+    MV('19', 'Genetic Bomb'),
+    G('Iceman'),
+    R('20', 'white dimension', False, False, None),
+    R('21', 'dope light', False, False, ('D3', 'dope light / Iceman')),
+    R('22', 'Wish Matrix', False, False, None),
+    R('23', 'Beauty and Beast 0\'00"', False, False, ('D3', 'Beauty and Beast 0\'00" / Iceman')),
+    R('24', 'BLEACHING', False, False, None),
+    R('25', 'ICE BREAKER', False, False, None),
+    R('26', 'FATE WEATHER', False, True, ('D3', 'FATE WEATHER / Iceman')),
+    R('27', 'Shining Collection', False, True, ('D3', 'Shining Collection / Iceman')),
+    R('28', 'Genetic Bomb', False, False, ('D3', 'Genetic Bomb / Iceman')),
+    G('All'),
+    R('29', 'MC', False, False, None),
   ]))
 
 SHOWS.append(dict(
   id='y1231b', short='Count Down', date='1999.12.31 (FRI)', venue='国立代々木競技場 第一体育館',
-  name='DA’s Party Let’s Count Down 99-00', oa_all=False, disc='DISC 3',
+  name="DA's Party Let's Count Down 99〜00", oa_all=False, disc='DISC 3',
   rows=[
     G('コタニキンヤ'),
-    ('01', 'Spicy Marmalade', False, False, ('D3*', 'Spicy Marmalade / コタニキンヤ')),
-    ('02', '憂鬱なSevendays', False, False, None),
+    R('01', 'Spicy Marmalade', False, False, ('D3', 'Spicy Marmalade / コタニキンヤ')),
+    R('02', '憂鬱なSeven days', False, False, None),
     G('Iceman'),
-    ('03', 'Eyes Bright', False, False, None),
-    ('04', 'Dear My Friend', False, False, None),
-    ('05', 'DAY DREAM BELIEVER', False, False, None),
+    R('03', 'Eyes Bright', False, False, None),
+    R('04', 'Dear My Friend 〜make your shine way', False, False, None),
+    R('05', 'DAYDREAM BELIEVER', False, False, None),
     G('the end of genesis T.M.R.evolution turbo type D'),
-    ('06', 'WHITE BREATH', False, False, ('D3*', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
-    ('07', 'I DON’T WANT TO MISS A THING', False, False, None),
-    ('08', 'HEART OF SWORD～夜明け前～', False, False, None),
+    R('06', 'WHITE BREATH', False, False, ('D3', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
+    R('07', "I don't want to miss a thing", False, False, None, '原曲: AEROSMITH'),
+    R('08', 'HEART OF SWORD ～夜明け前～', False, False, None),
     G('All'),
-    ('09', 'DYNAMITE PASSION', False, False, None),
-    ('10', 'GALAXY GANG', False, False, None),
-    ('11', 'Paradise City', False, False, None),
-    ('12', 'DA’s Party 2000-TV Size（中継あり）', False, True, ('D3*', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
-    ('13', 'DA’s Party 2000', False, True, ('D3*', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    R('09', 'COUNT DOWN', False, False, None),
+    R('10', 'DYNAMITE PASSION', False, False, None),
+    R('11', 'GALAXY GANG', False, False, None),
+    R('12', 'Paradise City', False, False, None),
+    R('13', "DA's PARTY 2000 -TV Size ver-", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
 SHOWS.append(dict(
   id='y0101', short='Happy New Year', date='2000.1.1 (SAT)', venue='国立代々木競技場 第一体育館',
-  name='DA’s Party Happy New Year Welcome 2000 featuring the end of genesis T.M.R.evolution turbo type D',
+  name="DA's Party Happy New Year Welcome 2000",
   oa_all=False, disc='DISC 3',
   rows=[
     G('Mad Soldiers'),
-    ('01', 'LEMON TEA', False, True, ('D3*', 'LEMON TEA / Mad Soldiers')),
-    ('02', 'Boys Jump The Midnight', False, True, ('D3*', 'Boys Jump The Midnight / Mad Soldiers')),
-    G('コタニキンヤ', 'MV. 高熱BLOOD'),
-    ('03', 'Spicy Marmalade', False, True, ('D3*', 'Spicy Marmalade / コタニキンヤ')),
-    ('04', '灼熱BLADE', False, True, ('D3*', '灼熱BLADE / コタニキンヤ')),
-    ('05', '高熱BLOOD', False, True, ('D3*', '高熱BLOOD / コタニキンヤ')),
-    ('06', 'Blind Game Again', False, True, ('D3*', 'Blind Game again /コタニキンヤ')),
+    R('01', 'LEMON TEA', False, True, ('D3', 'LEMON TEA / Mad Soldiers')),
+    R('02', 'Boys Jump The Midnight', False, True, ('D3', 'Boys Jump The Midnight / Mad Soldiers'), '原曲: THE STREET SLIDERS'),
+    MV('03', '高熱BLOOD'),
+    G('コタニキンヤ'),
+    R('04', 'Spicy Marmalade', False, True, ('D3', 'Spicy Marmalade / コタニキンヤ')),
+    R('05', '灼熱BLADE', False, True, ('D3', '灼熱BLADE / コタニキンヤ')),
+    R('06', '高熱BLOOD', False, True, ('D3', '高熱BLOOD / コタニキンヤ')),
+    R('07', 'Blind Game Again', False, True, ('D3', 'Blind Game again /コタニキンヤ')),
     G('浅倉大介'),
-    ('07', 'white dimension', False, False, None),
-    ('08', 'CAUTION', False, False, None),
-    ('09', 'GATEⅡ-sensitive gate', False, True, ('D3*', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
-    ('10', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3*', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
-    ('11', 'TRY AGAIN', False, True, ('D3', 'TRY AGAIN / Daisuke Asakura')),
-    ('12', '1000年の誓い', False, True, None),
-    ('13', 'Neo Age', False, True, ('D3', 'Neo Age / Daisuke Asakura')),
-    G('Iceman', 'MV.Genetic Bomb shortがフルのやつ'),
-    ('14', 'white dimension', False, False, None),
-    ('15', 'dope light', False, True, ('D3*', 'dope light / Iceman')),
-    ('16', 'Beauty and Beast 0’00”', False, True, ('D3*', 'Beauty and Beast 0\'00" / Iceman')),
-    ('17', 'Genetic Bomb', False, True, ('D3*', 'Genetic Bomb / Iceman')),
-    G('the end of genesis T.M.R.evolution turbo type D', 'MV.雪幻-winter dust'),
-    ('18', '陽炎-KAGEROH-', False, True, ('D3*', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('19', '月虹-GEKKOH-', False, True, ('D3*', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('20', '雪幻-winter dust-', False, True, ('D3*', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
-    ('21', 'HEART OF SWORD～夜明け前～', False, False, None),
-    ('22', 'BLACK OR WHITE?', False, False, None),
-    # The blog also lists WHITE BREATH (☆) before 陽炎 as no.18; that line is a
-    # mistake — it was played once, here, and this is the broadcast one (owner's
-    # correction, 2026-10-26). The rows after it are renumbered down by one.
-    ('23', 'WHITE BREATH', False, True, ('D3*', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
-    G('EC All'),
-    ('24', 'DA’s Party 2000', False, False, ('D3*', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    R('08', 'white dimension', False, False, None),
+    R('09', 'CAUTION!', False, False, None),
+    R('10', 'GATEⅡ -sensitive gate', False, True, ('D3', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
+    R('11', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
+    R('12', 'TRY AGAIN', False, True, ('D3', 'TRY AGAIN / Daisuke Asakura')),
+    R('13', '1000年の誓い', False, True, None),
+    R('14', 'Neo Age', False, True, ('D3', 'Neo Age / Daisuke Asakura')),
+    MV('15', 'Genetic Bomb'),
+    G('Iceman'),
+    R('16', 'white dimension', False, False, None),
+    R('17', 'dope light', False, True, ('D3', 'dope light / Iceman')),
+    R('18', 'Beauty and Beast 0\'00"', False, True, ('D3', 'Beauty and Beast 0\'00" / Iceman')),
+    R('19', 'Genetic Bomb', False, True, ('D3', 'Genetic Bomb / Iceman')),
+    G('the end of genesis T.M.R.evolution turbo type D'),
+    R('20', '陽炎-KAGEROH-', False, True, ('D3', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('21', '月虹 -GEKKOH-', False, True, ('D3', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    R('22', '雪幻 -winter dust-', False, True, ('D3', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
+    R('23', 'HEART OF SWORD 〜夜明け前〜', False, False, None),
+    R('24', 'BLACK OR WHITE?', False, False, None),
+    # The site and the blog both also have WHITE BREATH before 陽炎; that is a mistake.
+    # It was played once, here, and this is the broadcast one (owner's correction).
+    # The earlier row is dropped and the rows between are renumbered.
+    R('25', 'WHITE BREATH', False, True, ('D3', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
+    G('All'),
+    R('26', "DA's PARTY 2000", False, False, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    R('27', 'MC', False, False, None),
   ]))
 
 # Sony DISC lists, verbatim, for the coverage check below.
@@ -263,8 +286,9 @@ e = html.escape
 # performance more finely than Sony's track list (a medley, two songs Sony lists as
 # one track, the TV-size cut), the blog's row is kept as it is and Sony's track
 # title is shown under it.
-KEEP = {('v0214', '05'), ('s0829', '08'), ('s0829', '09'), ('s0829', '14'),
-        ('s0829', '30'), ('s0829', '31'), ('y1231b', '12')}
+KEEP = {('v0214', '05'), ('v0214', '06'), ('v0214', '07'), ('v0214', '08'),
+        ('s0829', '08'), ('s0829', '09'), ('s0829', '14'),
+        ('s0829', '30'), ('s0829', '31'), ('y1231b', '13')}
 SONY_NAME = {
   'v0214': "DA's SPECIAL Valentine Party!!! in Yokohama Arena",
   's0829': "DA's Party Special Summer Festival!!! In Tokyo Bay NK Hall",
@@ -325,7 +349,7 @@ for s_ in SHOWS:
 # owner) although the VHS credits don't list them. The VHS credits and Sony's DISC 1
 # list are the same 16 songs in the same order, so DISC 1 is the VHS programme and
 # has them too. Editing is not marked per song; one note at the top covers it.
-UNLISTED = {('v0214', '03'), ('v0214', '12'), ('v0214', '20')}
+UNLISTED = {('v0214', '03'), ('v0214', '15'), ('v0214', '23')}
 
 def bd_code(s, r):
     if (s['id'], r[0]) in UNLISTED: return 'D1'
@@ -333,7 +357,8 @@ def bd_code(s, r):
     return r[4][0] if r[4] else None
 
 def stats(s):
-    songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] != 'MC']
+    # MC and the count-down itself are on the setlist but are not songs
+    songs = [r for r in s['rows'] if r[0] != 'G' and r[0] and r[1] not in ('MC', 'COUNT DOWN')]
     oa = sum(1 for r in songs if r[3])
     vhs = sum(1 for r in songs if r[2])
     bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
@@ -358,6 +383,11 @@ for s in SHOWS:
                         '<td class="m oa">●</td><td class="m no" title="VHSのクレジットには記載なし">―</td>'
                         '<td class="m q" title="BDに収録されるかは不明">?</td></tr>')
             continue
+        if r[0] == 'G' and r[3:] == ('mv',):
+            rows.append(f'<tr class="nav"><td class="no">{e(r[2])}</td>'
+                        f'<td class="t">{e(r[1])}<span class="sony">映像のみ(MV)</span></td>'
+                        '<td class="m"></td><td class="m"></td><td class="m"></td></tr>')
+            continue
         if r[0] == 'G':
             note = f'<span class="gn">{e(r[2])}</span>' if r[2] else ''
             rows.append(f'<tr class="g"><th colspan="5" scope="rowgroup">{e(r[1])}{note}</th></tr>')
@@ -373,6 +403,8 @@ for s in SHOWS:
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
         if (s['id'], no) in UNLISTED:
             sub = '<span class="sony">VHS・BDとも曲目には記載なし</span>'
+        extra = NOTE.get((SHOWS.index(s), no))
+        if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
         cls = []
         if v and not b and not k: cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
@@ -602,11 +634,12 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 
   <footer>
     出典<br>
-    セットリスト・VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
+    セットリスト: 浅倉大介 クレジットデータベース(ライブ)<br>
+    VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
     2/14・8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)<br>
-    曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはブログの表記)。<br>
-    メドレーなど、公式の曲目より細かく分かれているところはブログの分け方のままにし、公式の曲目を「BD表記」として併記しています。
+    曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはデータベースの表記)。<br>
+    メドレーなど、公式の曲目より細かく分かれているところはデータベースの分け方のままにし、公式の曲目を「BD表記」として併記しています。
   </footer>
 </main>
 </body>
