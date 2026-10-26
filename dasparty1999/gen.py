@@ -62,7 +62,8 @@ SHOWS.append(dict(
     G('MC-K2'),
     ('01', 'Spicy Marmalade', True, True, ('D2', 'Spicy Marmalade / コタニキンヤ')),
     ('02', 'Time in my heart', True, True, ('D2', 'Time in my Heart / コタニキンヤ')),
-    ('03', 'Blind Game Again', False, True, ('D2', 'Blind Game again / コタニキンヤ')),
+    # No ★ on the blog, but it is on the VHS (owner's correction, 2026-10-26).
+    ('03', 'Blind Game Again', True, True, ('D2', 'Blind Game again / コタニキンヤ')),
     G('Fayray'),
     ('04', 'YURA・YURA ～Vibration', False, True, None),
     ('05', '太陽のグラヴィティー', False, True, None),
@@ -545,8 +546,8 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     </div>
     <div class="card">
       <h2>VHS未収録 → BDで初収録</h2>
-      <ul>{li(new)}</ul>
-      <p style="margin-top:6px">代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。</p>
+      {f'<ul>{li(new)}</ul>' if new else ''}
+      <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。</p>
     </div>
     <div class="card">
       <h2>DISC 3 はどの回の映像か</h2>
