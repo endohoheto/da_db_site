@@ -403,30 +403,24 @@ for s in SHOWS:
     </table></div>
   </section>''')
 
-# DISC 3 flow: for each track on the disc, the show it was played at, the broadcast it
-# went out on, and the disc — plus the other times it was played but not broadcast.
+# DISC 3 matrix: which Yoyogi show played each Sony track, and was it broadcast.
+yshort = [('y1231a', '12/31<br>Grand Finale'), ('y1231b', '12/31<br>Count Down'), ('y0101', '1/1<br>Happy New Year')]
 mrows = []
 for t in SONY_D['D3']:
     # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
     # itself, carried over as aired (per the site owner).
     if t.startswith("Navigator's Talk"):
-        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td>'
-                     f'<td class="flow"><span class="st">Viewsic 放送のナビ部分</span><span class="ar">▸ そのまま BD</span></td></tr>')
+        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">☆ Viewsic放送のナビ部分をそのまま収録</td></tr>')
         continue
-    src = SRC[t]
-    srcs = {sid for sid, _ in src}
-    others = []
-    for sid, lab in YSHOW.items():
-        s_ = next(x for x in SHOWS if x['id'] == sid)
-        hit = [r for r in s_['rows'] if r[0] != 'G' and r[4] and r[4][1] == t and (sid, r[0]) not in src]
-        if hit and sid not in srcs: others.append(lab)
-    open_ = len(src) > 1
-    head = ' / '.join(f'<span class="st">{e(YSHOW[sid])}</span>' for sid, _ in src)
-    flow = f'{head}<span class="ar">▸ 放送 ▸ BD</span>'
-    if open_: flow += '<span class="sony">どちらの回の映像かは発売後に確認</span>'
-    if others: flow += f'<span class="sony">{e("、".join(others))} でも演奏(放送なし)</span>'
+    cells = []
+    for sid, _ in yshort:
+        s = next(x for x in SHOWS if x['id'] == sid)
+        hit = [r for r in s['rows'] if r[0] != 'G' and r[4] and r[4][1] == t]
+        if not hit: cells.append('<td class="m no">―</td>')
+        elif any(r[3] for r in hit): cells.append('<td class="m oa">☆</td>')
+        else: cells.append('<td class="m pl">演奏</td>')
     title, artist = split_artist(t)
-    mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td><td class="flow">{flow}</td></tr>')
+    mrows.append(f'<tr><td class="t">{e(title)}<span class="sony">{e(artist)}</span></td>{"".join(cells)}</tr>')
 
 # summary lists
 lost = []; new = []
@@ -513,20 +507,15 @@ tr.lost td.t {{ color:var(--pink); }}
 tr.new td.t {{ color:var(--cyan); }}
 sup {{ font-size:9px; }}
 td.pl {{ color:var(--text); font-size:11px; }}
-/* Fixed layout so the long flow text can't take the row and squeeze the title column
-   to a few characters on a phone. */
+/* Three show columns with two-line headings: nowrap would let them take the row
+   and squeeze the title to a few characters on a phone, so the widths are fixed. */
 section.matrix table {{ table-layout:fixed; }}
-section.matrix th:first-child {{ width:44%; }}
-td.flow {{ font-size:11.5px; line-height:1.6; }}
-/* inline-block + nowrap: each piece wraps to the next line as a whole instead of
-   running past the cell edge on a phone. */
-td.flow .st {{ display:inline-block; color:var(--text); white-space:nowrap; }}
-td.flow .ar {{ display:inline-block; color:var(--cyan); margin-left:6px; white-space:nowrap; }}
-.notice {{ margin:12px 0 0; font-size:11px; line-height:1.8; color:var(--amber); opacity:.9; }}
+section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
 .flowbar {{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:14px;
   font-size:11px; color:var(--dim); }}
 .flowbar span {{ border:1px solid var(--border); border-radius:3px; padding:3px 8px; }}
 tr.talk td.t {{ color:var(--dim); }}
+tr.talk td.m {{ white-space:normal; font-size:11px; }}
 tr.nav td.t {{ color:var(--dim); font-size:11.5px; }}
 footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 @media (max-width:480px) {{
@@ -586,7 +575,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 
   <nav class="toc">
     {''.join(f'<a href="#{s["id"]}">{e(s["date"].split()[0])} {e(s["short"])}</a>' for s in SHOWS)}
-    <a href="#disc3">DISC 3 収録元</a>
+    <a href="#disc3">DISC 3 対照</a>
   </nav>
 {''.join(out)}
 
@@ -594,11 +583,11 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="sh">
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
-      <div class="venue">公式の曲目ごとに、どの回の演奏が放送を経て BD に入ったか</div>
+      <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
     </div>
-    <p class="sn">同じ曲を別の回でも演奏していて放送が無いものは、下に添えています(<a href="#notice">※</a>)。</p>
+    <p class="sn"><b class="oa">☆</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし(<a href="#notice">※</a>)</p>
     <div class="tw"><table>
-      <thead><tr><th>DISC 3 曲目(公式)</th><th>収録の流れ</th></tr></thead>
+      <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
       <tbody>
 {chr(10).join(mrows)}
       </tbody>
