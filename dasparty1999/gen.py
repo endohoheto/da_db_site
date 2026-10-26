@@ -304,8 +304,9 @@ for s_ in SHOWS:
         else: YD[key] = ('elsewhere', src)
 
 # On the 2/14 VHS these three are in, but edited into the programme rather than as
-# whole songs (per the site owner). Sony's track list doesn't name them, which says
-# nothing either way about whether the same edit is on the BD — so '?', not '―'.
+# whole songs (per the site owner), and the VHS credits don't list them. The VHS
+# credits and Sony's DISC 1 list are the same 16 songs in the same order, so DISC 1 is
+# the VHS programme and carries the same edits — shown as 編集 in both columns.
 EDITED = {('v0214', '03'), ('v0214', '12'), ('v0214', '20')}
 
 def bd_code(s, r):
@@ -318,20 +319,21 @@ def stats(s):
     oa = sum(1 for r in songs if r[3])
     vhs = sum(1 for r in songs if r[2])
     bd = sum(1 for r in songs if bd_code(s, r) in ('D1', 'D2', 'D3', 'D3?'))
-    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv', 'edit'))
-    return len(songs), oa, vhs, bd, q
+    q = sum(1 for r in songs if bd_code(s, r) in ('Q', 'tv'))
+    ed = sum(1 for r in songs if bd_code(s, r) == 'edit')
+    return len(songs), oa, vhs, bd, q, ed
 
 def bd_cell(k):
     if k in (None, 'elsewhere'): return '<td class="m no">―</td>'
     if k == 'Q': return '<td class="m q" title="公式の曲目からは特定できない">?</td>'
-    if k == 'edit': return '<td class="m q" title="VHSでは編集して収録。BDの曲目には記載なし">?</td>'
+    if k == 'edit': return '<td class="m bd ed" title="曲目に記載はないが、VHSと同じく編集して収録">編集</td>'
     if k == 'tv': return '<td class="m q" title="TV Size。BDの曲目は「DA’s Party 2000」">?</td>'
     if k == 'D3?': return '<td class="m bd" title="別の回でも放送あり。どちらの映像かは未確定">D3?</td>'
     return f'<td class="m bd">{e(k)}</td>'
 
 out = []
 for s in SHOWS:
-    n, oa, vhs, bd, q = stats(s)
+    n, oa, vhs, bd, q, ed = stats(s)
     rows = []
     for r in s['rows']:
         if r[0] == 'G':
@@ -348,7 +350,7 @@ for s in SHOWS:
                                     for sid, n_ in YD[(s['id'], no)][1])
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
         if k == 'edit':
-            sub = '<span class="sony">VHSでは編集して収録。BDの曲目には記載なし</span>'
+            sub = '<span class="sony">VHS・BDとも曲目に記載はないが、編集して収録</span>'
         cls = []
         if v and not b and k != 'edit': cls.append('lost')
         if b and b[0] != 'Q' and not v and s['disc'] in ('DISC 1', 'DISC 2'): cls.append('new')
@@ -365,7 +367,7 @@ for s in SHOWS:
     if s['disc'] == 'DISC 3':
         note = ('<p class="sn">当時VHSは出ていません(公式の記載も横浜アリーナと東京ベイNKホールの2公演のみ)。'
                 '同じ曲を別の回の放送から収録している行は、BD を ― にして収録元の回を書いています(<a href="#notice">※</a>)。</p>')
-    qline = f'<span>BD ? {q}</span>' if q else ''
+    qline = (f'<span>BD ? {q}</span>' if q else '') + (f'<span>編集 {ed}</span>' if ed else '')
     out.append(f'''
   <section class="show" id="{s['id']}">
     <div class="sh">
@@ -530,11 +532,12 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
     <div class="flowbar"><span>公演</span>▸<span class="oa">放送 Viewsic</span>▸<span class="vhs">VHS 当時</span>/<span class="bd">BD 2026</span></div>
     <p class="notice" id="notice">※ DISC 3(代々木)の各曲がどの回の映像かは、公式の「Viewsic が放送した映像」という記載と、
-      管理人の放送記録から割り出したものです。発売後に映像で確認し、追って追記します。</p>
+      管理人の放送記録から割り出したものです。DISC 1 の「編集」の3曲は、VHS と同じ内容であることから判断しています。
+      いずれも発売後に映像で確認し、追って追記します。</p>
     <div class="legend">
       <span><b class="oa">●</b> 放送(Viewsic)</span>
       <span><b class="vhs">●</b> VHS収録</span>
-      <span><b class="vhs">編集</b> VHSでは編集して収録</span>
+      <span><b class="vhs">編集</b> 曲目に記載はないが編集して収録</span>
       <span><b class="bd">D1/D2/D3</b> BD収録ディスク</span>
       <span><b class="bd">D3?</b> 2つの回で放送があり、どちらの映像か発売後に確認</span>
       <span><b class="q">?</b> 公式曲目から特定不可</span>
@@ -543,15 +546,16 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
 
   <div class="cards">
     <div class="card">
-      <h2>VHSでは編集して収録 / BDの曲目に記載なし</h2>
+      <h2>曲目に無いが編集で収録</h2>
       <ul>{li(lost)}</ul>
-      <p style="margin-top:6px">VHSには編集された形で入っている3曲。BDの曲目には記載が無いので、BDでの扱いは発売後に確認。</p>
+      <p style="margin-top:6px">VHSのクレジットにもBDの曲目にも無いが、VHSに編集された形で入っている3曲。
+        DISC 1 は VHS と同じ内容なので、BDにも同じ形で入る。</p>
     </div>
     <div class="card">
       <h2>VHS と BD の曲目</h2>
       {f'<ul>{li(new)}</ul>' if new else ''}
       <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。
-        8/29 は VHS のクレジットと DISC 2 の曲目が11曲とも同じ(曲順も同じ)。</p>
+        VHS のクレジットと BD の曲目は、2/14(DISC 1・16曲)も 8/29(DISC 2・11曲)も曲名・曲順とも同じ。</p>
     </div>
     <div class="card">
       <h2>DISC 3 はどの回の映像か</h2>
@@ -588,7 +592,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     出典<br>
     セットリスト・VHS収録(★)・放送(☆): <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
-    8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)<br>
+    2/14・8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)<br>
     曲名・公演名・アーティスト名はソニーミュージック公式の表記に合わせています(公式に出てこないものはブログの表記)。<br>
     メドレーなど、公式の曲目より細かく分かれているところはブログの分け方のままにし、公式の曲目を「BD表記」として併記しています。
   </footer>
