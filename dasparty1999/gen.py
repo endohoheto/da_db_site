@@ -1,6 +1,10 @@
 # Generates dasparty1999/index.html:  python3 dasparty1999/gen.py dasparty1999/index.html
-# Setlists, ★ (VHS) and ☆ (broadcast) are transcribed from the owner's blog;
-# BD contents only from the Sony Music official page. Nothing else is a source.
+# Sources, and nothing else:
+#   - setlists, ★ (VHS) and ☆ (broadcast): the owner's blog
+#   - BD contents: the Sony Music official page only
+#   - 2/14 and 8/29 VHS track lists: the VHS jackets (photos from the owner); each is
+#     the same list, in the same order, as Sony's DISC 1 / DISC 2
+#   - corrections from the owner, each commented where it is applied
 import html, sys
 
 BLOG = 'https://chikichikichi.hatenablog.com/entry/2019/09/02/004516'
