@@ -210,15 +210,17 @@ SHOWS.append(dict(
     ('16', 'Beauty and Beast 0’00”', False, True, ('D3*', 'Beauty and Beast 0\'00" / Iceman')),
     ('17', 'Genetic Bomb', False, True, ('D3*', 'Genetic Bomb / Iceman')),
     G('the end of genesis T.M.R.evolution turbo type D', 'MV.雪幻-winter dust'),
-    ('18', 'WHITE BREATH', False, True, ('D3*', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
-    ('19', '陽炎-KAGEROH-', False, True, ('D3*', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('20', '月虹-GEKKOH-', False, True, ('D3*', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
-    ('21', '雪幻-winter dust-', False, True, ('D3*', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
-    ('22', 'HEART OF SWORD～夜明け前～', False, False, None),
-    ('23', 'BLACK OR WHITE?', False, False, None),
-    ('24', 'WHITE BREATH', False, False, ('D3*', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
+    ('18', '陽炎-KAGEROH-', False, True, ('D3*', '陽炎-KAGEROH- / the end of genesis T.M.R. evolution turbo type D')),
+    ('19', '月虹-GEKKOH-', False, True, ('D3*', '月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
+    ('20', '雪幻-winter dust-', False, True, ('D3*', '雪幻-winter dust- / the end of genesis T.M.R. evolution turbo type D')),
+    ('21', 'HEART OF SWORD～夜明け前～', False, False, None),
+    ('22', 'BLACK OR WHITE?', False, False, None),
+    # The blog also lists WHITE BREATH (☆) before 陽炎 as no.18; that line is a
+    # mistake — it was played once, here, and this is the broadcast one (owner's
+    # correction, 2026-10-26). The rows after it are renumbered down by one.
+    ('23', 'WHITE BREATH', False, True, ('D3*', 'WHITE BREATH / the end of genesis T.M.R. evolution turbo type D')),
     G('EC All'),
-    ('25', 'DA’s Party 2000', False, False, ('D3*', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
+    ('24', 'DA’s Party 2000', False, False, ('D3*', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
 # Sony DISC lists, verbatim, for the coverage check below.
