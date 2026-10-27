@@ -259,7 +259,9 @@ SHOWS.append(dict(
     R('14', 'Neo Age', False, True, ('D3', 'Neo Age / Daisuke Asakura')),
     G('Iceman'),
     MV('15', 'Genetic Bomb'),
-    R('16', 'white dimension', False, False, None),
+    # On the BD although Sony's DISC 3 list does not name it (owner); DISC 3 is the
+    # broadcast exactly, so it was broadcast too. See D3_UNLISTED.
+    R('16', 'white dimension', False, True, None),
     R('17', 'dope light', False, True, ('D3', 'dope light / Iceman')),
     R('18', 'Beauty and Beast 0\'00"', False, True, ('D3', 'Beauty and Beast 0\'00" / Iceman')),
     R('19', 'Genetic Bomb', False, True, ('D3', 'Genetic Bomb / Iceman')),
@@ -376,12 +378,15 @@ for s_ in SHOWS:
         key = (s_['id'], r[0]); src = SRC[r[4][1]]
         if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
+# On DISC 3 but not in Sony's track list (owner). Shown as DISC 3 with a note.
+D3_UNLISTED = {('y0101', '16')}
 # DISC 3 is the broadcast exactly: every broadcast performance is on it, once.
 for s_ in SHOWS:
     if s_['disc'] != 'DISC 3': continue
     for r in s_['rows']:
         if r[0] != 'G' and r[3]:
-            assert YD.get((s_['id'], r[0]), ('',))[0] == 'D3', ('broadcast but not on DISC 3', s_['id'], r[:2])
+            assert ((s_['id'], r[0]) in D3_UNLISTED
+                    or YD.get((s_['id'], r[0]), ('',))[0] == 'D3'), ('broadcast but not on DISC 3', s_['id'], r[:2])
 
 # Performances another programme also aired, in its own edit rather than the Viewsic
 # one (owner: there are more of these). One label for all of them, the date, station
@@ -392,6 +397,7 @@ ALT_OA = {
 }
 
 def bd_code(s, r):
+    if (s['id'], r[0]) in D3_UNLISTED: return 'D3'
     if r[4] and s['disc'] == 'DISC 3': return YD[(s['id'], r[0])][0]
     return r[4][0] if r[4] else None
 
@@ -469,6 +475,8 @@ for s in SHOWS:
             sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
         if k == 'D3?':
             sub = '<span class="sony">12/31 Grand Finale と 1/1 のどちらの映像かは未確定</span>'
+        if (s['id'], no) in D3_UNLISTED:
+            sub = '<span class="sony">BDの曲目には記載なし</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
         if key in ALT_OA:
