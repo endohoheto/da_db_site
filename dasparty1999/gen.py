@@ -384,10 +384,11 @@ for s_ in SHOWS:
             assert YD.get((s_['id'], r[0]), ('',))[0] == 'D3', ('broadcast but not on DISC 3', s_['id'], r[:2])
 
 # Performances another programme also aired, in its own edit rather than the Viewsic
-# one (owner: there are more of these). One label for all of them, the programme in
-# brackets; the end note says what the label means.
+# one (owner: there are more of these). One label for all of them, the date, station
+# and programme in brackets; the end note says what the label means.
 ALT_OA = {
-  ('v0214', '15'): '貴教革命',   # THUNDERBIRD, as a digest
+  # THUNDERBIRD, as a digest; the title as the database has it (broadcasts, 1999/05/14)
+  ('v0214', '15'): '1999.5.14 NHK BS2『貴教革命～T.M.Revolution true story～』',
 }
 
 def bd_code(s, r):
@@ -706,7 +707,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <h2>注記</h2>
     <ol>
       <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
-      <li>「別編集でOAあり」は、Viewsic の放送とは別に、ほかの番組で別に編集された映像が放送されたものです。かっこ内は番組名です。表の「放送」欄は Viewsic の放送だけを示しています。</li>
+      <li>「別編集でOAあり」は、Viewsic の放送とは別に、ほかの番組で別に編集された映像が放送されたものです。かっこ内は放送日・局・番組名です。表の「放送」欄は Viewsic の放送だけを示しています。</li>
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
       <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。VHS・BD には入っていません。</li>
       <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
