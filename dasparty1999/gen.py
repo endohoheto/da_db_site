@@ -124,7 +124,9 @@ SHOWS.append(dict(
     R('10', 'Toy Box In The Morning', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', False, True, None),
     R('12', 'Mickey Mouse Club March', False, True, None),
-    R('13', '突然シーモアが！', False, True, None),
+    # From the musical Little Shop of Horrors (owner confirmed); the Japanese title stays,
+    # the English one in brackets (owner).
+    R('13', '突然シーモアが！(Suddenly Seymour)', False, True, None, '原曲: ミュージカル『リトル・ショップ・オブ・ホラーズ』'),
     R('14', 'GATEⅠ -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     G('木村由姫'),
     NAV,
