@@ -2,7 +2,8 @@
 # Sources, and nothing else:
 #   - setlists (order, titles, who played): the database's own live list, as the site
 #     shows it (getPerformanceSetlist), 2026-10-26
-#   - ★ (VHS) and ☆ (broadcast): the owner's blog, matched to the site's rows
+#   - ★ (VHS) and ☆ (broadcast): the owner's blog, matched to the site's rows — a starting
+#     point only, corrected row by row by the owner; the page cites it as reference
 #   - BD contents: the Sony Music official page only
 #   - 2/14 and 8/29 VHS track lists: the VHS jackets (photos from the owner); each is
 #     the same list, in the same order, as Sony's DISC 1 / DISC 2
@@ -130,7 +131,7 @@ SHOWS.append(dict(
     R('16', 'Fall in YOU', False, True, None),
     # On 木村由姫's own VHS 「first impression」 (PIVL-5140, 1999.12.22) as a live track;
     # the database lists it there (owner pointed it out). Not on the DA's Party VHS.
-    R('17', 'Windy scene', False, True, None, '木村由姫のVHS『first impression』(1999.12.22)に収録'),
+    R('17', 'Windy scene', False, True, None, 'VHS『first impression』(1999.12.22)に収録'),
     R('18', 'Summer Rain', False, True, None),
     G('Mad Soldiers'),
     NAV,
@@ -472,11 +473,11 @@ for s in SHOWS:
         if k == 'elsewhere':
             where = ' または '.join(f'この回の{n_}曲目' if sid == s['id'] else YSHOW[sid]
                                     for sid, n_ in YD[(s['id'], no)][1])
-            sub = f'<span class="sony">BDのDISC 3は {e(where)} の演奏(放送映像)</span>'
+            sub = f'<span class="sony">BD には {e(where)} の演奏を収録</span>'
         if k == 'D3?':
             sub = '<span class="sony">12/31 Grand Finale と 1/1 のどちらの映像かは未確定</span>'
         if (s['id'], no) in D3_UNLISTED:
-            sub = '<span class="sony">BDの曲目には記載なし</span>'
+            sub = '<span class="sony">BD の曲目にはないが収録</span>'
         extra = NOTE.get((SHOWS.index(s), no))
         if extra: sub = f'<span class="sony">{e(extra)}</span>' + sub
         if key in ALT_OA:
@@ -669,22 +670,22 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
     <div class="kind">SPECIAL ― DA’s Party 1999</div>
     <h1>DA’s Party 1999<br>収録対照表</h1>
     <p class="lead">1999年のDA’s Party 5公演のセットリストを1曲ずつ並べ、Viewsicでの放送・当時のVHS・2026年10月28日発売のBlu-ray『DA’s Party 1999 SPECIAL EDITION』に入っているかを突き合わせました。</p>
-    <p class="howto">表の「放送」「VHS」は ● が収録あり、― がなし。「BD」は収録されているディスクです。注記はページの最後にまとめています。</p>
+    <p class="howto">表の ● はあり、― はなし。「BD」の欄は収録されているディスクです。注記はページの最後にまとめています。</p>
   </header>
 
   <div class="cards">
     <div class="card">
       <h2>VHS と BD の曲目</h2>
       {f'<ul>{li(new)}</ul>' if new else ''}
-      <p{' style="margin-top:6px"' if new else ''}>代々木の3公演はVHSが無く、DISC 3の全曲が初商品化。
-        VHS のクレジットと BD の曲目は、2/14(DISC 1・16曲)も 8/29(DISC 2・11曲)も曲名・曲順とも同じ。</p>
+      <p{' style="margin-top:6px"' if new else ''}>2/14(DISC 1・16曲)と 8/29(DISC 2・11曲)は、当時の VHS と曲目・曲順が同じ。
+        代々木の3公演は VHS が出ておらず、DISC 3 の全曲が初の商品化。</p>
     </div>
     <div class="card">
       <h2>DISC 3 はどの回の映像か</h2>
-      <p>ほとんどが 1/1 Happy New Year の放送から。
+      <p>DISC 3 は Viewsic の放送と同じ内容。
+        ほとんどが 1/1 Happy New Year の映像で、
         FATE WEATHER と Shining Collection は 12/31 Grand Finale、
-        DA’s Party 2000 は 12/31 Count Down から。
-        DISC 3 は Viewsic の放送とまったく同じ内容。</p>
+        DA’s Party 2000 は 12/31 Count Down の映像。</p>
     </div>
   </div>
 
@@ -714,23 +715,21 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
   <section class="notes" id="notes">
     <h2>注記</h2>
     <ol>
-      <li>VHS には、曲が編集されて入っているものが多くあります。BD の DISC 1・2 は、2/14・8/29 の VHS と曲目・曲順が同じで、VHS と同じ内容です。</li>
-      <li>「別編集でOAあり」は、Viewsic の放送とは別に、ほかの番組で別に編集された映像が放送されたものです。かっこ内は放送日・局・番組名です。表の「放送」欄は Viewsic の放送だけを示しています。</li>
-      <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
-      <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。VHS・BD には入っていません。</li>
-      <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
-      <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、放送とまったく同じ内容です。各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
-      <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。公式と曲名が違う曲には、公式の曲名を「BD表記」として添えています。</li>
-      <li>BD の内容は、発売後に映像で確認して追記します。</li>
+      <li>VHS には、編集されて入っている曲が多くあります。</li>
+      <li>表の「放送」は Viewsic の放送です。2/14 と 8/29 は全曲が中継されました。「別編集でOAあり」は、ほかの番組で別に編集された映像が放送されたもので、かっこ内は放送日・局・番組名です。</li>
+      <li>8/29 の放送では、オープニングと各出演者の前にナビゲーターが入ります。VHS・BD には入っていません。</li>
+      <li>メドレーなど BD で1曲になっているものは、BD の曲名で1曲と数え、その下に曲を並べています。2/14 のピアノメドレーは BD に1曲としての名前がないため、Pf Solo としています。映像のみ(MV)は曲に数えていません。</li>
+      <li>同じ曲を代々木の複数の回で演奏している場合、BD に入っているのは放送された回の演奏です。ほかの回の行は「BD」を ― にし、収録されている回を曲名の下に書いています。</li>
+      <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています(公式にないものはデータベースの表記)。公式と曲名が違う曲には「BD表記」を添えています。</li>
     </ol>
   </section>
 
   <footer>
     出典<br>
     セットリスト: 浅倉大介 クレジットデータベース(ライブ)<br>
-    VHS収録・放送: <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a><br>
     Blu-ray の曲目: <a href="{SONY}" target="_blank" rel="noopener">ソニーミュージック オフィシャルサイト(2026.09.15)</a><br>
-    2/14・8/29 の VHS 収録曲: VHS のクレジット(管理人所蔵)
+    2/14・8/29 の VHS 収録曲: VHS のクレジット<br>
+    参考: <a href="{BLOG}" target="_blank" rel="noopener">全DA's Party セットリスト(ちっちきちっちっちっちっち)</a>
   </footer>
 </main>
 </body>
