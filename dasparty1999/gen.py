@@ -154,8 +154,8 @@ SHOWS.append(dict(
     R('31', '月虹 -GEKKOH-', True, True, ('D2', '陽炎-KAGEROH-〜月虹-GEKKOH- / the end of genesis T.M.R. evolution turbo type D')),
     # She joined the closing All block as a guest; the blog has 「MC+雛形あきこ」 here and
     # the site only 「MC」, so the guest goes on the block heading, not on the MC row.
+    # No navigator before the closing All block (owner).
     G('All', 'ゲスト: 雛形あきこ'),
-    NAV,
     R('32', 'MC', False, True, None),
   ]))
 
@@ -226,9 +226,10 @@ SHOWS.append(dict(
     R('11', 'GALAXY GANG', False, False, None),
     # Not marked as a cover on the site; Guns N' Roses (owner confirmed, no other candidate found).
     R('12', 'Paradise City', False, False, None, "原曲: GUNS N' ROSES"),
-    # Not on the BD, so not broadcast either: DISC 3 is the broadcast exactly (owner).
-    # The BD has the full song, no.14.
-    R('13', "DA's PARTY 2000 -TV Size ver-", False, False, None),
+    # Not on the BD, so not on Viewsic either: DISC 3 is the broadcast exactly (owner).
+    # It went out live on Fuji TV instead; the programme title is the database's
+    # (broadcasts, 1999/12/31, ♪ DA's Party 2000). The BD has the full song, no.14.
+    R('13', "DA's PARTY 2000 -TV Size ver-", False, False, None, 'フジテレビ『めちゃめちゃ あいしてる！』で中継'),
     R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
