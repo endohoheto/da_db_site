@@ -353,7 +353,7 @@ for s in SHOWS:
 # ---- where each DISC 3 track came from ----------------------------------------
 # Sony: DISC 3 is footage Viewsic broadcast from Yoyogi. So a DISC 3 track can only come
 # from a performance that was broadcast — a ☆ in the blog. Where exactly one ☆
-# performance of the song exists, that is the source; where two exist, both stay open.
+# performance of the song exists, that is the source; where two exist, both stay open unless USED below settles it.
 # A performance that was not broadcast cannot be on the disc, even if the song is.
 YSHOW = {'y1231a': '12/31 Grand Finale', 'y1231b': '12/31 Count Down', 'y0101': '1/1 Happy New Year'}
 SRC = {}
@@ -362,6 +362,14 @@ for s_ in SHOWS:
     for r in s_['rows']:
         if r[0] != 'G' and r[4] and r[3] and (s_['id'], r[0]) not in KEEP:
             SRC.setdefault(r[4][1], []).append((s_['id'], r[0]))
+# Where two broadcast performances exist and the owner knows which one is on the disc.
+USED = {
+  # aired from both 12/31 Grand Finale and 1/1; the disc has the 1/1 one (owner)
+  'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura': ('y0101', '11'),
+}
+for t, key in USED.items():
+    assert key in SRC[t], (t, key)
+    SRC[t] = [key]
 for t in SONY_D['D3']:
     if not t.startswith("Navigator's Talk"):
         assert SRC.get(t), ('DISC 3 track with no broadcast performance', t)
@@ -521,7 +529,10 @@ for t in SONY_D['D3']:
         s = next(x for x in SHOWS if x['id'] == sid)
         hit = [r for r in s['rows'] if r[0] != 'G' and r[4] and r[4][1] == t]
         if not hit: cells.append('<td class="m no">―</td>')
-        elif any(r[3] for r in hit): cells.append('<td class="m oa mk">●</td>')
+        elif any(YD[(sid, r[0])][0] in ('D3', 'D3?') for r in hit):
+            cells.append('<td class="m oa mk">●</td>')
+        # broadcast too, but the disc uses another show's footage
+        elif any(r[3] for r in hit): cells.append('<td class="m pl">放送</td>')
         else: cells.append('<td class="m pl">演奏</td>')
     title, artist = split_artist(t)
     # an artist heading whenever the act changes, as in the show tables
@@ -676,7 +687,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <p>ほとんどが 1/1 Happy New Year の放送から。
         FATE WEATHER と Shining Collection は 12/31 Grand Finale、
         DA’s Party 2000 は 12/31 Count Down から。
-        THE ELECTROMANCER は両日で放送があり、発売後に確認。
+        THE ELECTROMANCER は 12/31 Grand Finale でも放送があったが、DISC 3 は 1/1 のもの。
         放送があってDISC 3に無いのは 1/1 の「1000年の誓い」だけ。</p>
     </div>
   </div>
@@ -694,7 +705,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
       <div class="stat">{d3_stat}</div>
     </div>
-    <p class="sn"><b class="oa">●</b> その回で演奏され放送あり / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
+    <p class="sn"><b class="oa">●</b> DISC 3 に入っている回 / 放送 = 放送はあったが DISC 3 は別の回 / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
       <tbody>
