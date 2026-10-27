@@ -229,7 +229,7 @@ SHOWS.append(dict(
     # Not on the BD, so not on Viewsic either: DISC 3 is the broadcast exactly (owner).
     # It went out live on Fuji TV instead; the programme title is the database's
     # (broadcasts, 1999/12/31, ♪ DA's Party 2000). The BD has the full song, no.14.
-    R('13', "DA's PARTY 2000 -TV Size ver-", False, False, None, 'フジテレビ『めちゃめちゃ あいしてる！』で中継'),
+    R('13', "DA's PARTY 2000 -TV Size ver-", False, False, None, '1999.12.31 フジテレビ『めちゃめちゃ あいしてる！』で中継'),
     R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
