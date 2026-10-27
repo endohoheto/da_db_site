@@ -520,9 +520,9 @@ MATRIX_ARTIST = {'Daisuke Asakura': '浅倉大介'}
 last_artist = None
 for t in SONY_D['D3']:
     # Not part of any show's setlist: the navigator segments are the Viewsic broadcast
-    # itself, carried over as aired (per the site owner).
+    # itself, carried over as aired (per the site owner). Said once under the title,
+    # not as rows between the songs (owner).
     if t.startswith("Navigator's Talk"):
-        mrows.append(f'<tr class="talk"><td class="t">{e(split_artist(t)[0])}<span class="sony">Mad Soldiers(ナビゲーター)</span></td><td class="m oa" colspan="3">● Viewsic放送のナビ部分をそのまま収録</td></tr>')
         continue
     cells = []
     for sid, _ in yshort:
@@ -644,8 +644,6 @@ section.matrix .stat span {{ color:var(--dim); }}
 section.matrix .m {{ width:5.4em; white-space:normal; font-size:10.5px; line-height:1.4; }}
 /* the mark is the point of the cell: as big as the ● in the show tables, not the 10.5px labels */
 section.matrix td.mk {{ font-size:12.5px; }}
-tr.talk td.t {{ color:var(--dim); }}
-tr.talk td.m {{ white-space:normal; font-size:11px; }}
 tr.nav td.t {{ color:var(--dim); font-size:11.5px; }}
 .howto {{ margin:14px 0 0; font-size:12px; line-height:1.8; color:var(--dim); }}
 th.bdc, td.bdc {{ width:4.8em; }}
@@ -703,6 +701,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <div class="date">BD DISC 3</div>
       <h2>DA's Party Special Yoyogi National Stadium 1999.12.31～2000.1.1</h2>
       <div class="venue">公式の曲目と、代々木3公演のどこで演奏されたか</div>
+      <div class="venue">Navigator's Talk 1〜{d3_talks}(Mad Soldiers)は、Viewsic 放送のナビ部分をそのまま収録</div>
       <div class="stat">{d3_stat}</div>
     </div>
     <p class="sn"><b class="oa">●</b> DISC 3 に入っている回 / 放送 = 放送はあったが DISC 3 は別の回 / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
