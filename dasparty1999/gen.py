@@ -63,7 +63,8 @@ SHOWS.append(dict(
     # the BD (owner; the blog's ★ is on that line), as Image of Tomorrow for Valentine.
     R('05', "TEAR'S LIBERATION", False, True, None),
     R('06', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, None),
-    R('07', 'Melody Fair', False, True, None),
+    # Bee Gees: the database credits Barry, Maurice & Robin Gibb (owner asked for the original).
+    R('07', 'Melody Fair', False, True, None, '原曲: BEE GEES'),
     R('08', 'Image of Tomorrow', True, True, ('D1', 'Image of Tomorrow for Valentine / Daisuke Asakura')),
     R('09', 'SIREN’S MELODY', True, True, ('D1', "SIREN'S MELODY / Daisuke Asakura")),
     G('Fayray'),
