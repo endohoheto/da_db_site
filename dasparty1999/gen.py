@@ -116,12 +116,13 @@ SHOWS.append(dict(
     NAV,
     # The VHS jacket and Sony list one track, Keyboard Solo〜Piano Solo; the ★ songs are it.
     R('08', 'SEQUENCE MEDITATION ～超電導思考回路～', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    # 09–13 are the piano part (owner).
+    # 09–13 are the piano part (owner). Of it, only GATEⅡ and Toy Box are on the VHS/BD;
+    # 11–13 were cut (owner).
     R('09', 'GATEⅡ -sensitive gate', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura'), 'Pf Solo'),
     R('10', 'Toy Box In The Morning', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    R('12', 'Mickey Mouse Club March', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
-    R('13', '突然シーモアが！', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
+    R('11', 'ENDLESS SUMMER 〜君が滲んだ夏〜', False, True, None),
+    R('12', 'Mickey Mouse Club March', False, True, None),
+    R('13', '突然シーモアが！', False, True, None),
     R('14', 'GATEⅠ -gate odyssey', True, True, ('D2', 'Keyboard Solo〜Piano Solo / Daisuke Asakura')),
     G('木村由姫'),
     NAV,
@@ -399,7 +400,8 @@ def parts_of(s, head):
 def piece_title(s, head):
     name, _ = MEDLEY[head]
     if name: return name
-    t = {split_artist(x[4][1])[0] for x in parts_of(s, head)}
+    # named for the BD track its songs are on; songs cut from the disc have none
+    t = {split_artist(x[4][1])[0] for x in parts_of(s, head) if x[4]}
     assert len(t) == 1, (head, t)
     return t.pop()
 
