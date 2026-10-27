@@ -170,7 +170,8 @@ SHOWS.append(dict(
     R('01', 'white dimension', False, False, None),
     R('02', 'CAUTION! / psychedelic mix', False, False, None),
     R('03', 'GATEⅡ -sensitive gate', False, False, ('D3', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
-    R('04', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
+    # Not broadcast: DISC 3 is the broadcast exactly, and its ELECTROMANCER is the 1/1 one (owner).
+    R('04', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, False, ('D3', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
     R('05', '夢を見たいから', False, False, None),
     R('06', '1000年の誓い', False, False, None),
     R('07', 'SIREN’S MELODY', False, False, None),
@@ -225,8 +226,9 @@ SHOWS.append(dict(
     R('11', 'GALAXY GANG', False, False, None),
     # Not marked as a cover on the site; Guns N' Roses (owner confirmed, no other candidate found).
     R('12', 'Paradise City', False, False, None, "原曲: GUNS N' ROSES"),
-    # The TV-size cut was broadcast but is not on the BD; the BD has the full song, no.14 (owner).
-    R('13', "DA's PARTY 2000 -TV Size ver-", False, True, None),
+    # Not on the BD, so not broadcast either: DISC 3 is the broadcast exactly (owner).
+    # The BD has the full song, no.14.
+    R('13', "DA's PARTY 2000 -TV Size ver-", False, False, None),
     R('14', "DA's PARTY 2000", False, True, ('D3', 'DA’s Party 2000 / Iceman・the end of genesis T.M.R. evolution turbo type D・コタニキンヤ')),
   ]))
 
@@ -250,7 +252,8 @@ SHOWS.append(dict(
     R('10', 'GATEⅡ -sensitive gate', False, True, ('D3', 'GATE Ⅱ～sensitive gate / Daisuke Asakura')),
     R('11', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO)', False, True, ('D3', 'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura')),
     R('12', 'TRY AGAIN', False, True, ('D3', 'TRY AGAIN / Daisuke Asakura')),
-    R('13', '1000年の誓い', False, True, None),
+    # Not on DISC 3, so not broadcast: DISC 3 is the broadcast exactly (owner).
+    R('13', '1000年の誓い', False, False, None),
     R('14', 'Neo Age', False, True, ('D3', 'Neo Age / Daisuke Asakura')),
     G('Iceman'),
     MV('15', 'Genetic Bomb'),
@@ -349,9 +352,9 @@ for s in SHOWS:
     s['rows'] = rows
 
 # ---- where each DISC 3 track came from ----------------------------------------
-# Sony: DISC 3 is footage Viewsic broadcast from Yoyogi. So a DISC 3 track can only come
-# from a performance that was broadcast — a ☆ in the blog. Where exactly one ☆
-# performance of the song exists, that is the source; where two exist, both stay open unless USED below settles it.
+# Sony: DISC 3 is footage Viewsic broadcast from Yoyogi, and it is the broadcast
+# exactly, no more and no less (owner). So a DISC 3 track comes from the one performance
+# of the song that was broadcast — a ☆ in the blog, corrected where the owner said so.
 # A performance that was not broadcast cannot be on the disc, even if the song is.
 YSHOW = {'y1231a': '12/31 Grand Finale', 'y1231b': '12/31 Count Down', 'y0101': '1/1 Happy New Year'}
 SRC = {}
@@ -360,14 +363,6 @@ for s_ in SHOWS:
     for r in s_['rows']:
         if r[0] != 'G' and r[4] and r[3] and (s_['id'], r[0]) not in KEEP:
             SRC.setdefault(r[4][1], []).append((s_['id'], r[0]))
-# Where two broadcast performances exist and the owner knows which one is on the disc.
-USED = {
-  # aired from both 12/31 Grand Finale and 1/1; the disc has the 1/1 one (owner)
-  'THE ELECTROMANCER(KANASHIMINO KAWAWO YOROKOBINO OKAWO）/ Daisuke Asakura': ('y0101', '11'),
-}
-for t, key in USED.items():
-    assert key in SRC[t], (t, key)
-    SRC[t] = [key]
 for t in SONY_D['D3']:
     if not t.startswith("Navigator's Talk"):
         assert SRC.get(t), ('DISC 3 track with no broadcast performance', t)
@@ -379,6 +374,12 @@ for s_ in SHOWS:
         key = (s_['id'], r[0]); src = SRC[r[4][1]]
         if key in src: YD[key] = ('D3' if len(src) == 1 else 'D3?', src)
         else: YD[key] = ('elsewhere', src)
+# DISC 3 is the broadcast exactly: every broadcast performance is on it, once.
+for s_ in SHOWS:
+    if s_['disc'] != 'DISC 3': continue
+    for r in s_['rows']:
+        if r[0] != 'G' and r[3]:
+            assert YD.get((s_['id'], r[0]), ('',))[0] == 'D3', ('broadcast but not on DISC 3', s_['id'], r[:2])
 
 # Performances another programme also aired, in its own edit rather than the Viewsic
 # one (owner: there are more of these). One label for all of them, the programme in
@@ -519,8 +520,6 @@ for t in SONY_D['D3']:
         if not hit: cells.append('<td class="m no">―</td>')
         elif any(YD[(sid, r[0])][0] in ('D3', 'D3?') for r in hit):
             cells.append('<td class="m oa mk">●</td>')
-        # broadcast too, but the disc uses another show's footage
-        elif any(r[3] for r in hit): cells.append('<td class="m pl">放送</td>')
         else: cells.append('<td class="m pl">演奏</td>')
     title, artist = split_artist(t)
     # an artist heading whenever the act changes, as in the show tables
@@ -673,8 +672,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <p>ほとんどが 1/1 Happy New Year の放送から。
         FATE WEATHER と Shining Collection は 12/31 Grand Finale、
         DA’s Party 2000 は 12/31 Count Down から。
-        THE ELECTROMANCER は 12/31 Grand Finale でも放送があったが、DISC 3 は 1/1 のもの。
-        放送があってDISC 3に無いのは 1/1 の「1000年の誓い」だけ。</p>
+        DISC 3 は Viewsic の放送とまったく同じ内容。</p>
     </div>
   </div>
 
@@ -692,7 +690,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <div class="venue">Navigator's Talk 1〜{d3_talks}(Mad Soldiers)は、Viewsic 放送のナビ部分をそのまま収録</div>
       <div class="stat">{d3_stat}</div>
     </div>
-    <p class="sn"><b class="oa">●</b> DISC 3 に入っている回 / 放送 = 放送はあったが DISC 3 は別の回 / 演奏 = 演奏はあるが放送の記載なし / ― = その回では演奏なし</p>
+    <p class="sn"><b class="oa">●</b> DISC 3 に入っている回(放送された回) / 演奏 = 演奏はあるが放送なし / ― = その回では演奏なし</p>
     <div class="tw"><table>
       <thead><tr><th>DISC 3 曲目(公式)</th>{''.join(f'<th class="m">{h}</th>' for _, h in yshort)}</tr></thead>
       <tbody>
@@ -709,7 +707,7 @@ footer {{ color:var(--dim); font-size:11px; line-height:1.9; margin-top:26px; }}
       <li>2/14 と 8/29 は、ブログの記載により全曲が Viewsic で中継されています。</li>
       <li>8/29 の放送では、年末の回と同じく、オープニングと各出演者の最初にナビゲーターが入ります。VHS・BD には入っていません。</li>
       <li>メドレーなど、公式では1曲になっているところは、公式の曲名に番号を付け、曲はその下に内訳として並べています。まとめて1曲と数えます。公式に1曲としての名前がないもの(2/14 のピアノメドレー)は Pf Solo としています。映像のみ(MV)の行は曲に数えていません。</li>
-      <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
+      <li>代々木の3公演は、当時 VHS が出ていません。DISC 3 は公式に「Viewsic が放送した映像」とあり、放送とまったく同じ内容です。各曲がどの回の映像かは、ブログの放送記録から割り出しました。同じ曲を別の回の放送から収録している行は「BD」を ― にし、曲名の下に収録元の回を書いています。</li>
       <li>曲名・公演名・アーティスト名は、ソニーミュージック公式の表記に合わせています。公式に出てこないものはデータベースの表記です。公式と曲名が違う曲には、公式の曲名を「BD表記」として添えています。</li>
       <li>BD の内容は、発売後に映像で確認して追記します。</li>
     </ol>
