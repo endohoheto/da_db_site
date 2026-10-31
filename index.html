@@ -181,6 +181,41 @@ td.n { text-align:right; color:var(--text); white-space:nowrap; padding-right:0;
 .cd a { color:var(--cyan); }
 footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   color:var(--dim); font-size:10.5px; letter-spacing:1px; line-height:1.9; opacity:.75; }
+/* Halloween front (2026-10-31 JST only). A full-screen night scene over the page;
+   the normal front page sits underneath, untouched, and shows once it is dismissed. */
+.hw-on, .hw-on body { overflow:hidden; }
+#halloween { position:fixed; inset:0; z-index:100; background:#07060c; color:#efe6d2;
+  opacity:0; transition:opacity .7s ease; }
+#halloween[hidden] { display:none; }
+#halloween.hw-ready, #halloween.hw-flat { opacity:1; }
+#halloween.hw-out { opacity:0; pointer-events:none; }
+#halloween.hw-flat { background:radial-gradient(circle at 30% 25%, #2a2340 0, #07060c 60%); }
+#hw-scene { position:absolute; inset:0; width:100%; height:100%; display:block;
+  touch-action:none; cursor:crosshair; }
+.hw-plate { position:absolute; inset:0; pointer-events:none; display:flex; flex-direction:column;
+  justify-content:space-between; gap:16px;
+  padding-block:max(22px, env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-bottom, 0px));
+  padding-left:max(18px, env(safe-area-inset-left, 0px));
+  padding-right:max(18px, env(safe-area-inset-right, 0px));
+  text-shadow:0 1px 12px rgba(0,0,0,.8); }
+.hw-eyebrow { font-family:"IM Fell English SC", Georgia, serif; letter-spacing:.18em;
+  font-size:13px; color:#ff9a3c; }
+.hw-site { margin-top:6px; font-family:"Zen Antique", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size:clamp(17px, 3.4vw, 24px); letter-spacing:.08em; line-height:1.45; }
+.hw-almanac { margin-top:8px; font-size:12px; color:rgba(239,230,210,.65); letter-spacing:.04em;
+  font-variant-numeric:tabular-nums; }
+.hw-almanac b { color:#efe6d2; font-weight:normal; }
+.hw-center { display:grid; justify-items:center; gap:14px; margin-bottom:6vh; }
+#hw-enter { pointer-events:auto; cursor:pointer; font-family:"Zen Antique", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size:clamp(22px, 5.6vw, 38px); letter-spacing:.12em; color:#fff3e0;
+  background:rgba(40,16,4,.55); border:1px solid #ff9a3c; border-radius:999px;
+  padding:.5em 1.4em .55em; box-shadow:0 0 28px rgba(255,140,40,.45), inset 0 0 18px rgba(255,140,40,.18);
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  transition:box-shadow .2s ease, transform .2s ease; }
+#hw-enter:hover { box-shadow:0 0 44px rgba(255,150,50,.7), inset 0 0 22px rgba(255,140,40,.3); transform:translateY(-1px); }
+#hw-enter:focus-visible { outline:2px solid #ff9a3c; outline-offset:4px; }
+.hw-hint { font-size:11px; letter-spacing:.06em; color:rgba(239,230,210,.6); }
+@media (prefers-reduced-motion: reduce) { #halloween, #hw-enter { transition:none; } }
 @media (max-width:480px) {
   main { padding:28px 20px 24px; }
   .mark { gap:13px; }
@@ -192,6 +227,42 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
 </style>
 </head>
 <body>
+<!-- Halloween front. Ships `hidden` so crawlers and visitors without scripts get the normal
+     page; the script below reveals it only between data-from and data-until (JST), so it
+     goes away by itself after the day without anyone editing the page. ?halloween previews it. -->
+<div id="halloween" hidden data-from="2026-10-31T00:00:00+09:00" data-until="2026-11-01T00:00:00+09:00"
+     role="dialog" aria-modal="true" aria-label="ハッピーハロウィン">
+  <canvas id="hw-scene" aria-label="月夜のカボチャ畑を進む3Dシーン"></canvas>
+  <div class="hw-plate">
+    <div>
+      <div class="hw-eyebrow">All Hallows’ Eve · 2026</div>
+      <div class="hw-site">浅倉大介 クレジットデータベース</div>
+      <div class="hw-almanac" id="hw-almanac"></div>
+    </div>
+    <div class="hw-center">
+      <button type="button" id="hw-enter">ハッピーハロウィン</button>
+      <div class="hw-hint">マウスかドラッグで見回す · タップで稲妻</div>
+    </div>
+  </div>
+</div>
+<script>
+  (function () {
+    var el = document.getElementById('halloween');
+    var from = Date.parse(el.dataset.from), until = Date.parse(el.dataset.until), now = Date.now();
+    var preview = /[?&]halloween\b/.test(location.search);
+    if (!preview && !(now >= from && now < until)) { el.remove(); return; }
+    el.hidden = false;
+    document.documentElement.classList.add('hw-on');
+    var font = document.createElement('link');
+    font.rel = 'stylesheet';
+    font.href = 'https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Zen+Antique&display=swap';
+    document.head.appendChild(font);
+    var s = document.createElement('script');
+    s.src = 'halloween/scene.js';
+    s.defer = true;
+    document.body.appendChild(s);
+  })();
+</script>
 <main>
   <div class="mark">
     <img src="favicon.png" alt="">
