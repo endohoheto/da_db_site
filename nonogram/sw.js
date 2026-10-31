@@ -2,7 +2,7 @@
 // 電波があるときはいつも最新を取りに行き、取れなかったときだけキャッシュを使う
 // (キャッシュを先に出すと、ホーム画面のアプリに古い版が残り続けた)。
 // 中身を変えたら VERSION も上げる(オフライン用の控えを入れ替えるため)
-const VERSION = 'v11';
+const VERSION = 'v12';
 const CACHE = 'nonogram-' + VERSION;
 const FILES = [
   './', 'index.html', 'app.css', 'app.js', 'gen.js', 'config.js', 'puzzles.json', 'manifest.webmanifest',
