@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title }}｜浅倉大介 クレジットデータベース</title>
+<meta name="description" content="{{ page.title }} — 『Suite Season』ブックレットの洋館と素材写真を特定する調査のまとめ。">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ '/icon-32.png' | relative_url }}">
+<link rel="icon" type="image/png" sizes="512x512" href="{{ '/icon-512.png' | relative_url }}">
+<link rel="apple-touch-icon" href="{{ '/icon-180.png' | relative_url }}">
+<style>
+  :root { --bg:#05070d; --card:#0a0f1a; --cyan:#00fff2; --purple:#b07cff;
+    --text:#d6f7f5; --dim:#8fa8b3; --border:rgba(0,255,242,0.18); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text);
+    font-family:"Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", YuGothic,
+      "Noto Sans JP", sans-serif; line-height:1.9; }
+  main { max-width:720px; margin:0 auto; padding:36px 22px 48px; }
+  .back { font-size:12.5px; letter-spacing:1px; margin:0 0 28px; }
+  .back a { color:var(--dim); text-decoration:none; border-bottom:1px dotted var(--dim); }
+  .back a:hover { color:var(--cyan); border-color:var(--cyan); }
+  h1 { font-size:22px; line-height:1.5; font-weight:600; margin:0 0 6px; }
+  .date { color:var(--purple); font-size:12.5px; letter-spacing:1px; margin:0 0 30px;
+    font-variant-numeric:tabular-nums; }
+  h2 { font-size:16px; margin:34px 0 10px; padding-bottom:6px;
+    border-bottom:1px solid var(--border); }
+  h3 { font-size:14.5px; margin:26px 0 8px; }
+  p, li { font-size:14px; color:var(--text); }
+  ul, ol { padding-left:1.4em; margin:8px 0 16px; }
+  li { margin:0 0 6px; }
+  a { color:var(--cyan); }
+  strong { color:#fff; }
+  blockquote { margin:16px 0; padding:8px 16px; border-left:2px solid var(--purple);
+    color:var(--dim); background:rgba(176,124,255,0.05); }
+  blockquote p { color:var(--dim); margin:4px 0; }
+  code { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12.5px;
+    background:rgba(0,255,242,0.07); padding:1px 5px; border-radius:3px; }
+  footer { border-top:1px solid var(--border); margin-top:40px; padding-top:16px;
+    color:var(--dim); font-size:11px; letter-spacing:1px; line-height:1.9; opacity:.75; }
+</style>
+</head>
+<body>
+<main>
+  <p class="back"><a href="{{ '/' | relative_url }}">← 浅倉大介 クレジットデータベース</a></p>
+  <h1>{{ page.title }}</h1>
+  <p class="date"><time datetime="{{ page.date | date: '%Y-%m-%d' }}">{{ page.date | date: '%Y年%m月%d日' }}</time></p>
+  {{ content }}
+  <footer>Suite Season ロケ地・素材写真の特定調査のまとめ — 浅倉大介 クレジットデータベース</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+# da_db_site — GitHub Pages (built-in Jekyll, no theme).
+#
+# Research summaries are published by adding ONE dated Markdown file under
+# suite_season/ (see PUBLISHING.md). The top page (index.html) lists them
+# automatically via Liquid, so nobody ever edits the index to publish.
+title: 浅倉大介 クレジットデータベース
+description: 浅倉大介が関わった作品・クレジット・ライブ・楽曲・雑誌・放送・書籍を横断して辿れるデータベース。
+lang: ja_JP
+url: "https://endohoheto.github.io"
+baseurl: "/da_db_site"
+markdown: kramdown
+
+# PUBLISHING.md is the agents' convention doc: kept in the repo for reading
+# on github.com, but not published as a page on the site.
+exclude:
+  - PUBLISHING.md
