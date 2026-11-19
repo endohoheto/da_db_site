@@ -416,8 +416,8 @@ footer { border-top:1px solid var(--border); margin-top:30px; padding-top:18px;
   <section>
     <h2>Research Log<span class="ja">Suite Season ロケ地調査のまとめ</span></h2>
     <p>『Suite Season』(the end of genesis T.M.R-evolution turbo type D) のブックレットに写る
-      洋館と素材写真を特定する調査のまとめです。新しいまとめは日付の新しい順に、
-      自動でここへ並びます。</p>
+      洋館と風景写真は、どこで撮られたものなのか。発売から25年以上わからなかった
+      その謎を追う調査の記録です。分かったことから順に、読み物としてまとめています。</p>
     <ul class="summaries">
       {%- assign summaries = site.pages | where_exp: "p", "p.path contains 'suite_season/'" | sort: "date" | reverse -%}
       {%- for p in summaries -%}
